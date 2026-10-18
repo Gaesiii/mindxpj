@@ -16,6 +16,26 @@ from school_app.schedules.services import save_rule
 from school_app.core.enums import Role, Slot, RequiredUniform
 
 
+def validation_codes(error):
+    errors = ([item for items in error.error_dict.values() for item in items]
+              if hasattr(error, 'error_dict') else error.error_list)
+    return ','.join(sorted({str(item.code or 'invalid') for item in errors}))
+
+
+def validate_demo_password(password):
+    """Precheck every seeded username; never expose input values in errors."""
+    if not isinstance(password, str) or not password.strip():
+        raise CommandError('DEMO_PASSWORD rejected [blank]. Set a nonempty strong demo password.')
+    usernames = ['demo_supervisor', 'demo_teacher_a', 'demo_teacher_b',
+                 *[f'demo_student_{index:02}' for index in range(1, 21)]]
+    for username in usernames:
+        try:
+            validate_password(password, user=get_user_model()(username=username))
+        except ValidationError as error:
+            raise CommandError(f'DEMO_PASSWORD rejected for {username} [{validation_codes(error)}]. '
+                               'Set a strong random password in the matching Vercel environment and redeploy.') from None
+
+
 def seed_account(username, role, password, student=None):
     email = f"{username}@example.invalid"
     user = get_user_model().objects.filter(username=username).first()
@@ -77,14 +97,16 @@ class Command(BaseCommand):
             password = getpass("Demo password: ")
             if password != getpass("Demo password again: "):
                 raise CommandError("Passwords do not match.")
+        validate_demo_password(password)
         try:
-            if not password.strip():
-                raise ValidationError("Password cannot be blank.")
-            validate_password(password, user=get_user_model()(username="demo_supervisor"))
             with transaction.atomic():
                 seed_objects(password)
-        except (ValidationError, AccountError, IntegrityError):
-            raise CommandError("Demo seed was not applied. Check password strength and existing demo records.") from None
+        except ValidationError as error:
+            raise CommandError(f'Demo data validation failed [{validation_codes(error)}]. Existing data was preserved.') from None
+        except AccountError as error:
+            raise CommandError(f'Demo data creation rejected [{error.code}]. Existing data was preserved.') from None
+        except IntegrityError:
+            raise CommandError('Demo database constraint failed. Existing data was preserved.') from None
         self.stdout.write(self.style.SUCCESS(
             "Demo ready: DEMO10A/DEMO10B, 20 fictional students, weekday morning/afternoon rules. "
             "Accounts: demo_supervisor, demo_teacher_a/b, demo_student_01..20. "

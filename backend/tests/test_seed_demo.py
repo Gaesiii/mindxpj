@@ -13,6 +13,41 @@ from school_app.core.enums import Role, RequiredUniform, Slot
 
 
 class SeedDemoTests(TestCase):
+    def test_weak_password_reports_safe_reason_before_creating_any_records(self):
+        password = '1234567'
+        with patch.dict('os.environ', {'DEMO_PASSWORD': password}):
+            with self.assertRaises(CommandError) as error:
+                call_command('seed_demo', stdout=StringIO())
+        self.assertIn('DEMO_PASSWORD', str(error.exception))
+        self.assertIn('password_too_short', str(error.exception))
+        self.assertNotIn(password, str(error.exception))
+        self.assertFalse(get_user_model().objects.exists())
+        self.assertFalse(Grade.objects.exists())
+
+    def test_password_is_prechecked_against_teacher_and_student_usernames(self):
+        seen = []
+        def validation(password, user):
+            seen.append(user.username)
+        with patch.dict('os.environ', {'DEMO_PASSWORD':'Rivers!Purple92'}), \
+             patch('school_app.management_app.management.commands.seed_demo.validate_password', side_effect=validation), \
+             patch('school_app.management_app.management.commands.seed_demo.seed_objects') as seed:
+            call_command('seed_demo', stdout=StringIO())
+        self.assertIn('demo_teacher_a', seen)
+        self.assertIn('demo_student_20', seen)
+        self.assertEqual(len(seen), 23)
+        seed.assert_called_once()
+
+    def test_data_validation_is_not_misreported_as_password_failure(self):
+        from django.core.exceptions import ValidationError
+        with patch.dict('os.environ', {'DEMO_PASSWORD':'Rivers!Purple92'}), \
+             patch('school_app.management_app.management.commands.seed_demo.seed_objects',
+                   side_effect=ValidationError({'username': ValidationError('private input',code='unique')})):
+            with self.assertRaises(CommandError) as error:
+                call_command('seed_demo', stdout=StringIO())
+        self.assertIn('data validation', str(error.exception))
+        self.assertIn('unique', str(error.exception))
+        self.assertNotIn('private input', str(error.exception))
+
     def run_seed(self):
         output = StringIO()
         with patch.dict("os.environ", {"DEMO_PASSWORD": "Rivers!Purple92"}):

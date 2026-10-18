@@ -8,6 +8,8 @@ Chỉ cần thêm hai Environment Variables trước khi build:
 
 File `.env.vercel` tạo trên máy chỉ dùng để nhập giá trị; không được push và Vercel không tự đọc file local đó. Trong đúng project Vercel, mở Environment Variables, nhập từng Name/Value, chọn Production và Preview, Save rồi tạo deployment mới. Nếu build vẫn báo thiếu env, tìm dòng `[demo-build:v2]`: dòng này chỉ in tên biến=set/missing, môi trường và commit, không in giá trị. Log không có marker này là bản code cũ; cần chọn deployment mới từ nhánh main.
 
+Nếu hai biến đều `set` nhưng seed thất bại, bản mới kiểm tra mật khẩu cho cả23tài khoản trước khi tạo dữ liệu. `DEMO_PASSWORD rejected [...]` chỉ rõ mã như `password_too_short`, `password_too_common`, `password_entirely_numeric`, `password_too_similar`; thay bằng giá trị mật khẩu ngẫu nhiên trong file private và tạo deployment mới. Chỉ copy phần giá trị sau `DEMO_PASSWORD=`, không copy tên biến/dấu `=` vào ô Value. Nếu báo `data validation`, `data creation rejected` hoặc `database constraint`, giữ dòng mã lỗi đó để chẩn đoán dữ liệu, không tự bỏ kiểm tra mật khẩu.
+
 | Biến | Giá trị |
 | --- | --- |
 | `DJANGO_SECRET_KEY` | Chuỗi ngẫu nhiên dài, giữ nguyên giữa các lần build cần dùng chung phiên |

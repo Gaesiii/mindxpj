@@ -32,6 +32,9 @@ def main():
         from django.core.management import call_command
         from django.db import connections
         from config.vercel_demo import prepare_demo_rules, refresh_demo_sessions
+        from school_app.management_app.management.commands.seed_demo import validate_demo_password
+        validate_demo_password(os.environ['DEMO_PASSWORD'])
+        print('[demo-build:v2] Demo password checks passed for all 23 accounts.', flush=True)
         call_command('prepare_vision_models', verbosity=0)
         call_command('migrate', interactive=False, verbosity=0)
         call_command('seed_demo', verbosity=0)
