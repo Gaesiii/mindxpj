@@ -142,6 +142,28 @@ with tempfile.TemporaryDirectory() as directory:
 
 
 class VercelBuildTests(SimpleTestCase):
+    def test_missing_variable_is_named_without_exposing_configured_secret(self):
+        secret = secrets.token_urlsafe(48)
+        env = {**os.environ, 'DJANGO_SECRET_KEY': secret, 'VERCEL_ENV': 'production',
+               'VERCEL_GIT_COMMIT_SHA': 'abcdef1234567890'}
+        env.pop('DEMO_PASSWORD', None)
+        result = subprocess.run([sys.executable, 'build_vercel.py'], env=env, capture_output=True, text=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('Missing build variables: DEMO_PASSWORD', result.stderr)
+        self.assertIn('environment=production commit=abcdef123456', result.stdout)
+        self.assertIn('DJANGO_SECRET_KEY=set DEMO_PASSWORD=missing', result.stdout)
+        self.assertNotIn(secret, result.stdout + result.stderr)
+
+    def test_both_missing_variables_fail_before_django_or_model_setup(self):
+        env = os.environ.copy()
+        for key in ('DJANGO_SECRET_KEY', 'DEMO_PASSWORD'):
+            env.pop(key, None)
+        result = subprocess.run([sys.executable, 'build_vercel.py'], env=env, capture_output=True, text=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('Missing build variables: DJANGO_SECRET_KEY, DEMO_PASSWORD', result.stderr)
+        self.assertIn('Local .env.vercel is not loaded on Vercel', result.stderr)
+        self.assertNotIn('Traceback', result.stderr)
+
     def test_failed_seed_preserves_previous_template_and_removes_staging(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

@@ -5,8 +5,16 @@ import tempfile
 
 
 def main():
-    if not os.environ.get('DJANGO_SECRET_KEY') or not os.environ.get('DEMO_PASSWORD'):
-        raise SystemExit('Build requires DJANGO_SECRET_KEY and DEMO_PASSWORD environment variables.')
+    required = ('DJANGO_SECRET_KEY', 'DEMO_PASSWORD')
+    missing = [name for name in required if not os.environ.get(name)]
+    # Print presence only; never include secret values in public build logs.
+    context = f"environment={os.environ.get('VERCEL_ENV', 'local')} commit={os.environ.get('VERCEL_GIT_COMMIT_SHA', 'local')[:12]}"
+    presence = ' '.join(name + ('=missing' if name in missing else '=set') for name in required)
+    print(f'[demo-build:v2] {context} {presence}', flush=True)
+    if missing:
+        raise SystemExit('Missing build variables: ' + ', '.join(missing) +
+                         '. Add them to the matching Vercel project environment, Save, then create a new deployment. '
+                         'Local .env.vercel is not loaded on Vercel.')
     backend = Path(__file__).resolve().parent
     target = backend / '.vercel-demo' / 'template.sqlite3'
     if target.resolve().parent.parent != backend.resolve():

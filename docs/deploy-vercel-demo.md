@@ -6,6 +6,8 @@ Import repository `Gaesiii/mindxpj` vào Vercel, chọn **Root Directory: `backe
 
 Chỉ cần thêm hai Environment Variables trước khi build:
 
+File `.env.vercel` tạo trên máy chỉ dùng để nhập giá trị; không được push và Vercel không tự đọc file local đó. Trong đúng project Vercel, mở Environment Variables, nhập từng Name/Value, chọn Production và Preview, Save rồi tạo deployment mới. Nếu build vẫn báo thiếu env, tìm dòng `[demo-build:v2]`: dòng này chỉ in tên biến=set/missing, môi trường và commit, không in giá trị. Log không có marker này là bản code cũ; cần chọn deployment mới từ nhánh main.
+
 | Biến | Giá trị |
 | --- | --- |
 | `DJANGO_SECRET_KEY` | Chuỗi ngẫu nhiên dài, giữ nguyên giữa các lần build cần dùng chung phiên |
