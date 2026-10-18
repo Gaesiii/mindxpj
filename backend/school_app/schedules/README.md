@@ -1,0 +1,15 @@
+# schedules - M04 / Member 2
+
+B04-B06 implement weekly rules, planned sessions, atomic opening snapshots and closing. Scope comes from the current classroom teacher or SUPERVISOR role on every request, including historical sessions. STUDENT cannot access staff schedule APIs. PM/member acceptance and API_Gate remain pending; these files do not approve frontend work.
+
+Routes under `/api/v1`: GET/POST `classes/:id/schedule-rules`, PATCH `schedule-rules/:id`, GET/POST `sessions`, GET `sessions/:id`, POST `sessions/:id/open`, POST `sessions/:id/close`, GET `sessions/:id/roster`. Session filters accept class_id/date_from/date_to/slot; an explicit class filter outside scope returns403, an object outside scope404.
+
+Rule payload: weekday integer 0-6, slot MORNING/AFTERNOON, local start_time/close_time HH:MM:SS, grace_minutes nonnegative integer, required_uniform SHIRT/SPORTS. Start precedes close and cutoff cannot exceed close. Partial PATCH merges the existing scoped rule before validation. Class identity comes from the URL. Unique classroom/weekday/slot protects duplicate rules; no calendar generator is included.
+
+Create receives class_id, school_date YYYY-MM-DD and slot. New sessions require an applicable rule and start PLANNED with null snapshots; repeated create returns the existing session200. Opening receives expected_version, conditionally changes PLANNED to OPEN and atomically captures the current rule, active students, identity/class/grade snapshots, and one UNMARKED/NOT_APPLICABLE Attendance at version0 per roster. Errors roll back everything. OPEN retry returns the existing snapshot; CLOSED cannot reopen. Editing a rule or student later does not modify snapshots.
+
+Closing receives expected_version, conditionally changes OPEN to CLOSED, converts UNMARKED to ABSENT and PENDING scans to EXPIRED, and preserves PRESENT uniforms including NOT_CHECKED. Response includes converted_unmarked, expired_pending and remaining_not_checked. Closing CLOSED again returns current state and zero new conversion counts. PLANNED must open first. Session versions begin0 and increment on successful lifecycle changes.
+
+Migration graph: academics0001 and students0001 precede schedules0001; attendance0002 adds its protected OneToOne roster; QR0002 depends on schedules. Core ChangeLog uses entity UUID references rather than cross-app foreign keys. SQLite uses conditional updates and atomic writes; select_for_update is not relied upon. Locked/busy database requests return409 DATABASE_BUSY.
+
+Verification: `tests.test_schedules` contains15 strict form tests; `tests.test_schedule_api` contains9 schema/API tests including scope, duplicates, active roster, retry after rule change, immutable snapshots, stale versions, missing rules, cutoff validation and injected attendance rollback. Run `.venv/Scripts/python.exe manage.py test tests.test_schedules tests.test_schedule_api` in backend with a process DJANGO_SECRET_KEY. Cross-module flow tests are in tests.test_full_flow. Technical evidence is recorded separately from PM review.

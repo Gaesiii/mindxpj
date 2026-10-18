@@ -1,0 +1,13 @@
+.venv/
+venv/
+tests/
+**/__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example
+*.sqlite3
+private_media/
+private_exports/
+.vercel-demo/
+README.md

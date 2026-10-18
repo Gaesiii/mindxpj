@@ -1,0 +1,52 @@
+{
+  "target": "CPython3.12 Linux x86_64 wheels",
+  "wheels": [
+    {
+      "wheel": "asgiref-3.12.1-py3-none-any.whl",
+      "uncompressed_bytes": 77147
+    },
+    {
+      "wheel": "colorama-0.4.6-py2.py3-none-any.whl",
+      "uncompressed_bytes": 77669
+    },
+    {
+      "wheel": "django-5.2.18-py3-none-any.whl",
+      "uncompressed_bytes": 23413181
+    },
+    {
+      "wheel": "et_xmlfile-2.0.0-py3-none-any.whl",
+      "uncompressed_bytes": 59203
+    },
+    {
+      "wheel": "numpy-2.2.6-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "uncompressed_bytes": 57790150
+    },
+    {
+      "wheel": "opencv_contrib_python_headless-4.13.0.92-cp37-abi3-manylinux_2_28_x86_64.whl",
+      "uncompressed_bytes": 177615845
+    },
+    {
+      "wheel": "openpyxl-3.1.5-py2.py3-none-any.whl",
+      "uncompressed_bytes": 863840
+    },
+    {
+      "wheel": "pillow-12.3.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+      "uncompressed_bytes": 19667368
+    },
+    {
+      "wheel": "qrcode-8.2-py3-none-any.whl",
+      "uncompressed_bytes": 135685
+    },
+    {
+      "wheel": "sqlparse-0.6.0-py3-none-any.whl",
+      "uncompressed_bytes": 158343
+    },
+    {
+      "wheel": "tzdata-2026.5-py2.py3-none-any.whl",
+      "uncompressed_bytes": 581918
+    }
+  ],
+  "total_uncompressed_bytes": 280440349,
+  "limit_bytes": 524288000,
+  "note": "Wheel contents only, not a deployed Vercel build. Source/template/bytecode/runtime overhead additional."
+}

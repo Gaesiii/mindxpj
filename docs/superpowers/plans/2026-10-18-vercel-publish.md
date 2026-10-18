@@ -1,0 +1,15 @@
+# GitHub handover and Vercel demo preparation
+
+User scope: push current source/docs to Gaesiii/mindxpj main and optimize for a Vercel demo with temporary database, minimal setup. No live deployment requested.
+
+**Design:** Vercel Root Directory backend; Python3.12; native Django WSGI detection, local static collected to CDN. Build creates an ignored seeded SQLite template privately within function bundle. Runtime copies that template into per-deployment temporary storage with initialization lock; no cold-start migrations or password hashing. Signed cookie sessions preserve stable seeded user identities across instances from same template. Runtime DB/photo samples and uploads are temporary; changes are not shared across instances. No claim of persistent DB or scaling safety. Only DJANGO_SECRET_KEY and DEMO_PASSWORD required, no cloud database setup.
+
+**Coordination:** core/config/hosting owned in this change; all original app/service interfaces unchanged. Minimal demo bootstrap reuses scoped services for today/open sessions. Keep QR retired and role/photo/export scope. Vercel DEBUGfalse, exact platform hosts, proxy HTTPS cookie handling; private media/temp files outside read-only bundle. No hardcoded credentials.
+
+- [x] Implement and test optional Vercel settings/runtime bootstrap/build-template helper. Existing local behavior preserved. New tests observe RED then GREEN, including copy-once, preserving changes, missing template failure and settings safety.
+- [x] Add backend/pyproject.toml Python/dependency pins+entrypoint/build script, backend/vercel.json function limits/exclusions, .vercelignore and deploy guide. Validate pins equal requirements and no source/biometric/history files required at runtime are excluded.
+- [x] Validate fresh build/collectstatic, cold-start bootstrap, secure-cookie/CSRF authenticated WSGI scenario, checks/full tests and independent code review. Save evidence; do not claim a real Vercel deployment.
+- [x] Initialize Git main in existing workspace, ignore runtime/venvs/tool packages/installers/legacy ZIP, scan staged source/docs for secrets and oversized files. Retain local originals and useful history docs. Inspect staged diff.
+- [ ] Authenticate GitHub using user-completed device login, commit with appropriate author identity and push main without force. Verify remote commit equals local. If authentication remains unavailable, complete all local preparation and report exact remaining auth step.
+
+References checked18/10/2026: official Vercel Django, Python runtime and SQLite guides. Current Django preset supports native manage.py/config entrypoint and automatic collectstatic, standard Python bundle500MB. Configure60s function budget and exclude tests/dev assets from bundle. Temporary SQLite is a demo tradeoff; multiple instances can show different recent changes, including missing newly created records. UI remains a local-authorized demo under pending PM acceptance; compatibility does not approve PM gate or public deployment.

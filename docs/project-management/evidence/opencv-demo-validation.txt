@@ -1,0 +1,5 @@
+Upgrade v1.2 -> v1.3: legacy student, QR confirmation and QR attendance preserved.
+CSRF HTTP: login -> enroll -> analyze(PENDING, 0 present) -> confirm -> retry -> manual -> uniform -> close -> report/export: PASS
+Exports reopened: 3 roster, 2 present, 1 absent; 1 VISION/1 MANUAL; 1 on time/1 late; 1 compliant/1 non-compliant: PASS
+Wrong-class teacher, student export and logged-out access blocked: PASS
+Temporary DBs cleaned; workspace DB unchanged. Synthetic textured faces; detector mocked only for positive HTTP scenario. Actual LBPH/HSV run. No real-camera accuracy/liveness claim.

@@ -1,0 +1,52 @@
+Found 10 test(s).
+Operations to perform:
+  Synchronize unmigrated apps: management_app, reports
+  Apply all migrations: academics, accounts, attendance, auth, contenttypes, core, qr, schedules, sessions, students
+Synchronizing apps without migrations:
+  Creating tables...
+    Running deferred SQL...
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0001_initial... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying accounts.0001_initial... OK
+  Applying academics.0001_initial... OK
+  Applying students.0001_initial... OK
+  Applying accounts.0002_user_student... OK
+  Applying schedules.0001_initial... OK
+  Applying attendance.0001_initial... OK
+  Applying attendance.0002_initial... OK
+  Applying core.0001_initial... OK
+  Applying qr.0001_initial... OK
+  Applying qr.0002_initial... OK
+  Applying sessions.0001_initial... OK
+System check identified no issues (0 silenced).
+Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+
+test_export_limit_on_real_roster_count (tests.test_reports.ReportApiTests.test_export_limit_on_real_roster_count) ... ok
+test_exports_unicode_formula_defense_metadata_and_reconcile (tests.test_reports.ReportApiTests.test_exports_unicode_formula_defense_metadata_and_reconcile) ... ok
+test_invalid_filters (tests.test_reports.ReportApiTests.test_invalid_filters) ... ok
+test_pending_not_present_and_only_relevant_confirmed_scan (tests.test_reports.ReportApiTests.test_pending_not_present_and_only_relevant_confirmed_scan) ... ok
+test_roles_reassignment_and_explicit_outside_filters (tests.test_reports.ReportApiTests.test_roles_reassignment_and_explicit_outside_filters) ... ok
+test_scope_snapshots_cutoff_and_filters (tests.test_reports.ReportApiTests.test_scope_snapshots_cutoff_and_filters) ... ok
+test_xml_invalid_noncharacters_are_sanitized (tests.test_reports.ReportApiTests.test_xml_invalid_noncharacters_are_sanitized) ... ok
+test_qr_manual_uniform_close_details_summary_and_both_exports_reconcile (tests.test_report_reconciliation.ReportReconciliationTests.test_qr_manual_uniform_close_details_summary_and_both_exports_reconcile) ... ok
+test_forty_roster_example (tests.test_reports.ReportAggregateTests.test_forty_roster_example) ... ok
+test_zero_denominators_are_null (tests.test_reports.ReportAggregateTests.test_zero_denominators_are_null) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 2.185s
+
+OK
+Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...

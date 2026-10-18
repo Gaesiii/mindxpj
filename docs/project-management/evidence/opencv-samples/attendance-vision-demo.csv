@@ -1,0 +1,4 @@
+﻿Ngày,Buổi,Mã học sinh,Họ tên,Mã lớp,Lớp,Mã khối,Khối,Trạng thái,Nguồn,Giờ quét,Giờ đến,Giờ xác minh,Đúng giờ/muộn,Chuẩn đồng phục,Loại thực tế,Kết quả đồng phục,Lý do vắng,Lý do đồng phục,Ghi chú,Người kiểm tra,Giờ kiểm tra
+2026-10-18,MORNING,VISION1,Học sinh giả 1,VISION10A,Lớp demo OpenCV,VISION10,Khối demo,PRESENT,VISION,2026-10-18T07:04:00+07:00,2026-10-18T07:04:00+07:00,2026-10-18T07:04:00+07:00,ON_TIME,SHIRT,SHIRT,COMPLIANT,,,,vision_demo_teacher,2026-10-18T07:04:00+07:00
+2026-10-18,MORNING,VISION2,Học sinh giả 2,VISION10A,Lớp demo OpenCV,VISION10,Khối demo,PRESENT,MANUAL,,2026-10-18T07:09:00+07:00,2026-10-18T07:10:00+07:00,LATE,SHIRT,SPORTS,NON_COMPLIANT,,Buổi yêu cầu sơ mi,,vision_demo_teacher,2026-10-18T07:10:00+07:00
+2026-10-18,MORNING,VISION3,Học sinh giả 3,VISION10A,Lớp demo OpenCV,VISION10,Khối demo,ABSENT,,,,,NOT_APPLICABLE,SHIRT,,NOT_APPLICABLE,,,,,

@@ -1,0 +1,222 @@
+# v1.3: active path is OpenCV (vision requests appended below).
+# QR blocks below are LEGACY ONLY; QR_ENABLED=false by default.
+# Local UI user-authorized before gate (2026-10-18); PM API gate remains NOT_APPROVED.
+# A14/B14 — local MVP API collection. No real credentials or student data.
+# Run backend migrate + seed_demo first. HTTP client must keep its cookie jar.
+# Before EVERY login: GET auth/me, copy csrftoken cookie to csrfToken.
+# Login rotates CSRF: copy the NEW cookie value before next write.
+# Change username to switch role; a login replaces the previous browser session.
+# Paste UUIDs/token from responses; QR expires60s, pending verification15min.
+# Do not save real passwords/tokens into this file or screenshots/evidence.
+@baseUrl = http://127.0.0.1:8000/api/v1
+@username = demo_teacher_a
+@password = replace-with-your-local-demo-password
+@csrfToken = paste-current-csrftoken-cookie
+@classId = paste-DEMO10A-class-id
+@otherClassId = paste-DEMO10B-class-id
+@studentId = paste-DEMOHS01-id
+@secondStudentId = paste-DEMOHS02-id
+@sessionId = paste-session-id
+@attendanceId = paste-DEMOHS02-attendance-id-from-roster
+@scanId = paste-scan-id
+@qrToken = paste-fresh-token
+@schoolDate = 2026-10-14
+@arrivedAt = 2026-10-14T07:10:00+07:00
+
+### Bootstrap CSRF; anonymous401 includes csrftoken; logged-in200 includes identity
+GET {{baseUrl}}/auth/me
+
+### Login teacher_a / supervisor / student_01;200 identity without password/hash
+# Change username variable to demo_supervisor, demo_student_01 etc as needed.
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+X-CSRFToken: {{csrfToken}}
+
+{"username":"{{username}}","password":"{{password}}"}
+
+### Teacher sees assigned classes; supervisor both; student403
+GET {{baseUrl}}/classes
+
+### Teacher sees scoped grades
+GET {{baseUrl}}/grades
+
+### Scoped student search; get UUIDs without passwords/photo paths
+GET {{baseUrl}}/students?class_id={{classId}}&search=DEMOHS
+
+### Student own minimal profile only; different student's ID404
+GET {{baseUrl}}/students/{{studentId}}
+
+### Teacher/supervisor only; no photo seeded ->404, student403
+GET {{baseUrl}}/students/{{studentId}}/photo
+
+### Teacher own weekday rules; Mon0..Fri4, SHIRT mornings, SPORTS afternoons
+GET {{baseUrl}}/classes/{{classId}}/schedule-rules
+
+### Create dated PLANNED session201; repeat200 sameid; use weekday from seed
+# schoolDate must be current local weekday for live QR demo, not weekend.
+POST {{baseUrl}}/sessions
+Content-Type: application/json
+X-CSRFToken: {{csrfToken}}
+
+{"class_id":"{{classId}}","school_date":"{{schoolDate}}","slot":"MORNING"}
+
+### PLANNED version0 -> OPEN version1; repeat OPEN returns200 same roster
+POST {{baseUrl}}/sessions/{{sessionId}}/open
+Content-Type: application/json
+X-CSRFToken: {{csrfToken}}
+
+{"expected_version":0}
+
+### 10 snapshot roster rows, UNMARKED/NOT_APPLICABLE version0
+GET {{baseUrl}}/sessions/{{sessionId}}/roster
+
+### Staff issues challenge201; token hash in DB, token returned only here
+POST {{baseUrl}}/sessions/{{sessionId}}/qr-challenges
+Content-Type: application/json
+X-CSRFToken: {{csrfToken}}
+
+{}
+
+### Login demo_student_01 first; own today's roster sessions only
+GET {{baseUrl}}/me/today-sessions
+
+### Student sends scan201 PENDING; samekey/body retry201 sameid+timestamp
+# Use fresh Idempotency-Key for a new actual action; keep this key for retry.
+POST {{baseUrl}}/qr-scans
+Content-Type: application/json
+X-CSRFToken: {{csrfToken}}
+Idempotency-Key: demo-scan-01-replace-per-run
+
+{"token":"{{qrToken}}"}
+
+### PENDING scan and UNMARKED attendance; student cannot ask identity of another
+GET {{baseUrl}}/me/scan-status?session_id={{sessionId}}
+
+### Login demo_teacher_a again; queue contains snapshot identity/class/photoURL
+GET {{baseUrl}}/sessions/{{sessionId}}/qr-scans?status=PENDING
+
+### Confirm identity at site;200 PRESENT, arrived_at=scanned_at, checked uniform
+# Cutoff inclusive:7:05:00 ON_TIME;7:05:01 LATE. Live time comes from server.
+POST {{baseUrl}}/qr-scans/{{scanId}}/confirm
+Content-Type: application/json
+X-CSRFToken: {{csrfToken}}
+Idempotency-Key: demo-confirm-01-replace-per-run
+
+{"expected_attendance_version":0,"expected_scan_version":0,"identity_confirmed":true,"uniform":{"observed_uniform":"SHIRT","uniform_status":"COMPLIANT"}}
+
+### Manual fallback for DEMOHS02; require aware arrivedAt same schoolDate <=now
+PATCH {{baseUrl}}/attendance/{{attendanceId}}
+Content-Type: application/json
+X-CSRFToken: {{csrfToken}}
+Idempotency-Key: demo-manual-02-replace-per-run
+
+{"expected_version":0,"status":"PRESENT","arrived_at":"{{arrivedAt}}","reason":"Không có điện thoại; ghi thời gian đến đã xác minh"}
+
+### Uniform uses current attendance version1; NON_COMPLIANT requires reason
+PATCH {{baseUrl}}/attendance/{{attendanceId}}/uniform
+Content-Type: application/json
+X-CSRFToken: {{csrfToken}}
+Idempotency-Key: demo-uniform-02-replace-per-run
+
+{"expected_version":1,"observed_uniform":"SPORTS","uniform_status":"NON_COMPLIANT","reason":"Buổi này yêu cầu sơ mi"}
+
+### Check roster/queue counts before close; OPEN version1 -> CLOSED version2
+# UNMARKED->ABSENT, PENDING->EXPIRED, NOT_CHECKED preserved.
+POST {{baseUrl}}/sessions/{{sessionId}}/close
+Content-Type: application/json
+X-CSRFToken: {{csrfToken}}
+
+{"expected_version":1}
+
+### Snapshot detail:10items (2PRESENT,8ABSENT) for clean workflow above
+GET {{baseUrl}}/reports/attendance?date_from={{schoolDate}}&date_to={{schoolDate}}&class_id={{classId}}
+
+### Expected10 present2 absent8 unmarked0 compliant1 non_compliant1 if clean demo
+GET {{baseUrl}}/reports/summary?date_from={{schoolDate}}&date_to={{schoolDate}}&class_id={{classId}}
+
+### XLSX3 sheets Chi_tiet/Tong_hop/Thong_tin,5000max, timezoneVietnam
+GET {{baseUrl}}/reports/export?date_from={{schoolDate}}&date_to={{schoolDate}}&class_id={{classId}}&format=xlsx
+
+### Same scoped rows, BOM UTF8/formula-safe, metadata in X-Report-* headers
+GET {{baseUrl}}/reports/export?date_from={{schoolDate}}&date_to={{schoolDate}}&class_id={{classId}}&format=csv
+
+### Negative: teacher_a explicit classB filter403
+GET {{baseUrl}}/reports/summary?date_from={{schoolDate}}&date_to={{schoolDate}}&class_id={{otherClassId}}
+
+### Negative: role/identity injection422; use student login for this request
+POST {{baseUrl}}/qr-scans
+Content-Type: application/json
+X-CSRFToken: {{csrfToken}}
+Idempotency-Key: demo-invalid-identity-replace-per-run
+
+{"token":"{{qrToken}}","student_id":"{{secondStudentId}}"}
+
+### Logout flushes session; next protected read401
+POST {{baseUrl}}/auth/logout
+Content-Type: application/json
+X-CSRFToken: {{csrfToken}}
+
+{}
+
+
+### VISION v1.3: enrollment metadata, scoped staff only, no image bytes
+GET {{baseUrl}}/students/{{studentId}}/face-samples
+
+### Enrollment atomically REPLACES all samples; replace local authorized file paths.
+# Never commit real face images. Exactly3-10 repeated images fields, total<=15MiB.
+POST {{baseUrl}}/students/{{studentId}}/face-samples
+X-CSRFToken: {{csrfToken}}
+Content-Type: multipart/form-data; boundary=VisionEnrollBoundary
+
+--VisionEnrollBoundary
+Content-Disposition: form-data; name="images"; filename="sample-1.jpg"
+Content-Type: image/jpeg
+
+< ./local-private/sample-1.jpg
+--VisionEnrollBoundary
+Content-Disposition: form-data; name="images"; filename="sample-2.jpg"
+Content-Type: image/jpeg
+
+< ./local-private/sample-2.jpg
+--VisionEnrollBoundary
+Content-Disposition: form-data; name="images"; filename="sample-3.jpg"
+Content-Type: image/jpeg
+
+< ./local-private/sample-3.jpg
+--VisionEnrollBoundary--
+
+### Analyze one image; no student_id; PENDING must NOT write PRESENT.
+POST {{baseUrl}}/sessions/{{sessionId}}/vision-scans
+X-CSRFToken: {{csrfToken}}
+Idempotency-Key: vision-analysis-01-replace-per-run
+Content-Type: multipart/form-data; boundary=VisionScanBoundary
+
+--VisionScanBoundary
+Content-Disposition: form-data; name="image"; filename="evaluation-1.jpg"
+Content-Type: image/jpeg
+
+< ./local-private/evaluation-1.jpg
+--VisionScanBoundary--
+
+### Staff queue scoped to session; capture scan UUID/version, attendance version.
+GET {{baseUrl}}/sessions/{{sessionId}}/vision-scans
+
+### Copy VISION scan UUID to scanId; direct staff identity check mandatory; expires120s.
+POST {{baseUrl}}/vision-scans/{{scanId}}/confirm
+Content-Type: application/json
+X-CSRFToken: {{csrfToken}}
+Idempotency-Key: vision-confirm-01-replace-per-run
+
+{"expected_scan_version":0,"expected_attendance_version":0,"identity_confirmed":true,"uniform":{"observed_uniform":"SHIRT","uniform_status":"COMPLIANT"}}
+
+### Reject a DIFFERENT PENDING vision scan; never write PRESENT.
+POST {{baseUrl}}/vision-scans/{{scanId}}/reject
+Content-Type: application/json
+X-CSRFToken: {{csrfToken}}
+Idempotency-Key: vision-reject-01-replace-per-run
+
+{"expected_scan_version":0,"reason":"Không xác minh được người thực tế; chuyển nhập thủ công"}
+
+### Remove private samples; invalidates pending proposals for this student.
+DELETE {{baseUrl}}/students/{{studentId}}/face-samples
+X-CSRFToken: {{csrfToken}}

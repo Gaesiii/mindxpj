@@ -1,0 +1,10 @@
+* text=auto eol=lf
+*.md whitespace=-blank-at-eol
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.docx binary
+*.pptx binary
+*.xlsx binary
+*.zip binary

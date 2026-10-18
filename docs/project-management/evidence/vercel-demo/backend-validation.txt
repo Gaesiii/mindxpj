@@ -1,0 +1,26 @@
+COMMAND: manage.py check
+System check identified no issues (0 silenced).
+
+EXIT: 0
+COMMAND: manage.py makemigrations --check --dry-run
+No changes detected
+
+EXIT: 0
+COMMAND: manage.py test tests --verbosity 1
+Found 161 test(s).
+System check identified no issues (0 silenced).
+Creating test database for alias 'default'...
+
+.................................................................................................................................................................
+----------------------------------------------------------------------
+Ran 161 tests in 60.384s
+
+OK
+Destroying test database for alias 'default'...
+
+
+EXIT: 0
+COMMAND: -m pip check
+No broken requirements found.
+
+EXIT: 0

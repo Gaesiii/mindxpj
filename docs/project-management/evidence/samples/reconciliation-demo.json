@@ -1,0 +1,167 @@
+{
+  "school_date": "2026-10-12",
+  "class_code": "DEMO10A",
+  "fictional_data_only": true,
+  "csrf_checks": true,
+  "database": "isolated temporary SQLite removed after validation",
+  "counts": {
+    "expected": 10,
+    "present": 2,
+    "absent": 8,
+    "unmarked": 0,
+    "on_time": 1,
+    "late": 1,
+    "compliant": 1,
+    "non_compliant": 1,
+    "not_checked": 0,
+    "checked": 2
+  },
+  "rates": {
+    "presence_rate": 0.2,
+    "late_rate": 0.5,
+    "violation_rate": 0.5,
+    "check_coverage": 1.0
+  },
+  "xlsx": {
+    "sheets": [
+      "Chi_tiet",
+      "Tong_hop",
+      "Thong_tin"
+    ],
+    "detail_rows": 10,
+    "summary_matches_json": true,
+    "detail_matches_json": true
+  },
+  "csv": {
+    "utf8_bom": true,
+    "detail_rows": 10,
+    "detail_matches_json": true
+  },
+  "steps": [
+    {
+      "step": "Login demo_teacher_a",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "step": "/sessions",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "step": "/sessions/495c5c00-7fca-4b5e-af8d-2b234c9d9390/open",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "step": "/sessions/495c5c00-7fca-4b5e-af8d-2b234c9d9390/roster",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "step": "/sessions/495c5c00-7fca-4b5e-af8d-2b234c9d9390/qr-challenges",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "step": "Login demo_student_01",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "step": "/qr-scans",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "step": "Login demo_student_03",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "step": "/qr-scans",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "step": "Student export/report denied",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "step": "Login demo_teacher_a",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "step": "/qr-scans/025827be-d983-4cd4-ab65-a9166b7c429e/confirm",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "step": "/attendance/a5e8285a-093e-4159-a615-ae736b97d847",
+      "method": "PATCH",
+      "status": 200
+    },
+    {
+      "step": "/attendance/a5e8285a-093e-4159-a615-ae736b97d847/uniform",
+      "method": "PATCH",
+      "status": 200
+    },
+    {
+      "step": "/sessions/495c5c00-7fca-4b5e-af8d-2b234c9d9390/close",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "step": "/reports/summary",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "step": "/reports/attendance",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "step": "/reports/export",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "step": "/reports/export",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "step": "Login demo_teacher_b",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "step": "Teacher B export class A denied",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "step": "Login demo_supervisor",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "step": "/reports/summary",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "step": "/auth/logout",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "step": "Logged-out report denied",
+      "method": "GET",
+      "status": 401
+    }
+  ]
+}

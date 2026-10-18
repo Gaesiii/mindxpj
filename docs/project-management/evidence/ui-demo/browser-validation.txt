@@ -1,0 +1,14 @@
+Browser login: invalid password feedback, real CSRF session, two scoped demo classes and ten-student roster: PASS
+Real UI schedule save -> session create(PLANNED) -> open -> ten-student snapshot roster: PASS
+Camera permission denial/upload fallback; real Haar rejects blank image, no candidate/attendance fabricated: PASS
+Mocked UI contract only: HSV never pre-checks uniform; identity checkbox required; confirm sends versions/identity, no student_id/uniform by default; actual DB stays unmarked: PASS
+Synthetic MediaStream preview/capture works; navigation stops every track: PASS
+Delayed old-class enrollment response cannot alter a new-class dialog: PASS
+Student enrollment dialog uses private metadata and rejects invalid no-face samples without saving: PASS
+Real committed write with simulated lost response body: same-key retry succeeds without a duplicate write: PASS
+Real browser manual entry + uniform violation + versioned session close: one present/nine absent: PASS
+Actual protected XLSX/CSV downloads through UI reopened; ten records/one present/nine absent/one uniform violation: PASS
+390px mobile layout has no page overflow; logout clears workspace; student login cannot enter staff UI: PASS
+Homeroom teacher sees only assigned class through real scoped APIs: PASS
+Server-side session logout followed by API401 clears private UI and returns to login: PASS
+JavaScript uncaught errors: 0. Real camera/positive face recognition not tested. Permission denial, MediaStream, proposal/confirm contract and lost response body are simulated only in isolated QA browser.
