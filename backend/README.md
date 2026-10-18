@@ -1,10 +1,10 @@
 # Backend Django MVP — API trước frontend
 
-Theo MVP v1.3, luồng hiện tại là OpenCV gợi ý danh tính/đồng phục → nhân sự xác nhận → điểm danh; thủ công là dự phòng. Auth/session/CSRF, lớp, học sinh/ảnh private, lịch/roster và report/XLSX/CSV được giữ. QR tắt mặc định, dữ liệu lịch sử không bị xóa. Người dùng đã cho làm UI demo local trước gate; giao diện tại `/`. PM API gate vẫn chờ review, không có triển khai ngoài.
+Theo MVP v1.4, luồng hiện tại là OpenCV gợi ý danh tính/đồng phục → nhân sự xác nhận → điểm danh; thủ công là dự phòng. Auth/session/CSRF, lớp, học sinh/ảnh private, lịch/roster và report/XLSX/CSV được giữ. QR tắt mặc định, dữ liệu lịch sử không bị xóa. Người dùng đã cho làm UI demo local trước gate; giao diện tại `/`. PM API gate vẫn chờ review, không có triển khai ngoài.
 
-Đọc [thiết kế v1.3](../docs/thiet-ke-he-thong-diem-danh.md), [hợp đồng API](../docs/api-contract.md), [API acceptance](../docs/api-acceptance.md) và [hướng dẫn demo/test/thuyết trình](../docs/huong-dan-demo-opencv.md). Bằng chứng QR/backend v1.2 là lịch sử; ZIP cũ không chứa OpenCV. SQLite dùng demo nhỏ.
+Đọc [thiết kế v1.4](../docs/thiet-ke-he-thong-diem-danh.md), [hợp đồng API](../docs/api-contract.md), [API acceptance](../docs/api-acceptance.md) và [hướng dẫn demo/test/thuyết trình](../docs/huong-dan-demo-opencv.md). Bằng chứng QR/backend v1.2 là lịch sử; ZIP cũ không chứa OpenCV. SQLite dùng demo nhỏ.
 
-Kiểm chứng mới: [149test + migrate/CSRF/export và review](../docs/project-management/evidence/opencv-backend.md). Chạy lại từ root bằng `backend/.venv/Scripts/python.exe .document-tools/verify_opencv.py`; script dùng DB tạm và xuất mẫu, không đổi DB hiện tại.
+Kiểm chứng trước SFace (lịch sử): [149test + migrate/CSRF/export và review](../docs/project-management/evidence/opencv-backend.md). Chạy lại từ root bằng `backend/.venv/Scripts/python.exe .document-tools/verify_opencv.py`; script dùng DB tạm và xuất mẫu, không đổi DB hiện tại.
 
 ### Chạy UI demo ngay
 
@@ -29,6 +29,7 @@ py -3.12 -m venv .venv
 ./.venv/Scripts/python.exe -m pip install -r requirements.txt
 $env:DJANGO_SECRET_KEY = (& ./.venv/Scripts/python.exe -c "import secrets; print(secrets.token_urlsafe(48))")
 $env:DJANGO_DEBUG = 'true'
+./.venv/Scripts/python.exe manage.py prepare_vision_models
 ./.venv/Scripts/python.exe manage.py check
 ./.venv/Scripts/python.exe manage.py migrate
 ./.venv/Scripts/python.exe manage.py makemigrations --check --dry-run
@@ -55,9 +56,9 @@ Secret được sinh cục bộ, không gửi cùng ZIP/commit. Nếu cần gi�
 | DJANGO_DB_PATH | backend/db.sqlite3; có thể trỏ tới DB rỗng khác khi kiểm chứng |
 | DEMO_PASSWORD | Tùy chọn cho seed trong môi trường process; nếu thiếu dùng prompt ẩn; không ghi vào repo |
 | QR_ENABLED | false; chỉ bật true để chạy tương thích QR cũ, không dùng cho demo mới |
-| VISION_FACE_MAX_DISTANCE | 55; khoảng cách LBPH tối đa, thấp hơn chặt hơn; không phải phần trăm chính xác |
-| VISION_FACE_MIN_MARGIN | 10; chênh lệch tối thiểu với ứng viên tiếp theo |
-| VISION_MIN_SHARPNESS | 50; ngưỡng phương sai Laplacian của mặt 128x128 |
+| VISION_FACE_MIN_COSINE | 0.45; cosine tối thiểu, cao hơn chặt hơn; không phải xác suất |
+| VISION_FACE_MIN_COSINE_MARGIN | 0.10; chênh lệch cosine tối thiểu với ứng viên tiếp theo |
+| VISION_MIN_SHARPNESS | 50; ngưỡng phương sai Laplacian trên mặt căn chỉnh112x112 |
 | VISION_UNIFORM_HSV | JSON hai dải SHIRT/SPORTS; mặc định áo trắng/áo xanh dương; phải hiệu chỉnh theo đồng phục thật |
 
 TIME_ZONE là Asia/Ho_Chi_Minh và USE_TZ=True. Khi DEBUG=false cookie Secure cần HTTPS; bản này chỉ bàn giao môi trường phát triển, chưa cấu hình hosting. Ảnh tương lai nằm private_media, không có URL media công khai.
@@ -74,8 +75,15 @@ TIME_ZONE là Asia/Ho_Chi_Minh và USE_TZ=True. Khi DEBUG=false cookie Secure c�
 
 ## Giới hạn demo
 
-OpenCV chạy cục bộ bằng Haar + LBPH; đăng ký 3–10 ảnh mặt khác nhau/học sinh, thay thế nguyên bộ, crop 128x128 lưu trong DB riêng tư. GET mẫu chỉ trả số lượng; DELETE xóa crop và vô hiệu hóa đề xuất chờ. Không dùng ảnh hồ sơ thay cho đăng ký mẫu. Khung camera không được lưu; đề xuất hết hạn sau120s. Quét chỉ trả CANDIDATE/UNKNOWN/ALREADY_MARKED; luôn cần nhân sự xác nhận danh tính. Đồng phục là gợi ý màu vùng thân áo, UNKNOWN giữ NOT_CHECKED, không tự kết luận vi phạm. Không có nhận diện sống/chống ảnh chụp giả. Kiểm thử ảnh tổng hợp không chứng minh độ chính xác trên người thật.
+OpenCV chạy cục bộ bằng YuNet2023mar + SFace2021dec FP32; đăng ký3–10ảnh mặt màu khác nhau/học sinh, thay nguyên tử cả bộ. Crop BGR căn chỉnh112x112 PNG và embedding chuẩn hóa128float32 little-endian (512byte) lưu DB private với model_key=sface-2021dec-fp32. GET trả sample_count/usable_sample_count/requires_reenrollment/model_key, không bytes; DELETE xóa mẫu và vô hiệu proposal chờ. Mẫu LBPH cũ giữ lịch sử, không tự chuyển đổi, cần đăng ký lại ít nhất3ảnh. Không dùng ảnh hồ sơ thay cho đăng ký mẫu. Khung camera không được lưu; đề xuất hết hạn sau120s. Quét trả CANDIDATE/UNKNOWN/ALREADY_MARKED, UNKNOWN reason=REENROLLMENT_REQUIRED khi roster chỉ có mẫu legacy; luôn cần nhân sự xác nhận danh tính. Đồng phục là gợi ý màu vùng thân áo, UNKNOWN giữ NOT_CHECKED, không tự kết luận vi phạm. Không có nhận diện sống/chống ảnh chụp giả. Kiểm thử ảnh tổng hợp không chứng minh độ chính xác trên người thật.
 
 Ảnh vision ≤2MiB/4MP mỗi ảnh, tổng đăng ký ≤15MiB; một ảnh quét/lần; roster ≤50 học sinh;20 phân tích/phút/nhân sự. Login10 lần/IP/5phút. Rate limit dùng cache process, SQLite không chứng minh tải toàn trường hoặc nhiều process. Cài đúng opencv-contrib-python-headless trong requirements, không cài đồng thời các gói OpenCV khác dùng chung module cv2. Thay đổi ngưỡng/màu cần chạy đánh giá lại trên bộ ảnh được phép dùng, tách khỏi ảnh đăng ký.
 
 Ảnh hồ sơ riêng biệt tối đa5MiB/24MP, chuẩn hóa PNG bỏ metadata và lưu private; tải luôn kiểm tra scope. Windows có thể giữ file ảnh hồ sơ cũ đang tải sau thay thế. Export đồng bộ ≤5.000 dòng, XLSX3sheet/CSV BOM/formula-safe. Không SMS/phụ huynh/cloud/queue/workflow duyệt sửa; không triển khai hoặc chia sẻ ngoài.
+
+
+## Chuẩn bị và nâng cấp SFace
+
+`manage.py prepare_vision_models` tải model đã pin revision/SHA-256 trước khi phục vụ nhận diện; launcher tự gọi lệnh này. Không tải ở request; thiếu/hỏng model báo503 VISION_UNAVAILABLE. Giữ SFACE.LICENSE/YUNET.LICENSE/NOTICE.txt tại third_party/opencv_zoo (YuNet MIT, SFace Apache2.0). Model binaries bỏ qua Git, không chia sẻ ảnh/mẫu thật/DB/runtime secrets.
+
+Khi nâng DB local đang dùng: backup DB, giữ nguyên secret/tài khoản, chạy migrate; không chạy seed để thay dữ liệu người dùng. Đăng nhập bằng tài khoản hiện tại và đăng ký lại3–10ảnh. API scan mới trả model_key, cosine_score và metric=cosine, distance=1-cosine; lịch sử LBPH metric=lbph_distance. Không trộn các ngưỡng/khoảng cách cũ mới. HSV và xác nhận nhân sự/manual giữ nguyên. Full-suite/browser/ảnh held-out của SFace cần evidence mới; các số test ở mục lịch sử không phải kết quả hiện tại.

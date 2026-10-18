@@ -8,6 +8,8 @@ class FaceSample(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     student = models.ForeignKey('students.Student', on_delete=models.CASCADE, related_name='face_samples')
     image = models.BinaryField(editable=False)
+    embedding = models.BinaryField(null=True, editable=False)
+    model_key = models.CharField(max_length=64, blank=True, default='')
     digest = models.CharField(max_length=64)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -25,6 +27,8 @@ class VisionScan(models.Model):
     sample_revision = models.CharField(max_length=64)
     attendance_version = models.PositiveIntegerField()
     distance = models.FloatField()
+    model_key = models.CharField(max_length=64, default='lbph')
+    cosine_score = models.FloatField(null=True)
     observed_uniform = models.CharField(max_length=16)
     color_coverage = models.FloatField()
     status = models.CharField(max_length=16, default='PENDING', choices=[(v,v) for v in (

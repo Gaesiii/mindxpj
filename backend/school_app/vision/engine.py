@@ -1,4 +1,4 @@
-"""Bounded local image processing. LBPH distance is not a probability."""
+"""Bounded local YuNet/SFace processing. Cosine similarity is not a probability."""
 import io
 import warnings
 
@@ -8,6 +8,7 @@ from PIL import Image, ImageOps, UnidentifiedImageError
 from django.conf import settings
 
 from school_app.accounts.services import AccountError
+from .sface_models import MODEL_KEY, get_runtime
 
 MAX_BYTES = 2 * 1024 * 1024
 MAX_PIXELS = 4_000_000
@@ -36,55 +37,131 @@ def decode_upload(upload):
 
 
 def detect_faces(image):
-    classifier = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-    if classifier.empty():
-        raise AccountError('VISION_UNAVAILABLE', 'Face detector unavailable.', 503)
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    return classifier.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(40,40))
+    _validate_image(image)
+    height, width = image.shape[:2]
+    scale = min(1.0, 640 / max(height, width))
+    size = (max(1, round(width * scale)), max(1, round(height * scale)))
+    resized = cv2.resize(image, size, interpolation=cv2.INTER_AREA) if scale < 1 else image
+    runtime = get_runtime()
+    try:
+        with runtime.lock:
+            runtime.detector.setInputSize(size)
+            _, rows = runtime.detector.detect(resized)
+            if rows is None:
+                return []
+            rows = np.array(rows, dtype=np.float32, copy=True)
+    except cv2.error as error:
+        raise AccountError('VISION_UNAVAILABLE', 'Face detector unavailable.', 503) from error
+    if rows.ndim != 2 or rows.shape[1] != 15 or not np.isfinite(rows).all():
+        raise AccountError('VISION_UNAVAILABLE', 'Face detector returned invalid geometry.', 503)
+    # Use actual resized dimensions, which can differ slightly after rounding.
+    rows[:, 0:14:2] *= width / size[0]
+    rows[:, 1:14:2] *= height / size[1]
+    return rows
+
+
+def _validate_image(image):
+    if (not isinstance(image, np.ndarray) or image.dtype != np.uint8
+            or image.ndim != 3 or image.shape[2] != 3 or min(image.shape[:2]) < 1
+            or image.shape[0] * image.shape[1] > MAX_PIXELS):
+        raise AccountError('INVALID_IMAGE', 'Use a valid color image.', 422)
+
+
+def _validate_crop(crop):
+    _validate_image(crop)
+    if crop.shape != (112, 112, 3):
+        raise AccountError('INVALID_IMAGE', 'Expected an aligned 112 pixel face.', 422)
+
+
+def align_face(image, detection):
+    row = np.asarray(detection, dtype=np.float32)
+    if row.shape != (15,) or not np.isfinite(row).all():
+        raise AccountError('INVALID_IMAGE', 'Face landmarks are invalid.', 422)
+    runtime = get_runtime()
+    try:
+        with runtime.lock:
+            crop = runtime.recognizer.alignCrop(image, row).copy()
+    except cv2.error as error:
+        raise AccountError('VISION_UNAVAILABLE', 'Face alignment unavailable.', 503) from error
+    _validate_crop(crop)
+    return crop
 
 
 def extract_face(image):
+    _validate_image(image)
     boxes = detect_faces(image)
     if len(boxes) == 0:
         raise AccountError('NO_FACE', 'No face detected. Retake or use manual attendance.', 422)
     if len(boxes) != 1:
         raise AccountError('MULTIPLE_FACES', 'Only one person may be in the frame.', 422)
-    x,y,w,h = box = tuple(int(v) for v in boxes[0])
+    x,y,w,h = box = tuple(int(v) for v in boxes[0][:4])
+    if min(x,y) < 0 or w <= 0 or h <= 0 or x+w > image.shape[1] or y+h > image.shape[0]:
+        raise AccountError('INVALID_IMAGE', 'Keep the full face inside the frame.', 422)
     if min(w,h) < 80:
         raise AccountError('FACE_TOO_SMALL', 'Move closer to the camera.', 422)
     gray = cv2.cvtColor(image[y:y+h,x:x+w], cv2.COLOR_BGR2GRAY)
-    crop = cv2.resize(gray, (128,128), interpolation=cv2.INTER_AREA)
-    if cv2.Laplacian(crop, cv2.CV_64F).var() < getattr(settings, 'VISION_MIN_SHARPNESS', 50):
+    quality = cv2.resize(gray, (112,112), interpolation=cv2.INTER_AREA)
+    if cv2.Laplacian(quality, cv2.CV_64F).var() < getattr(settings, 'VISION_MIN_SHARPNESS', 50):
         raise AccountError('BLURRY_FACE', 'Face is blurry. Retake the image.', 422)
-    return cv2.equalizeHist(crop), box
+    return align_face(image, boxes[0]), box
 
 
 def encode_face(crop):
+    _validate_crop(crop)
     ok, data = cv2.imencode('.png', crop)
     if not ok:
         raise AccountError('VISION_UNAVAILABLE', 'Could not encode face.', 503)
     return data.tobytes()
 
 
+def embed_face(crop):
+    _validate_crop(crop)
+    runtime = get_runtime()
+    try:
+        with runtime.lock:
+            vector = np.array(runtime.recognizer.feature(crop), dtype=np.float32, copy=True)
+    except cv2.error as error:
+        raise AccountError('VISION_UNAVAILABLE', 'Face recognition unavailable.', 503) from error
+    if vector.shape not in {(128,), (1,128)} or not np.isfinite(vector).all():
+        raise AccountError('VISION_UNAVAILABLE', 'Invalid face feature.', 503)
+    vector = vector.reshape(128)
+    norm = float(np.linalg.norm(vector))
+    if not np.isfinite(norm) or norm <= 1e-12:
+        raise AccountError('VISION_UNAVAILABLE', 'Invalid face feature.', 503)
+    return (vector / norm).astype('<f4').tobytes()
+
+
+def _decode_embedding(data):
+    if not isinstance(data, (bytes, bytearray, memoryview)):
+        raise AccountError('VISION_DATA_ERROR', 'Re-enroll invalid face samples.', 409)
+    data = bytes(data)
+    if len(data) != 512:
+        raise AccountError('VISION_DATA_ERROR', 'Re-enroll invalid face samples.', 409)
+    vector = np.frombuffer(data, dtype='<f4')
+    if not np.isfinite(vector).all() or not np.isclose(np.linalg.norm(vector), 1.0, atol=1e-4, rtol=0):
+        raise AccountError('VISION_DATA_ERROR', 'Re-enroll invalid face samples.', 409)
+    return vector
+
+
 def match_face(crop, samples):
-    distances = []
+    if not samples:
+        return {'student_id':None, 'distance':None, 'cosine_score':None, 'reason':'NO_ENROLLMENT'}
+    query = _decode_embedding(embed_face(crop))
+    scores = []
     for student_id, encoded in samples.items():
-        faces = [cv2.imdecode(np.frombuffer(bytes(data), np.uint8), cv2.IMREAD_GRAYSCALE) for data in encoded]
-        if not faces or any(face is None or face.shape != (128,128) for face in faces):
+        if not encoded:
             raise AccountError('VISION_DATA_ERROR', 'Re-enroll invalid face samples.', 409)
-        recognizer = cv2.face.LBPHFaceRecognizer_create()
-        recognizer.train(faces, np.zeros(len(faces), dtype=np.int32))
-        _, distance = recognizer.predict(crop)
-        distances.append((float(distance), str(student_id)))
-    distances.sort()
-    if not distances:
-        return {'student_id':None, 'distance':None, 'reason':'NO_ENROLLMENT'}
-    best, student_id = distances[0]
-    if best > getattr(settings, 'VISION_FACE_MAX_DISTANCE', 55):
-        return {'student_id':None, 'distance':round(best,3), 'reason':'UNKNOWN_FACE'}
-    if len(distances)>1 and distances[1][0]-best < getattr(settings, 'VISION_FACE_MIN_MARGIN', 10):
-        return {'student_id':None, 'distance':round(best,3), 'reason':'AMBIGUOUS_FACE'}
-    return {'student_id':student_id, 'distance':round(best,3), 'reason':None}
+        score = max(float(np.clip(np.dot(query, _decode_embedding(data)), -1, 1)) for data in encoded)
+        scores.append((score, str(student_id)))
+    scores.sort(key=lambda item: (-item[0], item[1]))
+    best, student_id = scores[0]
+    reason = None
+    if best < getattr(settings, 'VISION_FACE_MIN_COSINE', .45):
+        reason = 'UNKNOWN_FACE'
+    elif len(scores) > 1 and best - scores[1][0] < getattr(settings, 'VISION_FACE_MIN_COSINE_MARGIN', .10):
+        reason = 'AMBIGUOUS_FACE'
+    return {'student_id':student_id if reason is None else None, 'distance':round(1-best,6),
+            'cosine_score':round(best,6), 'reason':reason}
 
 
 def suggest_uniform(image, box):

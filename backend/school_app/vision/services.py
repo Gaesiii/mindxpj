@@ -32,6 +32,8 @@ def serialize_scan(scan):
             'scanned_at':dt(scan.scanned_at), 'expires_at':dt(scan.expires_at),
             'resolved_at':dt(scan.resolved_at), 'reason':scan.reason,
             'distance':scan.distance, 'observed_uniform':scan.observed_uniform,
+            'model_key':scan.model_key, 'cosine_score':scan.cosine_score,
+            'metric':'cosine' if scan.model_key == engine.MODEL_KEY else 'lbph_distance',
             'color_coverage':scan.color_coverage}
 
 
@@ -94,10 +96,14 @@ def analyze(user, session_id, upload, key):
         image = engine.decode_upload(upload)
         crop, box = engine.extract_face(image)
         samples = defaultdict(list)
-        for sample in FaceSample.objects.filter(student_id__in=[row.student_id for row in roster]):
-            samples[str(sample.student_id)].append(sample.image)
-        match = engine.match_face(crop,samples)
+        roster_samples = FaceSample.objects.filter(student_id__in=[row.student_id for row in roster])
+        for sample in roster_samples.filter(model_key=engine.MODEL_KEY, embedding__isnull=False):
+            samples[str(sample.student_id)].append(bytes(sample.embedding))
+        samples = {student_id: vectors for student_id, vectors in samples.items() if len(vectors) >= 3}
         uniform = engine.suggest_uniform(image,box)
+        if not samples and roster_samples.exists():
+            return {'recognition':'UNKNOWN','reason':'REENROLLMENT_REQUIRED','uniform':uniform,'scan':None},200
+        match = engine.match_face(crop,samples)
         if match['student_id'] is None:
             return {'recognition':'UNKNOWN','reason':match['reason'],'uniform':uniform,'scan':None},200
         row = next(row for row in roster if str(row.student_id)==match['student_id'])
@@ -109,7 +115,7 @@ def analyze(user, session_id, upload, key):
             resolved_by=user,reason='New capture',version=F('version')+1)
         scan = VisionScan.objects.create(roster=row,created_by=user,scanned_at=now,expires_at=now+timedelta(seconds=120),
             sample_revision=sample_revision(row.student_id),attendance_version=row.attendance.version,
-            distance=match['distance'],**uniform)
+            distance=match['distance'],model_key=engine.MODEL_KEY,cosine_score=match['cosine_score'],**uniform)
         body = serialize_scan(scan)
         record_change(user,scan,'VISION_SCAN',{},body)
         return {'recognition':'CANDIDATE','scan':body,'uniform':uniform},201

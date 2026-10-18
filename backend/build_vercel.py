@@ -24,6 +24,7 @@ def main():
         from django.core.management import call_command
         from django.db import connections
         from config.vercel_demo import prepare_demo_rules, refresh_demo_sessions
+        call_command('prepare_vision_models', verbosity=0)
         call_command('migrate', interactive=False, verbosity=0)
         call_command('seed_demo', verbosity=0)
         prepare_demo_rules()

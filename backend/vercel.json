@@ -4,7 +4,7 @@
   "functions": {
     "config/wsgi.py": {
       "maxDuration": 60,
-      "includeFiles": "{.vercel-demo/template.sqlite3,school_app/demo_ui/templates/**}",
+      "includeFiles": "{.vercel-demo/template.sqlite3,vision_models/**,school_app/demo_ui/templates/**,third_party/**}",
       "excludeFiles": "{.venv/**,venv/**,tests/**,**/__pycache__/**,*.md,db.sqlite3,private_media/**,private_exports/**,staticfiles/**}"
     }
   }

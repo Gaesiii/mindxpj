@@ -70,8 +70,11 @@ PRIVATE_MEDIA_ROOT = BASE_DIR / "private_media"
 
 # QR history stays available to reports; its old write/scan API is retired by default.
 QR_ENABLED = os.environ.get('QR_ENABLED', 'false').lower() == 'true'
-VISION_FACE_MAX_DISTANCE = float(os.environ.get('VISION_FACE_MAX_DISTANCE', '55'))
-VISION_FACE_MIN_MARGIN = float(os.environ.get('VISION_FACE_MIN_MARGIN', '10'))
+VISION_MODEL_DIR = BASE_DIR / 'vision_models'
+VISION_FACE_MIN_COSINE = float(os.environ.get('VISION_FACE_MIN_COSINE', '0.45'))
+VISION_FACE_MIN_COSINE_MARGIN = float(os.environ.get('VISION_FACE_MIN_COSINE_MARGIN', '0.10'))
+if not 0 <= VISION_FACE_MIN_COSINE <= 1 or not 0 <= VISION_FACE_MIN_COSINE_MARGIN <= 2:
+    raise ImproperlyConfigured('Face cosine threshold/margin is outside its valid range.')
 VISION_MIN_SHARPNESS = float(os.environ.get('VISION_MIN_SHARPNESS', '50'))
 VISION_ANALYSES_PER_MINUTE = 20
 VISION_ENROLLMENT_TOTAL_BYTES = int(os.environ.get(

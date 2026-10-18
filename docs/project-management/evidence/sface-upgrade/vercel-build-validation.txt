@@ -1,0 +1,10 @@
+COMMAND: build_vercel.py
+Prepared 2 verified local face models.
+Demo ready: DEMO10A/DEMO10B, 20 fictional students, weekday morning/afternoon rules. Accounts: demo_supervisor, demo_teacher_a/b, demo_student_01..20. Existing passwords and historical sessions were preserved.
+Vercel demo template and static assets prepared; runtime storage is temporary per instance.
+
+EXIT: 0
+Built template -> cold runtime copy -> secure signed login/CSRF -> real three-photo enrollment -> held-out proposal: PASS
+Model sface-2021dec-fp32; cosine 0.697729; user demo DB unchanged; no live deployment.
+
+EXIT: 0

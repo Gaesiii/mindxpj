@@ -1,0 +1,60 @@
+COMMAND: manage.py check
+System check identified no issues (0 silenced).
+
+EXIT: 0
+COMMAND: manage.py migrate --noinput
+Operations to perform:
+  Apply all migrations: academics, accounts, attendance, auth, contenttypes, core, qr, schedules, sessions, students, vision
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0001_initial... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying accounts.0001_initial... OK
+  Applying academics.0001_initial... OK
+  Applying students.0001_initial... OK
+  Applying accounts.0002_user_student... OK
+  Applying schedules.0001_initial... OK
+  Applying attendance.0001_initial... OK
+  Applying attendance.0002_initial... OK
+  Applying attendance.0003_alter_attendance_source... OK
+  Applying core.0001_initial... OK
+  Applying qr.0001_initial... OK
+  Applying qr.0002_initial... OK
+  Applying sessions.0001_initial... OK
+  Applying vision.0001_initial... OK
+  Applying vision.0002_sface_embeddings... OK
+
+EXIT: 0
+COMMAND: manage.py makemigrations --check --dry-run
+No changes detected
+
+EXIT: 0
+COMMAND: manage.py test tests --verbosity 1
+Found 203 test(s).
+System check identified no issues (0 silenced).
+Creating test database for alias 'default'...
+
+...........................................................................................................................................................................................................
+----------------------------------------------------------------------
+Ran 203 tests in 65.932s
+
+OK
+Destroying test database for alias 'default'...
+
+
+EXIT: 0
+COMMAND: -m pip check
+No broken requirements found.
+
+EXIT: 0

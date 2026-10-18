@@ -21,7 +21,7 @@ from playwright.sync_api import sync_playwright, expect
 from PIL import Image
 from openpyxl import load_workbook
 
-OUT=ROOT/'docs/project-management/evidence/ui-demo'
+OUT=ROOT/'docs/project-management/evidence/sface-upgrade/ui'
 OUT.mkdir(parents=True,exist_ok=True)
 LOG=[]
 
@@ -88,7 +88,7 @@ def main(values):
         page.locator('#analyze-button').click()
         expect(page.locator('#scan-feedback')).to_contain_text('Chưa tìm thấy khuôn mặt')
         expect(page.locator('#confirm-scan-form')).to_be_hidden()
-        note('Camera permission denial/upload fallback; real Haar rejects blank image, no candidate/attendance fabricated: PASS')
+        note('Camera permission denial/upload fallback; real YuNet rejects blank image, no candidate/attendance fabricated: PASS')
 
         # Isolated browser contract fixture ONLY. This does not alter the server's
         # detector or save recognition/attendance. The live user UI never receives it.

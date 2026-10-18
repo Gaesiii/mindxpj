@@ -1,6 +1,6 @@
 # Project instructions
 
-- Follow the user's MVP only. Authoritative scope: docs/thiet-ke-he-thong-diem-danh.md v1.3.
+- Follow the user's MVP only. Authoritative scope: docs/thiet-ke-he-thong-diem-danh.md v1.4.
 - Python/Django backend first. Implement the authorized OpenCV backend/demo preparation; technical evidence and PM approval remain separate.
 - Local demo UI is explicitly authorized by the user's 18/10/2026 request “làm luôn UI để demo”, as an exception to the prior frontend gate. Implement it against existing APIs; PM API_Gate remains NOT_APPROVED until actual review. No deployment is authorized.
 - Member 1 owns accounts, academics, students, reports; Member 2 owns schedules, attendance, vision and legacy qr.

@@ -32,6 +32,9 @@
     IDEMPOTENCY_CONFLICT:'Yêu cầu trước có nội dung khác. Làm mới rồi thao tác lại.',
     DATABASE_BUSY:'Dữ liệu đang được xử lý. Thử lại để kiểm tra cùng yêu cầu.',
     NO_ENROLLMENT:'Lớp chưa có mẫu nhận diện phù hợp. Đăng ký mẫu ở mục Học sinh.',
+    REENROLLMENT_REQUIRED:'Mẫu nhận diện cũ cần đăng ký lại. Vào Học sinh → Quản lý mẫu, chọn lại 3–10 ảnh rồi lưu.',
+    VISION_UNAVAILABLE:'Chưa sẵn sàng bộ nhận diện. Liên hệ người quản lý demo để kiểm tra model.',
+    VISION_DATA_ERROR:'Mẫu nhận diện không còn hợp lệ. Đăng ký lại mẫu ở mục Học sinh.',
     UNKNOWN_FACE:'Chưa nhận diện được học sinh. Chụp lại hoặc ghi nhận thủ công.',
     AMBIGUOUS_FACE:'Kết quả gần giống nhiều học sinh. Chụp lại hoặc đối chiếu thủ công.'};
   function text(tag, value, cls='') { const node=document.createElement(tag); node.textContent=value ?? ''; if(cls) node.className=cls; return node; }
@@ -312,8 +315,11 @@
   }
   async function openEnrollment(student) {
     const token=state.epoch;const result=await api(`/students/${student.id}/face-samples`);if(token!==state.epoch)return;
-    state.enroll=student;state.sampleCounts.set(student.id,result.sample_count);renderStudents();
-    $('enroll-student-name').textContent=`${student.full_name} · ${student.student_code}`;$('enroll-metadata').textContent=`Đã đăng ký ${result.sample_count} mẫu. Bộ ảnh mới sẽ thay toàn bộ mẫu cũ.`;
+    state.enroll=student;state.sampleCounts.set(student.id,result.usable_sample_count??result.sample_count);renderStudents();
+    $('enroll-student-name').textContent=`${student.full_name} · ${student.student_code}`;
+    $('enroll-metadata').textContent=result.requires_reenrollment
+      ? `Đang lưu ${result.sample_count} mẫu cũ; cần đăng ký lại 3–10 ảnh để dùng bộ nhận diện mới. Chưa có đủ mẫu dùng được.`
+      : `Đã đăng ký ${result.usable_sample_count??result.sample_count} mẫu dùng được. Bộ ảnh mới sẽ thay toàn bộ mẫu cũ.`;
     $('enroll-files').value='';$('enroll-dialog').querySelector('.dialog-error').hidden=true;$('enroll-dialog').showModal();
   }
   function openManual(row) {
@@ -348,7 +354,7 @@
   $('scan-upload').addEventListener('change',()=>run(null,async()=>{const file=$('scan-upload').files[0];if(file)useFrame(file);}));
   onSubmit('confirm-scan-form',async()=>{const scan=state.scan;if(!scan||!$('identity-confirmed').checked)throw new Error('Vui lòng xác nhận đúng học sinh.');const uniform=uniformPayload($('candidate-uniform').value,$('candidate-reason').value);await mutateThenRefresh(()=>write(`/vision-scans/${scan.id}/confirm`,'POST',{expected_scan_version:scan.version,expected_attendance_version:scan.expected_attendance_version,identity_confirmed:true,...(uniform?{uniform}:{})}),'Đã xác nhận có mặt và lưu kết quả điểm danh.');});
   onClick('reject-scan-button',async()=>{const scan=state.scan;if(!scan)return;const reason=prompt('Lý do từ chối kết quả nhận diện:');if(reason===null)return;if(!reason.trim())throw new Error('Nhập lý do từ chối.');await mutateThenRefresh(()=>write(`/vision-scans/${scan.id}/reject`,'POST',{expected_scan_version:scan.version,reason:reason.trim()}),'Đã từ chối kết quả. Có thể chụp lại hoặc ghi nhận thủ công.');});
-  onSubmit('enroll-form',async()=>{const context=contextStamp(),student=state.enroll;if(!student)return;const files=[...$('enroll-files').files];validateFiles(files,3,10,Number(document.body.dataset.enrollmentLimit)||15*1024*1024);const form=new FormData();files.forEach(file=>form.append('images',file));const result=await api(`/students/${student.id}/face-samples`,{method:'POST',body:form});if(!sameContext(context)||state.enroll?.id!==student.id)return;state.sampleCounts.set(student.id,result.sample_count);$('enroll-dialog').close();$('enroll-files').value='';renderStudents();notify('Đã lưu bộ mẫu nhận diện riêng tư cho học sinh.');});
+  onSubmit('enroll-form',async()=>{const context=contextStamp(),student=state.enroll;if(!student)return;const files=[...$('enroll-files').files];validateFiles(files,3,10,Number(document.body.dataset.enrollmentLimit)||15*1024*1024);const form=new FormData();files.forEach(file=>form.append('images',file));const result=await api(`/students/${student.id}/face-samples`,{method:'POST',body:form});if(!sameContext(context)||state.enroll?.id!==student.id)return;state.sampleCounts.set(student.id,result.usable_sample_count??result.sample_count);$('enroll-dialog').close();$('enroll-files').value='';renderStudents();notify('Đã lưu bộ mẫu nhận diện riêng tư cho học sinh.');});
   onClick('delete-samples',async()=>{const context=contextStamp(),student=state.enroll;if(!student||!confirm('Xóa toàn bộ mẫu mặt của học sinh này? Kết quả quét chờ sẽ bị vô hiệu.'))return;await api(`/students/${student.id}/face-samples`,{method:'DELETE'});if(!sameContext(context)||state.enroll?.id!==student.id)return;state.sampleCounts.set(student.id,0);$('enroll-dialog').close();$('enroll-files').value='';renderStudents();clearProposal();notify('Đã xóa toàn bộ mẫu nhận diện.');});
   $('manual-status').addEventListener('change',()=>{$('manual-arrival-label').hidden=$('manual-status').value==='ABSENT';});
   onSubmit('manual-form',async()=>{const row=state.manual;if(!row)return;const status=$('manual-status').value;const reason=$('manual-reason').value.trim();const input=$('manual-arrival').value;if(status==='PRESENT'&&!input)throw new Error('Nhập thời gian đến.');await mutateThenRefresh(()=>write(`/attendance/${row.attendance.id}`,'PATCH',{expected_version:row.attendance.version,status,reason,...(status==='PRESENT'?{arrived_at:input+'+07:00'}:{absence_reason:reason})}),'Đã lưu điểm danh thủ công.');});

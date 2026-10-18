@@ -1,0 +1,16 @@
+{
+  "expected": 3,
+  "present": 2,
+  "absent": 1,
+  "unmarked": 0,
+  "on_time": 1,
+  "late": 1,
+  "compliant": 1,
+  "non_compliant": 1,
+  "not_checked": 0,
+  "checked": 2,
+  "presence_rate": 0.6666666666666666,
+  "late_rate": 0.5,
+  "violation_rate": 0.5,
+  "check_coverage": 1.0
+}

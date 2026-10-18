@@ -2,8 +2,10 @@
 from pathlib import Path
 import re
 import sys
+import os
 
-sys.path.insert(0, str(Path(__file__).parent / "deps"))
+tool_deps = Path(os.environ.get("DOCUMENT_TOOL_DEPS", Path(__file__).parent / "deps"))
+sys.path.insert(0, str(tool_deps))
 
 from docx import Document
 from docx.oxml import OxmlElement
@@ -13,7 +15,7 @@ from docx.shared import Cm, Pt, RGBColor
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "docs" / "thiet-ke-he-thong-diem-danh.md"
-DESTINATION = SOURCE.with_name("thiet-ke-he-thong-diem-danh-v1.3.docx")
+DESTINATION = SOURCE.with_name("thiet-ke-he-thong-diem-danh-v1.4.docx")
 
 
 def rich_text(paragraph, text):
@@ -82,7 +84,7 @@ def table_from_lines(document, lines):
     document.add_paragraph().paragraph_format.space_after = Pt(2)
 
 
-def build(source=SOURCE, destination=DESTINATION, header_text="THIẾT KẾ ĐIỂM DANH • MVP / PYTHON • BẢN 1.3", version="1.2"):
+def build(source=SOURCE, destination=DESTINATION, header_text="THIẾT KẾ ĐIỂM DANH • MVP / PYTHON • BẢN 1.4", version="1.2"):
     content = source.read_text(encoding="utf-8")
     lines = content.splitlines()
     document = Document()
@@ -189,7 +191,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source", type=Path, default=SOURCE)
     parser.add_argument("--destination", type=Path, default=DESTINATION)
-    parser.add_argument("--header", default="THIẾT KẾ ĐIỂM DANH • MVP / PYTHON • BẢN 1.3")
-    parser.add_argument("--version", default="1.3")
+    parser.add_argument("--header", default="THIẾT KẾ ĐIỂM DANH • MVP / PYTHON • BẢN 1.4")
+    parser.add_argument("--version", default="1.4")
     args = parser.parse_args()
     build(args.source, args.destination, args.header, args.version)

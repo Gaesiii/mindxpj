@@ -2,6 +2,10 @@ from datetime import timedelta
 from datetime import datetime, time
 from unittest.mock import patch
 import json
+import hashlib
+
+import cv2
+import numpy as np
 
 from django.core.cache import cache
 from django.test import Client, override_settings
@@ -14,6 +18,16 @@ from tests.test_vision_engine import BOX, frame, upload
 
 
 class VisionApiTests(WorkflowCase):
+    def test_partial_enrollment_requires_replacement_before_matching(self):
+        self.enroll()
+        FaceSample.objects.filter(student=self.student).order_by('id').exclude(
+            id=FaceSample.objects.filter(student=self.student).first().id).delete()
+        self.assertTrue(self.client.get(self.samples_url).json()['requires_reenrollment'])
+        result = self.scan()
+        self.assertEqual(result.json()['recognition'], 'UNKNOWN')
+        self.assertEqual(result.json()['reason'], 'REENROLLMENT_REQUIRED')
+        self.assertFalse(VisionScan.objects.exists())
+
     def setUp(self):
         super().setUp()
         cache.clear()
@@ -21,11 +35,24 @@ class VisionApiTests(WorkflowCase):
         clock_patch=patch('django.utils.timezone.now',return_value=now)
         self.clock=clock_patch.start();self.addCleanup(clock_patch.stop)
         self.open()
-        self.detector = patch('school_app.vision.engine.detect_faces', return_value=[BOX])
+        # API fixtures isolate image inference while exercising real cosine matching.
+        # Random pixels are deliberately not claimed to be real face detections.
+        self.detector = patch('school_app.vision.engine.extract_face', side_effect=lambda image: (
+            cv2.resize(image[50:170, 200:320], (112, 112)), BOX))
         self.detector.start()
         self.addCleanup(self.detector.stop)
+        self.embedder = patch('school_app.vision.engine.embed_face', side_effect=self.synthetic_embedding)
+        self.embedder.start()
+        self.addCleanup(self.embedder.stop)
         self.samples_url = f'/api/v1/students/{self.student.pk}/face-samples'
         self.scans_url = f'/api/v1/sessions/{self.session.pk}/vision-scans'
+
+    @staticmethod
+    def synthetic_embedding(crop):
+        seed = int.from_bytes(hashlib.sha256(crop.tobytes()).digest()[:8], 'little')
+        vector = np.random.default_rng(seed).normal(size=128).astype('<f4')
+        vector /= np.linalg.norm(vector)
+        return vector.tobytes()
 
     def enroll(self, student=None):
         url = f'/api/v1/students/{(student or self.student).pk}/face-samples'

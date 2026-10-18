@@ -1,8 +1,8 @@
-# Hợp đồng module/API — v1.3
+# Hợp đồng module/API — v1.4
 
 QR/v1.2 trong các ghi chú baseline dưới đây là lịch sử; mục 9 là hợp đồng vision hiện hành. PM gate vẫn NOT_APPROVED.
 
-Nguồn chuẩn: [MVP v1.3](thiet-ke-he-thong-diem-danh.md). Đây là hợp đồng kỹ thuật để mem1/mem2 nối module; không thay thế phê duyệt API gate. Backend auth, lớp/Student/ảnh, lịch/buổi, attendance/QR/uniform và report/export đã triển khai theo yêu cầu toàn bộ backend ngày14/10/2026. Kiểm chứng/review từng đợt nằm trong evidence/backend-api.md; PM/member review và gate chờ xác nhận. UI local Django shell/CSS/JS tại `/` được người dùng cho phép trước gate ngày18/10/2026 (“làm luôn UI để demo”); API/scope không đổi, không PM approval hoặc deploy.
+Nguồn chuẩn: [MVP v1.4](thiet-ke-he-thong-diem-danh.md). Đây là hợp đồng kỹ thuật để mem1/mem2 nối module; không thay thế phê duyệt API gate. Backend auth, lớp/Student/ảnh, lịch/buổi, attendance/QR/uniform và report/export đã triển khai theo yêu cầu toàn bộ backend ngày14/10/2026. Kiểm chứng/review từng đợt nằm trong evidence/backend-api.md; PM/member review và gate chờ xác nhận. UI local Django shell/CSS/JS tại `/` được người dùng cho phép trước gate ngày18/10/2026 (“làm luôn UI để demo”); API/scope không đổi, không PM approval hoặc deploy.
 
 ## 1. Quy ước dùng chung
 
@@ -257,13 +257,13 @@ Queue scan trả snapshot mã/tên/lớp/khối và photo_url khi hồ sơ Stude
 
 **Chỉ tương thích QR legacy, không dùng cho vision:** QR challenge tạo201, token sống60s/hint refresh30s khi client gọi phát mới; không tự job. Scan new201, pending mới key lặp200 giữ timestamp; retry **cùng key/body** trả nguyên HTTP status/body đã lưu (có thể201), scope vẫn kiểm tra lại trước replay. Attendance MANUAL không bị scan đổi giờ. Login10 lần/peer IP/5phút, scan30 lần/student/phút (kể cả token sai), cache process demo; replay scan đã thành công không bị quota ngăn trả kết quả cũ.
 
-## 9. Vision v1.3 — hợp đồng dùng chung đã phối hợp
+## 9. Vision v1.4 — hợp đồng dùng chung đã phối hợp
 
-Owner vision/mẫu private: mem2; owner học sinh/ảnh/report và scope review: mem1. Không lấy ảnh hồ sơ làm mẫu tự động. Core thêm AttendanceSource.VISION bằng migration mới; giữ QR và graph migration cũ. Scan frame chỉ trong bộ nhớ, không lưu DB/log/media; crop enrollment grayscale 128x128 lưu BinaryField private. GET không trả bytes/base64/path mẫu.
+Owner vision/mẫu private: mem2; owner học sinh/ảnh/report và scope review: mem1. Không lấy ảnh hồ sơ làm mẫu tự động. Core thêm AttendanceSource.VISION bằng migration mới; giữ QR và graph migration cũ. Scan frame chỉ trong bộ nhớ, không lưu DB/log/media; crop enrollment màu BGR căn chỉnh112x112 PNG và embedding chuẩn hóa128float32 little-endian/512byte lưu BinaryField private, model_key=sface-2021dec-fp32. GET không trả bytes/base64/path mẫu.
 
 | Endpoint (base /api/v1) | Body / hành vi |
 | --- | --- |
-| GET /students/:id/face-samples | Staff scope học sinh; metadata `{student_id,sample_count}`; revision chỉ nội bộ; không byte mẫu |
+| GET /students/:id/face-samples | Staff scope học sinh; metadata `{student_id,sample_count,usable_sample_count,requires_reenrollment,model_key}`; revision chỉ nội bộ; không byte mẫu |
 | POST /students/:id/face-samples | multipart `images` lặp 3–10 file; thay bộ nguyên tử; một ảnh lỗi giữ toàn bộ mẫu cũ |
 | DELETE /students/:id/face-samples | Staff scope; xóa mẫu và vô hiệu proposal cũ |
 | POST /sessions/:id/vision-scans | multipart duy nhất `image`, Idempotency-Key bắt buộc; không student_id; phân tích trong roster OPEN, tạo proposal PENDING khi đủ điều kiện, không ghi attendance |
@@ -275,17 +275,24 @@ Tất cả GET/POST/DELETE kiểm tra staff active (GVCN lớp hiện tại ho�
 
 Giới hạn: tối đa 2MiB và 4MP/ảnh; enrollment tổng 15MiB, 3–10 ảnh đúng một mặt; scan đúng một image; roster phân tích tối đa 50; 20 analysis/phút/actor theo cửa sổ phút cố định trong cache từng process (không rolling/global); proposal hết hạn 120 giây. Retry cùng key/payload trả lại kết quả cũ; key/payload khác conflict. Version là integer không âm, bool không thay integer. Manual, close, transfer, re-enroll, delete sample làm proposal cũ không xác nhận được. Trạng thái proposal PENDING/CONFIRMED/REJECTED/EXPIRED/SUPERSEDED dùng semantics một lần; GET không làm lộ mặt crop.
 
-Haar + LBPH dùng mẫu chuẩn hóa và khoảng cách riêng từng học sinh. VISION_FACE_MAX_DISTANCE=55, VISION_FACE_MIN_MARGIN=10, VISION_MIN_SHARPNESS=50 là cấu hình khởi đầu, không xác suất/accuracy. Gần ngưỡng/ứng viên sát nhau/không mặt/nhiều mặt/mờ/người lạ cần retry/manual, không tự PRESENT. Gợi ý HSV mặc định trắng→SHIRT, xanh→SPORTS, còn lại/torso clipped→UNKNOWN; nhân sự phải quyết định trạng thái uniform, không tự coi UNKNOWN là vi phạm. Cấu hình thực tế xem backend settings; không có liveness guarantee.
+YuNet2023mar + SFace2021dec FP32 dùng5landmark, crop màu căn chỉnh112x112 và embedding128chiều; cosine so trong đúng roster. VISION_FACE_MIN_COSINE=0.45, VISION_FACE_MIN_COSINE_MARGIN=0.10, VISION_MIN_SHARPNESS=50 là ngưỡng khởi đầu, không xác suất/accuracy. Model key sface-2021dec-fp32; metric=cosine, distance=1-cosine. Lịch sử LBPH metric=lbph_distance; không so hai metric hoặc dùng ngưỡng LBPH cho SFace. Gần ngưỡng/ứng viên sát nhau/không mặt/nhiều mặt/mờ/người lạ cần retry/manual, không tự PRESENT. Gợi ý HSV mặc định trắng→SHIRT, xanh→SPORTS, còn lại/torso clipped→UNKNOWN; nhân sự phải quyết định trạng thái uniform, không tự coi UNKNOWN là vi phạm. Cấu hình thực tế xem backend settings; không có liveness guarantee.
 
 Các schema response/mã lỗi cụ thể phải đối chiếu implementation và evidence mới khi review; không lấy ví dụ QR legacy làm payload vision. Không tự thêm student_id vào confirm để đổi ứng viên.
 
 
 ### Schema response vision và model
 
-- Enrollment GET/POST/DELETE trả `{student_id,sample_count}` (POST201, GET/DELETE200). Không expose revision hoặc crop.
+- Enrollment GET/POST/DELETE trả `{student_id,sample_count,usable_sample_count,requires_reenrollment,model_key}` (POST201, GET/DELETE200). Không expose revision, crop hoặc embedding. usable_sample_count đếm mẫu đúng model key có embedding; requires_reenrollment=true khi sample_count>0 và usable_sample_count<3. Mẫu legacy cần enrollment lại3–10ảnh, không tự chuyển đổi, không fallback LBPH.
 - Analyze match trả201 `{recognition:"CANDIDATE",scan,uniform}`; chưa nhận diện trả200 `{recognition:"UNKNOWN",reason,uniform,scan:null}`; attendance đã ghi trả200 `{recognition:"ALREADY_MARKED",scan:null,attendance}`. Invalid ảnh/schema trả422; session/date/version/stale conflict409; quota429.
-- Queue trả `{items:[scan,...]}`. `scan` gồm id, roster_id, attendance_id, student_id (do server chọn), student_code_snapshot, full_name_snapshot, status, version, expected_attendance_version, scanned_at, expires_at, resolved_at, reason, distance, observed_uniform, color_coverage. Không byte hoặc profile photo URL trong schema vision này; queue QR legacy phía trên không phải vision.
+- Queue trả `{items:[scan,...]}`. `scan` gồm id, roster_id, attendance_id, student_id (do server chọn), student_code_snapshot, full_name_snapshot, status, version, expected_attendance_version, scanned_at, expires_at, resolved_at, reason, distance, model_key, cosine_score, metric, observed_uniform, color_coverage. Không byte hoặc profile photo URL trong schema vision này; queue QR legacy phía trên không phải vision.
 - Confirm trả200 `{scan,attendance}`; reject trả200 object scan. Scan.version dùng làm expected_scan_version; scan.expected_attendance_version là phiên bản attendance được bind khi phân tích. Đọc roster lại khi có conflict.
-- `vision.FaceSample`: UUID/student/crop BinaryField/digest/created_by/created_at; unique(student,digest), mẫu cần khác nhau. `vision.VisionScan`: UUID/roster/created_by/scanned_at/expires_at/sample_revision/attendance_version/distance/observed_uniform/color_coverage/status/version/resolved_by/resolved_at/reason. Unique một PENDING/roster; không lưu frame scan.
+- `vision.FaceSample`: UUID/student/crop BinaryField/embedding BinaryField nullable/model_key/digest/created_by/created_at; unique(student,digest), mẫu cần khác nhau. `vision.VisionScan`: UUID/roster/created_by/scanned_at/expires_at/sample_revision/attendance_version/distance/model_key/cosine_score nullable/observed_uniform/color_coverage/status/version/resolved_by/resolved_at/reason. Unique một PENDING/roster; không lưu frame scan.
 
-Mã lỗi bổ sung: VISION_LIMIT422, RATE_LIMITED429, SESSION_CLOSED409, SESSION_DATE409, SESSION_TIME409 (ngoài start_at/close_at), SCAN_NOT_PENDING409, ROSTER_CHANGED409, ENROLLMENT_CHANGED409, ATTENDANCE_CHANGED409; dùng chung INVALID_IMAGE/VALIDATION_ERROR422, VERSION_CONFLICT/IDEMPOTENCY_CONFLICT409. Quy tắc error envelope/request_id từ mục4 vẫn áp dụng. Backend settings dùng VISION_FACE_MIN_MARGIN, VISION_MIN_SHARPNESS, VISION_UNIFORM_HSV cho margin/độ nét/dải màu cấu hình.
+Mã lỗi bổ sung: VISION_LIMIT422, RATE_LIMITED429, SESSION_CLOSED409, SESSION_DATE409, SESSION_TIME409 (ngoài start_at/close_at), SCAN_NOT_PENDING409, ROSTER_CHANGED409, ENROLLMENT_CHANGED409, ATTENDANCE_CHANGED409; dùng chung INVALID_IMAGE/VALIDATION_ERROR422, VERSION_CONFLICT/IDEMPOTENCY_CONFLICT409. Quy tắc error envelope/request_id từ mục4 vẫn áp dụng. Backend settings dùng VISION_FACE_MIN_COSINE, VISION_FACE_MIN_COSINE_MARGIN, VISION_MIN_SHARPNESS, VISION_UNIFORM_HSV cho margin/độ nét/dải màu cấu hình.
+
+
+### Nâng cấp mẫu/scan v1.4
+
+Giữ API path, scope, CSRF, idempotency/version và xác nhận nhân sự. Migration vision/0002 giữ nguyên dữ liệu LBPH cũ (sample model_key rỗng, embedding null; scan model_key=lbph, cosine_score null). Không chuyển crop grayscale cũ thành mẫu SFace. Khi roster chỉ có mẫu cũ, analyze trả200 recognition=UNKNOWN, reason=REENROLLMENT_REQUIRED, scan=null. Sau enrollment3–10ảnh mới, mẫu/embedding/key thay cả bộ nguyên tử và invalidate proposal cũ. Chưa có mẫu thì requires_reenrollment=false, usable_sample_count=0; vẫn cần enrollment để nhận diện.
+
+Scan mới dùng model_key=sface-2021dec-fp32, metric=cosine, cosine_score hữu hạn và distance=1-cosine. Cosine cao hơn là giống hơn, không phải confidence%. Scan LBPH lịch sử giữ distance cũ, metric=lbph_distance, cosine_score=null. Không expose embedding trong GET hoặc logs. Thiếu/hỏng model503 VISION_UNAVAILABLE; command prepare_vision_models/build kiểm tra revision/hash trước, request không download.

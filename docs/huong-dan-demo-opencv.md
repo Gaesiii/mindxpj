@@ -1,6 +1,6 @@
 # Demo OpenCV — setup, API test và thuyết trình
 
-Theo thiết kế v1.3, đây là hướng dẫn tái lập và checklist thiết bị thật. Không phải cam kết accuracy. API_Gate = NOT_APPROVED; ngoại lệ ngày18/10/2026: người dùng yêu cầu rõ “làm luôn UI để demo”, cho phép UI local trước gate. Đây không phải phê duyệt PM API; Finish? không tự thay đổi. UI tại `/` đã có bằng chứng153test và kiểm chứng browser riêng bên dưới; camera vật lý/accuracy chưa được kiểm chứng.
+Theo thiết kế v1.4, đây là hướng dẫn tái lập và checklist thiết bị thật. Không phải cam kết accuracy. API_Gate = NOT_APPROVED; ngoại lệ ngày18/10/2026: người dùng yêu cầu rõ “làm luôn UI để demo”, cho phép UI local trước gate. Đây không phải phê duyệt PM API; Finish? không tự thay đổi. UI tại `/` có evidence153test/browser lịch sử trước SFace bên dưới; nâng cấp YuNet/SFace cần validation mới; camera vật lý/accuracy chưa được kiểm chứng.
 
 ## 1. Chuẩn bị local
 
@@ -12,6 +12,7 @@ py -3.12 -m venv .venv
 .venv/Scripts/python.exe -m pip install -r requirements.txt
 $env:DJANGO_SECRET_KEY = (& .venv/Scripts/python.exe -c "import secrets; print(secrets.token_urlsafe(48))")
 $env:DJANGO_DEBUG = 'true'
+.venv/Scripts/python.exe manage.py prepare_vision_models
 # DB thử riêng; không trỏ DB demo đang dùng.
 $env:DJANGO_DB_PATH = "$PWD/demo-vision.sqlite3"
 .venv/Scripts/python.exe manage.py check
@@ -20,11 +21,11 @@ $env:DJANGO_DB_PATH = "$PWD/demo-vision.sqlite3"
 .venv/Scripts/python.exe manage.py runserver 127.0.0.1:8000
 ```
 
-DJANGO_DB_PATH được đọc từ backend/config/settings.py; kiểm tra DB đích trước khi migrate, không coi ví dụ là log đã chạy. Seed chỉ tạo hồ sơ giả, không tạo bộ ảnh nhận diện người thật. QR_ENABLED mặc định false; không bật QR để demo vision. OpenCV chạy cục bộ, không cần cloud/API key. Nếu thiếu cv2.face, kiểm tra đã cài opencv-contrib-python-headless từ requirements, tránh cài nhiều biến thể cv2 chồng nhau.
+DJANGO_DB_PATH được đọc từ backend/config/settings.py; kiểm tra DB đích trước khi migrate, không coi ví dụ là log đã chạy. Seed chỉ tạo hồ sơ giả, không tạo bộ ảnh nhận diện người thật. QR_ENABLED mặc định false; không bật QR để demo vision. OpenCV chạy cục bộ, không cần cloud/API key. Nếu thiếu cv2.FaceRecognizerSF hoặc cv2.FaceDetectorYN, kiểm tra đã cài opencv-contrib-python-headless từ requirements, tránh cài nhiều biến thể cv2 chồng nhau.
 
 ## 1.1 Chạy UI local để demo
 
-Cách nhanh từ root: `backend/.venv/Scripts/python.exe .document-tools/run_demo.py`. Launcher tạo dữ liệu giả/buổi hôm nay sẵn sàng và chỉ ra file `demo-login.txt` ngoài repository để lấy đăng nhập. Mỗi lần chạy tạo DB mới; không thay DBgốc. [Bằng chứng153test/browser và giới hạn mô phỏng](project-management/evidence/ui-demo/README.md).
+Cách nhanh từ root: `backend/.venv/Scripts/python.exe .document-tools/run_demo.py`. Launcher tạo dữ liệu giả/buổi hôm nay sẵn sàng và chỉ ra file `demo-login.txt` ngoài repository để lấy đăng nhập. Mỗi lần chạy tạo DB mới; không thay DBgốc. [Bằng chứng153test/browser lịch sử trước SFace và giới hạn mô phỏng](project-management/evidence/ui-demo/README.md).
 
 Mở `http://127.0.0.1:8000/` sau migrate/seed/runserver. Đăng nhập demo_teacher_a hoặc demo_supervisor bằng mật khẩu local đã chọn; STUDENT không được dùng staff console. Không có mật khẩu cứng trong tài liệu/UI.
 
@@ -113,3 +114,16 @@ Demo bằng UI local được người dùng cho phép trước gate; API client
 - [ ] Expiry120s, manual/close/transfer/re-enroll/delete, attendance version cũ, invalid uniform rollback và retry chính xác.
 - [ ] Manual fallback, close, JSON/XLSX/CSV khớp dữ liệu; không lộ crop/frame/password trong response/evidence.
 - [ ] Có log kết quả, người review, PM Comment; PM duyệt API gate riêng. Không tick checklist khi chỉ có code/fixture.
+
+
+## Nâng cấp YuNet + SFace FP32 — v1.4
+
+Chuẩn bị model trước manage.py nhận diện: `manage.py prepare_vision_models`; launcher tự gọi lệnh này. Revision/SHA-256 được pin, request không tải network. Giữ các giấy phép trong backend/third_party/opencv_zoo. DB đang dùng phải backup và migrate, giữ tài khoản/secret và không seed lại; đăng nhập bằng tài khoản cũ để enrollment3–10ảnh màu mới. Launcher dữ liệu giả là luồng riêng, không dùng thay quy trình migrate DB người dùng.
+
+GET face-samples trả sample_count, usable_sample_count, requires_reenrollment, model_key=sface-2021dec-fp32. Mẫu LBPH legacy không tự chuyển đổi; khi chưa có3mẫu mới, UI yêu cầu đăng ký lại. Chưa có mẫu nào thì requires_reenrollment=false nhưng vẫn cần enrollment. Crop màu BGR căn chỉnh112x112 và embedding chuẩn hóa128float32 little-endian/512byte private, không trả bytes. Mẫu mới thay nguyên bộ nguyên tử và vô hiệu proposal cũ.
+
+Đọc model_key/metric/cosine_score khi phân tích: SFace metric=cosine, điểm cao hơn giống hơn; distance=1-cosine, không phải phần trăm. Lịch sử LBPH giữ metric=lbph_distance, không so trực tiếp khoảng cách cũ/mới. Ngưỡng mặc định cosine≥0.45 và margin≥0.10, sharpness50; thiếu model503 VISION_UNAVAILABLE. Roster chỉ còn mẫu legacy trả UNKNOWN/REENROLLMENT_REQUIRED, không fallback LBPH. HSV/xác nhận bắt buộc/manual giữ nguyên.
+
+Dùng ảnh đánh giá ngoài enrollment và người lạ độc lập; không chỉ upload lại ảnh mẫu để tuyên bố đạt. Bản nâng cấp đã đạt203test và kiểm thử trình duyệt thật trên ảnh ngoài mẫu của người dùng; xem [evidence SFace](project-management/evidence/sface-upgrade/README.md). Bộ ảnh nhỏ không phải accuracy tổng quát hoặc bảo đảm liveness.
+
+Để tiếp tục DB demo local đã có, dùng `backend/.venv/Scripts/python.exe .document-tools/run_demo.py --resume-runtime <thư-mục-runtime-demo>`. Lệnh kiểm tra thư mục tạm và DB/login tồn tại, chạy migration rồi giữ dữ liệu/mật khẩu, không seed lại. Launcher tạo secret phiên mới nên cần đăng nhập lại. Không dùng launcher tạo demo mới nếu muốn giữ mẫu và điểm danh hiện tại.

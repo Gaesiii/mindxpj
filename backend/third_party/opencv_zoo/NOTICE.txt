@@ -1,0 +1,20 @@
+MindX attendance demo uses pretrained face models from OpenCV Zoo.
+
+YuNet 2023mar: MIT License, see YUNET.LICENSE.
+Upstream: https://github.com/opencv/opencv_zoo/tree/main/models/face_detection_yunet
+Authors credited upstream: Wei Wu, Hanyang Peng, Shiqi Yu and contributors.
+
+SFace 2021dec FP32: Apache License 2.0, see SFACE.LICENSE.
+Copyright (C) 2021, Shenzhen Institute of Artificial Intelligence and Robotics
+for Society, all rights reserved. SFace contribution by Yaoyao Zhong;
+ONNX conversion credited upstream to Chengrui Wang.
+Upstream: https://github.com/opencv/opencv_zoo/tree/main/models/face_recognition_sface
+
+GitHub source revision: 47534e27c9851bb1128ccc0102f1145e27f23f98
+Official Hugging Face mirror revision: d4938dfc9d4ec5d098bfa33e98b3f3345a236586
+Exact model filenames, SHA-256, sizes and download URLs are pinned in
+school_app/vision/model_assets.py. Model weights are used unchanged.
+
+The application integration, scope/version controls and attendance workflow are
+project code. The project does not claim to have invented or trained YuNet/SFace.
+Third-party copyright remains with its respective owners.

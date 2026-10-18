@@ -18,7 +18,7 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 BACKEND = ROOT / 'backend'
 OUT = ROOT / 'docs/project-management/evidence'
-SAMPLES = OUT / 'opencv-samples'
+SAMPLES = OUT / 'sface-upgrade' / 'synthetic-exports'
 LOG = []
 
 
@@ -83,6 +83,8 @@ def upgrade_and_demo():
     from school_app.schedules.models import ScheduleRule, Session, SessionRoster
     from school_app.core.models import ChangeLog
     from tests.test_vision_engine import BOX, frame, upload
+    from tests.test_vision_api import VisionApiTests
+    import cv2
     from openpyxl import load_workbook
 
     User=get_user_model(); password=secrets.token_urlsafe(24)
@@ -107,7 +109,9 @@ def upgrade_and_demo():
         assert result.status_code in (200,201), result.content
         return result.json()
 
-    with patch('django.utils.timezone.now',return_value=clock_value) as clock, patch('school_app.vision.engine.detect_faces',return_value=[BOX]):
+    with patch('django.utils.timezone.now',return_value=clock_value) as clock, \
+         patch('school_app.vision.engine.extract_face',side_effect=lambda image:(cv2.resize(image[50:170,200:320],(112,112)),BOX)), \
+         patch('school_app.vision.engine.embed_face',side_effect=VisionApiTests.synthetic_embedding):
         assert client.get('/api/v1/auth/me').status_code==401
         write('post','/auth/login',{'username':teacher.username,'password':password})
         session=write('post','/sessions',{'class_id':str(classroom.pk),'school_date':str(day),'slot':'MORNING'})
@@ -199,10 +203,11 @@ def main():
                     command(args)
             os.environ['DJANGO_DB_PATH']=str(Path(folder)/'upgrade.sqlite3')
             upgrade_and_demo()
-        note('Temporary DBs cleaned; workspace DB unchanged. Synthetic textured faces; detector mocked only for positive HTTP scenario. Actual LBPH/HSV run. No real-camera accuracy/liveness claim.')
+        note('Temporary DBs cleaned; workspace DB unchanged. Synthetic textured faces; detection/alignment/embedding mocked for synthetic HTTP only. Real cosine matching/HSV run. Real SFace image/browser validation is separate. No camera accuracy/liveness claim.')
     finally:
-        name = 'opencv-demo-validation.txt' if '--demo-only' in sys.argv else 'opencv-validation.txt'
-        (OUT/name).write_text('\n'.join(LOG),encoding='utf-8')
+        target = OUT / 'sface-upgrade'
+        target.mkdir(exist_ok=True)
+        (target/'legacy-upgrade-validation.txt').write_text('\n'.join(LOG),encoding='utf-8')
 
 
 if __name__=='__main__':

@@ -1,0 +1,92 @@
+Prepared 2 verified local face models.
+Demo ready: DEMO10A/DEMO10B, 20 fictional students, weekday morning/afternoon rules. Accounts: demo_supervisor, demo_teacher_a/b, demo_student_01..20. Existing passwords and historical sessions were preserved.
+UI: http://127.0.0.1:8001/
+Demo login file: C:\Users\Admin\AppData\Local\Temp\projectmindx-demo-ui-rklnq481\demo-login.txt
+Two classes and today OPEN sessions are ready. Original workspace DB is unchanged.
+[18/Oct/2026 20:52:19] "GET / HTTP/1.1" 200 20457
+[18/Oct/2026 20:52:20] "GET / HTTP/1.1" 200 20457
+[18/Oct/2026 20:52:20] "GET /static/demo_ui/app.css HTTP/1.1" 200 24797
+[18/Oct/2026 20:52:20] "GET /static/demo_ui/app.js HTTP/1.1" 200 41414
+Unauthorized: /api/v1/auth/me
+[18/Oct/2026 20:52:20] "GET /api/v1/auth/me HTTP/1.1" 401 138
+Unauthorized: /api/v1/auth/login
+[18/Oct/2026 20:52:21] "POST /api/v1/auth/login HTTP/1.1" 401 144
+[18/Oct/2026 20:52:22] "POST /api/v1/auth/login HTTP/1.1" 200 214
+[18/Oct/2026 20:52:22] "GET /api/v1/classes HTTP/1.1" 200 409
+[18/Oct/2026 20:52:22] "GET /api/v1/students?class_id=c4cc257d-2b48-43c9-be82-6e6e60fe3820 HTTP/1.1" 200 2521
+[18/Oct/2026 20:52:22] "GET /api/v1/sessions?class_id=c4cc257d-2b48-43c9-be82-6e6e60fe3820 HTTP/1.1" 200 343
+[18/Oct/2026 20:52:22] "GET /api/v1/sessions/38f807a2-8a8f-456e-b063-65c65df70280 HTTP/1.1" 200 330
+[18/Oct/2026 20:52:22] "GET /api/v1/sessions/38f807a2-8a8f-456e-b063-65c65df70280/roster HTTP/1.1" 200 8211
+[18/Oct/2026 20:52:22] "GET /api/v1/sessions/38f807a2-8a8f-456e-b063-65c65df70280/vision-scans HTTP/1.1" 200 13
+[18/Oct/2026 20:52:23] "GET /api/v1/classes/c4cc257d-2b48-43c9-be82-6e6e60fe3820/schedule-rules HTTP/1.1" 200 2600
+[18/Oct/2026 20:52:23] "POST /api/v1/classes/c4cc257d-2b48-43c9-be82-6e6e60fe3820/schedule-rules HTTP/1.1" 201 234
+[18/Oct/2026 20:52:23] "POST /api/v1/sessions HTTP/1.1" 201 278
+[18/Oct/2026 20:52:23] "GET /api/v1/students?class_id=c4cc257d-2b48-43c9-be82-6e6e60fe3820 HTTP/1.1" 200 2521
+[18/Oct/2026 20:52:23] "GET /api/v1/sessions?class_id=c4cc257d-2b48-43c9-be82-6e6e60fe3820 HTTP/1.1" 200 623
+[18/Oct/2026 20:52:23] "GET /api/v1/sessions/cb6ce0b3-ed68-4d7c-be7c-c55e73886839/roster HTTP/1.1" 200 13
+[18/Oct/2026 20:52:23] "GET /api/v1/sessions/cb6ce0b3-ed68-4d7c-be7c-c55e73886839 HTTP/1.1" 200 278
+[18/Oct/2026 20:52:23] "GET /api/v1/sessions/cb6ce0b3-ed68-4d7c-be7c-c55e73886839/vision-scans HTTP/1.1" 200 13
+[18/Oct/2026 20:52:23] "POST /api/v1/sessions/cb6ce0b3-ed68-4d7c-be7c-c55e73886839/open HTTP/1.1" 200 332
+[18/Oct/2026 20:52:23] "GET /api/v1/students?class_id=c4cc257d-2b48-43c9-be82-6e6e60fe3820 HTTP/1.1" 200 2521
+[18/Oct/2026 20:52:23] "GET /api/v1/sessions?class_id=c4cc257d-2b48-43c9-be82-6e6e60fe3820 HTTP/1.1" 200 677
+[18/Oct/2026 20:52:23] "GET /api/v1/sessions/cb6ce0b3-ed68-4d7c-be7c-c55e73886839 HTTP/1.1" 200 332
+[18/Oct/2026 20:52:23] "GET /api/v1/sessions/cb6ce0b3-ed68-4d7c-be7c-c55e73886839/roster HTTP/1.1" 200 8211
+[18/Oct/2026 20:52:23] "GET /api/v1/sessions/cb6ce0b3-ed68-4d7c-be7c-c55e73886839/vision-scans HTTP/1.1" 200 13
+Unprocessable Entity: /api/v1/sessions/cb6ce0b3-ed68-4d7c-be7c-c55e73886839/vision-scans
+[18/Oct/2026 20:52:23] "POST /api/v1/sessions/cb6ce0b3-ed68-4d7c-be7c-c55e73886839/vision-scans HTTP/1.1" 422 153
+[18/Oct/2026 20:52:23] "GET /api/v1/sessions/cb6ce0b3-ed68-4d7c-be7c-c55e73886839/roster HTTP/1.1" 200 8211
+[18/Oct/2026 20:52:24] "GET /api/v1/students?class_id=c4cc257d-2b48-43c9-be82-6e6e60fe3820 HTTP/1.1" 200 2521
+[18/Oct/2026 20:52:24] "GET /api/v1/sessions?class_id=c4cc257d-2b48-43c9-be82-6e6e60fe3820 HTTP/1.1" 200 677
+[18/Oct/2026 20:52:24] "GET /api/v1/sessions/cb6ce0b3-ed68-4d7c-be7c-c55e73886839 HTTP/1.1" 200 332
+[18/Oct/2026 20:52:24] "GET /api/v1/sessions/cb6ce0b3-ed68-4d7c-be7c-c55e73886839/vision-scans HTTP/1.1" 200 13
+[18/Oct/2026 20:52:24] "GET /api/v1/sessions/cb6ce0b3-ed68-4d7c-be7c-c55e73886839/roster HTTP/1.1" 200 8211
+[18/Oct/2026 20:52:24] "GET /api/v1/students/7745ae18-6937-4fec-9a45-9781aa77535e/face-samples HTTP/1.1" 200 166
+Unprocessable Entity: /api/v1/students/7745ae18-6937-4fec-9a45-9781aa77535e/face-samples
+[18/Oct/2026 20:52:24] "POST /api/v1/students/7745ae18-6937-4fec-9a45-9781aa77535e/face-samples HTTP/1.1" 422 153
+Unprocessable Entity: /api/v1/students/7745ae18-6937-4fec-9a45-9781aa77535e/face-samples
+[18/Oct/2026 20:52:24] "POST /api/v1/students/7745ae18-6937-4fec-9a45-9781aa77535e/face-samples HTTP/1.1" 422 153
+[18/Oct/2026 20:52:24] "GET /api/v1/students?class_id=3675c2c1-d9b6-4925-bd00-ec6597f35cca HTTP/1.1" 200 2521
+[18/Oct/2026 20:52:24] "GET /api/v1/sessions?class_id=3675c2c1-d9b6-4925-bd00-ec6597f35cca HTTP/1.1" 200 343
+[18/Oct/2026 20:52:24] "GET /api/v1/sessions/e0973bc3-fe4f-4aef-98f0-0039374d9c50 HTTP/1.1" 200 330
+[18/Oct/2026 20:52:24] "GET /api/v1/sessions/e0973bc3-fe4f-4aef-98f0-0039374d9c50/roster HTTP/1.1" 200 8211
+[18/Oct/2026 20:52:24] "GET /api/v1/sessions/e0973bc3-fe4f-4aef-98f0-0039374d9c50/vision-scans HTTP/1.1" 200 13
+[18/Oct/2026 20:52:24] "GET /api/v1/students/d0679d7e-d985-4191-a1d2-ffe756f399ac/face-samples HTTP/1.1" 200 166
+[18/Oct/2026 20:52:25] "PATCH /api/v1/attendance/3e03a824-957f-4b98-af26-3c2a7b4d8092 HTTP/1.1" 200 539
+[18/Oct/2026 20:52:25] "PATCH /api/v1/attendance/3e03a824-957f-4b98-af26-3c2a7b4d8092 HTTP/1.1" 200 539
+[18/Oct/2026 20:52:25] "GET /api/v1/sessions?class_id=3675c2c1-d9b6-4925-bd00-ec6597f35cca HTTP/1.1" 200 343
+[18/Oct/2026 20:52:25] "GET /api/v1/students?class_id=3675c2c1-d9b6-4925-bd00-ec6597f35cca HTTP/1.1" 200 2521
+[18/Oct/2026 20:52:25] "GET /api/v1/sessions/e0973bc3-fe4f-4aef-98f0-0039374d9c50 HTTP/1.1" 200 330
+[18/Oct/2026 20:52:25] "GET /api/v1/sessions/e0973bc3-fe4f-4aef-98f0-0039374d9c50/roster HTTP/1.1" 200 8278
+[18/Oct/2026 20:52:25] "GET /api/v1/sessions/e0973bc3-fe4f-4aef-98f0-0039374d9c50/vision-scans HTTP/1.1" 200 13
+[18/Oct/2026 20:52:25] "PATCH /api/v1/attendance/3e03a824-957f-4b98-af26-3c2a7b4d8092/uniform HTTP/1.1" 200 642
+[18/Oct/2026 20:52:25] "GET /api/v1/students?class_id=3675c2c1-d9b6-4925-bd00-ec6597f35cca HTTP/1.1" 200 2521
+[18/Oct/2026 20:52:25] "GET /api/v1/sessions?class_id=3675c2c1-d9b6-4925-bd00-ec6597f35cca HTTP/1.1" 200 343
+[18/Oct/2026 20:52:25] "GET /api/v1/sessions/e0973bc3-fe4f-4aef-98f0-0039374d9c50 HTTP/1.1" 200 330
+[18/Oct/2026 20:52:25] "GET /api/v1/sessions/e0973bc3-fe4f-4aef-98f0-0039374d9c50/roster HTTP/1.1" 200 8381
+[18/Oct/2026 20:52:25] "GET /api/v1/sessions/e0973bc3-fe4f-4aef-98f0-0039374d9c50/vision-scans HTTP/1.1" 200 13
+[18/Oct/2026 20:52:25] "POST /api/v1/sessions/e0973bc3-fe4f-4aef-98f0-0039374d9c50/close HTTP/1.1" 200 407
+[18/Oct/2026 20:52:25] "GET /api/v1/students?class_id=3675c2c1-d9b6-4925-bd00-ec6597f35cca HTTP/1.1" 200 2521
+[18/Oct/2026 20:52:25] "GET /api/v1/sessions?class_id=3675c2c1-d9b6-4925-bd00-ec6597f35cca HTTP/1.1" 200 345
+[18/Oct/2026 20:52:25] "GET /api/v1/sessions/e0973bc3-fe4f-4aef-98f0-0039374d9c50 HTTP/1.1" 200 332
+[18/Oct/2026 20:52:25] "GET /api/v1/sessions/e0973bc3-fe4f-4aef-98f0-0039374d9c50/roster HTTP/1.1" 200 8363
+[18/Oct/2026 20:52:25] "GET /api/v1/sessions/e0973bc3-fe4f-4aef-98f0-0039374d9c50/vision-scans HTTP/1.1" 200 13
+[18/Oct/2026 20:52:25] "GET /api/v1/reports/summary?date_from=2026-10-18&date_to=2026-10-18&class_id=3675c2c1-d9b6-4925-bd00-ec6597f35cca HTTP/1.1" 200 237
+[18/Oct/2026 20:52:25] "GET /api/v1/reports/attendance?date_from=2026-10-18&date_to=2026-10-18&class_id=3675c2c1-d9b6-4925-bd00-ec6597f35cca HTTP/1.1" 200 10050
+[18/Oct/2026 20:52:25] "GET /api/v1/reports/export?date_from=2026-10-18&date_to=2026-10-18&class_id=3675c2c1-d9b6-4925-bd00-ec6597f35cca&format=xlsx HTTP/1.1" 200 7386
+[18/Oct/2026 20:52:25] "GET /api/v1/reports/export?date_from=2026-10-18&date_to=2026-10-18&class_id=3675c2c1-d9b6-4925-bd00-ec6597f35cca&format=csv HTTP/1.1" 200 1916
+[18/Oct/2026 20:52:25] "POST /api/v1/auth/logout HTTP/1.1" 200 12
+[18/Oct/2026 20:52:26] "POST /api/v1/auth/login HTTP/1.1" 200 205
+[18/Oct/2026 20:52:26] "POST /api/v1/auth/logout HTTP/1.1" 200 12
+[18/Oct/2026 20:52:27] "POST /api/v1/auth/login HTTP/1.1" 200 179
+[18/Oct/2026 20:52:27] "GET /api/v1/classes HTTP/1.1" 200 210
+[18/Oct/2026 20:52:27] "GET /api/v1/sessions?class_id=3675c2c1-d9b6-4925-bd00-ec6597f35cca HTTP/1.1" 200 345
+[18/Oct/2026 20:52:27] "GET /api/v1/students?class_id=3675c2c1-d9b6-4925-bd00-ec6597f35cca HTTP/1.1" 200 2521
+[18/Oct/2026 20:52:27] "GET /api/v1/sessions/e0973bc3-fe4f-4aef-98f0-0039374d9c50 HTTP/1.1" 200 332
+[18/Oct/2026 20:52:27] "GET /api/v1/sessions/e0973bc3-fe4f-4aef-98f0-0039374d9c50/roster HTTP/1.1" 200 8363
+[18/Oct/2026 20:52:27] "GET /api/v1/sessions/e0973bc3-fe4f-4aef-98f0-0039374d9c50/vision-scans HTTP/1.1" 200 13
+[18/Oct/2026 20:52:27] "POST /api/v1/auth/logout HTTP/1.1" 200 12
+Unauthorized: /api/v1/students
+Unauthorized: /api/v1/sessions
+[18/Oct/2026 20:52:27] "GET /api/v1/students?class_id=3675c2c1-d9b6-4925-bd00-ec6597f35cca HTTP/1.1" 401 138
+[18/Oct/2026 20:52:27] "GET /api/v1/sessions?class_id=3675c2c1-d9b6-4925-bd00-ec6597f35cca HTTP/1.1" 401 138
+[18/Oct/2026 20:52:28,130] - Broken pipe from ('127.0.0.1', 64621)

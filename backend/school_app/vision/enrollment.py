@@ -20,7 +20,12 @@ def sample_revision(student_id):
 
 def metadata(user, student_id):
     student = require_student_profile(user, student_id)
-    return {'student_id':str(student.pk), 'sample_count':FaceSample.objects.filter(student=student).count()}
+    samples = FaceSample.objects.filter(student=student)
+    total = samples.count()
+    usable = samples.filter(model_key=engine.MODEL_KEY, embedding__isnull=False).count()
+    return {'student_id':str(student.pk), 'sample_count':total,
+            'usable_sample_count':usable, 'requires_reenrollment':total > 0 and usable < 3,
+            'model_key':engine.MODEL_KEY}
 
 
 def invalidate_samples(student, user):
@@ -37,7 +42,9 @@ def replace_samples(user, student_id, uploads):
     if not 3 <= len(uploads) <= 10 or sum(file.size for file in uploads) > budget:
         raise AccountError('VALIDATION_ERROR',
                            f'Submit 3–10 images, at most {budget / (1024 * 1024):g} MiB total.',422)
-    encoded = [engine.encode_face(engine.extract_face(engine.decode_upload(file))[0]) for file in uploads]
+    crops = [engine.extract_face(engine.decode_upload(file))[0] for file in uploads]
+    encoded = [engine.encode_face(crop) for crop in crops]
+    embeddings = [engine.embed_face(crop) for crop in crops]
     digests = [hashlib.sha256(data).hexdigest() for data in encoded]
     if len(set(digests)) != len(digests):
         raise AccountError('VALIDATION_ERROR','Use distinct face samples.',422)
@@ -50,8 +57,9 @@ def replace_samples(user, student_id, uploads):
             raise AccountError('INVALID_STATE','Only active students may enroll.',409)
         before = metadata(user, student_id)
         FaceSample.objects.filter(student=student).delete()
-        FaceSample.objects.bulk_create([FaceSample(student=student,image=data,digest=digest,created_by=user)
-                                       for data,digest in zip(encoded,digests)])
+        FaceSample.objects.bulk_create([FaceSample(student=student,image=data,digest=digest,
+            embedding=embedding,model_key=engine.MODEL_KEY,created_by=user)
+            for data,digest,embedding in zip(encoded,digests,embeddings)])
         invalidate_samples(student,user)
         after = metadata(user,student_id)
         record_change(user,student,'FACE_ENROLL',before,after)

@@ -10,4 +10,5 @@ tests/
 private_media/
 private_exports/
 .vercel-demo/
+vision_models/
 README.md
