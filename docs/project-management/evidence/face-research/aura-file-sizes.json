@@ -1,0 +1,34 @@
+[
+  {
+    "path": ".gitattributes",
+    "size": 1519
+  },
+  {
+    "path": "1k3d68.onnx",
+    "size": 143607619
+  },
+  {
+    "path": "2d106det.onnx",
+    "size": 5030888
+  },
+  {
+    "path": "LICENSE.md",
+    "size": 12624
+  },
+  {
+    "path": "README.md",
+    "size": 3959
+  },
+  {
+    "path": "genderage.onnx",
+    "size": 1322532
+  },
+  {
+    "path": "glintr100.onnx",
+    "size": 260694151
+  },
+  {
+    "path": "scrfd_10g_bnkps.onnx",
+    "size": 16923827
+  }
+]

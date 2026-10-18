@@ -1,0 +1,293 @@
+{
+  "opencv": "4.13.0",
+  "platform": "Windows-10-10.0.19043-SP0",
+  "threads": 1,
+  "detector_resize_max_edge": 640,
+  "detector_confidence": 0.9,
+  "cosine_threshold_upstream": 0.363,
+  "note": "Offline research only. No app/DB modifications. Same-person labels supplied by user/dataset. Three enrollment photos evaluated leave-one-out; one user holdout and one known different-person negative. Tiny fixture, not accuracy claim. Timing local Windows CPU, not Vercel.",
+  "results": {
+    "face_recognition_sface_2021dec.onnx": {
+      "load_ms": 162.74,
+      "detections": [
+        {
+          "file": "demo-images/01-enroll/01-obama-2012.jpg",
+          "faces": 1,
+          "elapsed_ms": 114.68,
+          "detection_scores": [
+            0.9462
+          ]
+        },
+        {
+          "file": "demo-images/01-enroll/02-obama-speech.jpg",
+          "faces": 1,
+          "elapsed_ms": 36.96,
+          "detection_scores": [
+            0.9516
+          ]
+        },
+        {
+          "file": "demo-images/01-enroll/03-obama-2009.jpg",
+          "faces": 1,
+          "elapsed_ms": 44.7,
+          "detection_scores": [
+            0.9447
+          ]
+        },
+        {
+          "file": "demo-images/demo/1753240560-trump-67651-width698height558.jpg",
+          "faces": 1,
+          "elapsed_ms": 45.09,
+          "detection_scores": [
+            0.9375
+          ]
+        },
+        {
+          "file": "demo-images/02-scan/multiple-detections.jpg",
+          "faces": 1,
+          "elapsed_ms": 42.0,
+          "detection_scores": [
+            0.945
+          ]
+        },
+        {
+          "file": "demo-images/02-scan/no-face.jpg",
+          "faces": 1,
+          "elapsed_ms": 35.63,
+          "detection_scores": [
+            0.9461
+          ]
+        },
+        {
+          "file": "demo-images/02-scan/unknown-person.jpg",
+          "faces": 1,
+          "elapsed_ms": 31.39,
+          "detection_scores": [
+            0.9265
+          ]
+        }
+      ],
+      "evaluations": [
+        {
+          "query": "demo-images/01-enroll/01-obama-2012.jpg",
+          "reference_scores": {
+            "demo-images/01-enroll/02-obama-speech.jpg": 0.753608,
+            "demo-images/01-enroll/03-obama-2009.jpg": 0.799567
+          },
+          "best_cosine": 0.799567,
+          "accepted_at_upstream_0_363": true,
+          "enrollment_photo_held_out": true
+        },
+        {
+          "query": "demo-images/01-enroll/02-obama-speech.jpg",
+          "reference_scores": {
+            "demo-images/01-enroll/01-obama-2012.jpg": 0.753608,
+            "demo-images/01-enroll/03-obama-2009.jpg": 0.757273
+          },
+          "best_cosine": 0.757273,
+          "accepted_at_upstream_0_363": true,
+          "enrollment_photo_held_out": true
+        },
+        {
+          "query": "demo-images/01-enroll/03-obama-2009.jpg",
+          "reference_scores": {
+            "demo-images/01-enroll/01-obama-2012.jpg": 0.799567,
+            "demo-images/01-enroll/02-obama-speech.jpg": 0.757273
+          },
+          "best_cosine": 0.799567,
+          "accepted_at_upstream_0_363": true,
+          "enrollment_photo_held_out": true
+        },
+        {
+          "query": "demo-images/demo/1753240560-trump-67651-width698height558.jpg",
+          "reference_scores": {
+            "demo-images/01-enroll/01-obama-2012.jpg": 0.554785,
+            "demo-images/01-enroll/02-obama-speech.jpg": 0.688063,
+            "demo-images/01-enroll/03-obama-2009.jpg": 0.634257
+          },
+          "best_cosine": 0.688063,
+          "accepted_at_upstream_0_363": true,
+          "enrollment_photo_held_out": false
+        },
+        {
+          "query": "demo-images/02-scan/multiple-detections.jpg",
+          "reference_scores": {
+            "demo-images/01-enroll/01-obama-2012.jpg": 0.804203,
+            "demo-images/01-enroll/02-obama-speech.jpg": 0.757255,
+            "demo-images/01-enroll/03-obama-2009.jpg": 0.786707
+          },
+          "best_cosine": 0.804203,
+          "accepted_at_upstream_0_363": true,
+          "enrollment_photo_held_out": false
+        },
+        {
+          "query": "demo-images/02-scan/no-face.jpg",
+          "reference_scores": {
+            "demo-images/01-enroll/01-obama-2012.jpg": 0.903033,
+            "demo-images/01-enroll/02-obama-speech.jpg": 0.690562,
+            "demo-images/01-enroll/03-obama-2009.jpg": 0.708982
+          },
+          "best_cosine": 0.903033,
+          "accepted_at_upstream_0_363": true,
+          "enrollment_photo_held_out": false
+        },
+        {
+          "query": "demo-images/02-scan/unknown-person.jpg",
+          "reference_scores": {
+            "demo-images/01-enroll/01-obama-2012.jpg": 0.121383,
+            "demo-images/01-enroll/02-obama-speech.jpg": 0.287265,
+            "demo-images/01-enroll/03-obama-2009.jpg": 0.230534
+          },
+          "best_cosine": 0.287265,
+          "accepted_at_upstream_0_363": false,
+          "enrollment_photo_held_out": false
+        }
+      ],
+      "user_photo_detection_and_embedding_12_runs_ms": {
+        "median": 43.49,
+        "max": 45.79
+      }
+    },
+    "face_recognition_sface_2021dec_int8.onnx": {
+      "load_ms": 31.69,
+      "detections": [
+        {
+          "file": "demo-images/01-enroll/01-obama-2012.jpg",
+          "faces": 1,
+          "elapsed_ms": 53.53,
+          "detection_scores": [
+            0.9462
+          ]
+        },
+        {
+          "file": "demo-images/01-enroll/02-obama-speech.jpg",
+          "faces": 1,
+          "elapsed_ms": 44.83,
+          "detection_scores": [
+            0.9516
+          ]
+        },
+        {
+          "file": "demo-images/01-enroll/03-obama-2009.jpg",
+          "faces": 1,
+          "elapsed_ms": 48.43,
+          "detection_scores": [
+            0.9447
+          ]
+        },
+        {
+          "file": "demo-images/demo/1753240560-trump-67651-width698height558.jpg",
+          "faces": 1,
+          "elapsed_ms": 57.59,
+          "detection_scores": [
+            0.9375
+          ]
+        },
+        {
+          "file": "demo-images/02-scan/multiple-detections.jpg",
+          "faces": 1,
+          "elapsed_ms": 52.67,
+          "detection_scores": [
+            0.945
+          ]
+        },
+        {
+          "file": "demo-images/02-scan/no-face.jpg",
+          "faces": 1,
+          "elapsed_ms": 42.86,
+          "detection_scores": [
+            0.9461
+          ]
+        },
+        {
+          "file": "demo-images/02-scan/unknown-person.jpg",
+          "faces": 1,
+          "elapsed_ms": 39.58,
+          "detection_scores": [
+            0.9265
+          ]
+        }
+      ],
+      "evaluations": [
+        {
+          "query": "demo-images/01-enroll/01-obama-2012.jpg",
+          "reference_scores": {
+            "demo-images/01-enroll/02-obama-speech.jpg": 0.770003,
+            "demo-images/01-enroll/03-obama-2009.jpg": 0.812742
+          },
+          "best_cosine": 0.812742,
+          "accepted_at_upstream_0_363": true,
+          "enrollment_photo_held_out": true
+        },
+        {
+          "query": "demo-images/01-enroll/02-obama-speech.jpg",
+          "reference_scores": {
+            "demo-images/01-enroll/01-obama-2012.jpg": 0.770003,
+            "demo-images/01-enroll/03-obama-2009.jpg": 0.739874
+          },
+          "best_cosine": 0.770003,
+          "accepted_at_upstream_0_363": true,
+          "enrollment_photo_held_out": true
+        },
+        {
+          "query": "demo-images/01-enroll/03-obama-2009.jpg",
+          "reference_scores": {
+            "demo-images/01-enroll/01-obama-2012.jpg": 0.812742,
+            "demo-images/01-enroll/02-obama-speech.jpg": 0.739874
+          },
+          "best_cosine": 0.812742,
+          "accepted_at_upstream_0_363": true,
+          "enrollment_photo_held_out": true
+        },
+        {
+          "query": "demo-images/demo/1753240560-trump-67651-width698height558.jpg",
+          "reference_scores": {
+            "demo-images/01-enroll/01-obama-2012.jpg": 0.567397,
+            "demo-images/01-enroll/02-obama-speech.jpg": 0.669067,
+            "demo-images/01-enroll/03-obama-2009.jpg": 0.624372
+          },
+          "best_cosine": 0.669067,
+          "accepted_at_upstream_0_363": true,
+          "enrollment_photo_held_out": false
+        },
+        {
+          "query": "demo-images/02-scan/multiple-detections.jpg",
+          "reference_scores": {
+            "demo-images/01-enroll/01-obama-2012.jpg": 0.823624,
+            "demo-images/01-enroll/02-obama-speech.jpg": 0.732551,
+            "demo-images/01-enroll/03-obama-2009.jpg": 0.784834
+          },
+          "best_cosine": 0.823624,
+          "accepted_at_upstream_0_363": true,
+          "enrollment_photo_held_out": false
+        },
+        {
+          "query": "demo-images/02-scan/no-face.jpg",
+          "reference_scores": {
+            "demo-images/01-enroll/01-obama-2012.jpg": 0.889243,
+            "demo-images/01-enroll/02-obama-speech.jpg": 0.676153,
+            "demo-images/01-enroll/03-obama-2009.jpg": 0.715088
+          },
+          "best_cosine": 0.889243,
+          "accepted_at_upstream_0_363": true,
+          "enrollment_photo_held_out": false
+        },
+        {
+          "query": "demo-images/02-scan/unknown-person.jpg",
+          "reference_scores": {
+            "demo-images/01-enroll/01-obama-2012.jpg": 0.114662,
+            "demo-images/01-enroll/02-obama-speech.jpg": 0.271584,
+            "demo-images/01-enroll/03-obama-2009.jpg": 0.233357
+          },
+          "best_cosine": 0.271584,
+          "accepted_at_upstream_0_363": false,
+          "enrollment_photo_held_out": false
+        }
+      ],
+      "user_photo_detection_and_embedding_12_runs_ms": {
+        "median": 47.49,
+        "max": 53.49
+      }
+    }
+  }
+}
