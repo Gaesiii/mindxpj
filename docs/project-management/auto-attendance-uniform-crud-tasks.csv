@@ -1,0 +1,27 @@
+﻿id,owner,hours,depends_on,title,acceptance,status,Finish
+P01,Shared,8,,Chốt contracts v1.5 và quyền,"State tự động, uniform review, CRUD, snapshot và lỗi được mô tả; PM gate độc lập",PLANNED,false
+P02,Shared,8,P01,Schema và migration liên app,"Capacity/active/version, auto attribution, review/model/profile version; migrate dữ liệu cũ không đổi nghĩa CONFIRMED",PLANNED,false
+C01,Member 1,6,P02,Mở rộng API lớp,"Chi tiết, sửa, sức chứa, sĩ số tự tính; unique, version và role scope đúng",PLANNED,false
+C02,Member 1,6,C01,Mở rộng API học sinh,"Thêm/sửa mã/tên, trạng thái; kiểm tra lớp active/capacity; GVCN không tự chuyển lớp",PLANNED,false
+C03,Member 1,6,C02,Archive/restore và chuyển lớp,"Không hard-delete lịch sử; chặn archive lớp còn active/OPEN; chuyển nguồn/đích atomic, đúng quyền",PLANNED,false
+C04,Member 1,6,C03,UI quản lý lớp,"Tìm kiếm, tạo/sửa/lưu trữ/khôi phục, hiển thị sĩ số/sức chứa; xử lý conflict rõ",PLANNED,false
+C05,Member 1,6,C04,UI quản lý học sinh,"CRUD, chuyển lớp, trạng thái và enrollment hiện có dùng được; không nhập sĩ số giả",PLANNED,false
+C06,Member 2,6,"C03,P02",Bổ sung roster buổi OPEN có kiểm soát,Supervisor thêm đúng lớp/active; version/audit; không rebuild hay sửa attendance cũ,PLANNED,false
+D01,Shared,12,P01,Quy chuẩn và chuẩn bị dataset trường,"Nhãn, quyền sử dụng, crop áo, manifest/split theo người/buổi; báo số ảnh còn thiếu",PLANNED,false
+D02,Member 2,8,D01,Chọn baseline/model và license,So baseline với MobileNetV3-Small hoặc ứng viên nhẹ; kiểm tra quyền code/weights/dataset và khả năng ONNX OpenCV,PLANNED,false
+D03,Member 2,16,D02,"Train offline, đánh giá, export ONNX","Script tái lập, seed/config, test độc lập, confusion matrix, precision/recall/coverage, latency/bytes và hash model",PLANNED,false
+D04,Member 1,8,"D01,P02",API/UI ảnh mẫu đồng phục riêng,"Supervisor quản lý/export riêng tư, scope ảnh; crop loại mặt; không public dataset hoặc train trong request",PLANNED,false
+U01,Member 2,6,P02,Profile/quy tắc đồng phục và model version,Theo loại buổi/lớp; snapshot lúc OPEN; kích hoạt version mới không viết lại lịch sử,PLANNED,false
+U02,Member 2,10,"D03,U01",Runtime ROI áo và ONNX,"Áo gắn đúng người; thiếu logo/thân áo hoặc bất định thành UNKNOWN; cache model/hash, không tải mạng trong request",PLANNED,false
+A01,Member 2,8,"P02,C03",Service/API tự điểm danh,Hai frame khớp cùng roster pupil; server quyết định; idempotency và recheck trước atomic write; không cần model áo,PLANNED,false
+A02,Member 2,6,A01,Camera tự chụp cặp ảnh,"Một request/4 giây, không chồng; giới hạn ảnh, CSRF, backoff; dừng khi đổi trang/tab/logout",PLANNED,false
+A03,Member 2,6,A02,Feedback quét và chống lặp UI,"Hiện tên/kết quả/hướng dẫn; một camera; không spam toast, không ghi lại giờ đến đầu",PLANNED,false
+A04,Member 2,6,A01,Attribution và lịch sử auto/manual,AUTO_RECORDED tách CONFIRMED; không giả verified_by; không đè chỉnh sửa MANUAL/ABSENT/CLOSED,PLANNED,false
+U03,Member 2,6,"U02,A01",Ghép đồng phục vào API scan,AUTO_ATTENDANCE và UNIFORM_ONLY; UNIFORM_ONLY không tự tạo PRESENT; thiếu model giữ NOT_CHECKED,PLANNED,false
+U04,Member 2,6,"U03,A02,D04",Không gian Đồng phục có camera,"Camera/framing, mẫu trường, profile và kết quả; chia sẻ controller với điểm danh",PLANNED,false
+R01,Member 1,6,"U03,A04",UI/API xử lý ngoại lệ đồng phục,"REVIEW_REQUIRED, giáo viên ghi lý do để NON_COMPLIANT hoặc sửa cảnh báo sai; không confirm danh tính lần nữa",PLANNED,false
+R02,Member 1,6,"R01,C03",Báo cáo và export tương thích,Tách đúng/nghi sai/chưa kiểm tra/vi phạm đã ghi lý do; giữ snapshot lịch sử và scope,PLANNED,false
+Q01,Shared,8,"C05,C06,U04,R02,A03",Regression bảo mật/nghiệp vụ,"Role/CSRF/private ảnh, conflict, retry/concurrency, rollback, inactive/transfer giữa inference và write",PLANNED,false
+Q02,Shared,10,"D03,U02,A03,R01",Kiểm chứng ảnh và camera thực,"Test ngoài enrollment, người lạ/nhiều mặt, logo tương tự/che; calibration threshold, precision và coverage công khai",PLANNED,false
+Q03,Shared,8,"Q01,Q02",Kiểm tra Vercel demo/API,Build và cold/warm CPU/RAM/bundle đo được; không thêm Torch runtime; không hứa SQLite chia sẻ; không deploy,PLANNED,false
+Q04,Shared,4,Q03,"Review, tài liệu và kịch bản thuyết trình","Review độc lập, đóng lỗi quan trọng, ghi evidence và giới hạn; chỉ cập nhật Finish khi đủ kiểm chứng/phê duyệt",PLANNED,false

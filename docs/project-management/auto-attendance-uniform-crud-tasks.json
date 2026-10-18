@@ -1,0 +1,334 @@
+{
+  "version": "v1.5-proposed",
+  "status": "PLAN_ONLY",
+  "API_Gate": "NOT_APPROVED",
+  "tasks": [
+    {
+      "id": "P01",
+      "owner": "Shared",
+      "hours": 8,
+      "depends_on": [],
+      "title": "Chốt contracts v1.5 và quyền",
+      "acceptance": "State tự động, uniform review, CRUD, snapshot và lỗi được mô tả; PM gate độc lập",
+      "status": "PLANNED",
+      "Finish": false
+    },
+    {
+      "id": "P02",
+      "owner": "Shared",
+      "hours": 8,
+      "depends_on": [
+        "P01"
+      ],
+      "title": "Schema và migration liên app",
+      "acceptance": "Capacity/active/version, auto attribution, review/model/profile version; migrate dữ liệu cũ không đổi nghĩa CONFIRMED",
+      "status": "PLANNED",
+      "Finish": false
+    },
+    {
+      "id": "C01",
+      "owner": "Member 1",
+      "hours": 6,
+      "depends_on": [
+        "P02"
+      ],
+      "title": "Mở rộng API lớp",
+      "acceptance": "Chi tiết, sửa, sức chứa, sĩ số tự tính; unique, version và role scope đúng",
+      "status": "PLANNED",
+      "Finish": false
+    },
+    {
+      "id": "C02",
+      "owner": "Member 1",
+      "hours": 6,
+      "depends_on": [
+        "C01"
+      ],
+      "title": "Mở rộng API học sinh",
+      "acceptance": "Thêm/sửa mã/tên, trạng thái; kiểm tra lớp active/capacity; GVCN không tự chuyển lớp",
+      "status": "PLANNED",
+      "Finish": false
+    },
+    {
+      "id": "C03",
+      "owner": "Member 1",
+      "hours": 6,
+      "depends_on": [
+        "C02"
+      ],
+      "title": "Archive/restore và chuyển lớp",
+      "acceptance": "Không hard-delete lịch sử; chặn archive lớp còn active/OPEN; chuyển nguồn/đích atomic, đúng quyền",
+      "status": "PLANNED",
+      "Finish": false
+    },
+    {
+      "id": "C04",
+      "owner": "Member 1",
+      "hours": 6,
+      "depends_on": [
+        "C03"
+      ],
+      "title": "UI quản lý lớp",
+      "acceptance": "Tìm kiếm, tạo/sửa/lưu trữ/khôi phục, hiển thị sĩ số/sức chứa; xử lý conflict rõ",
+      "status": "PLANNED",
+      "Finish": false
+    },
+    {
+      "id": "C05",
+      "owner": "Member 1",
+      "hours": 6,
+      "depends_on": [
+        "C04"
+      ],
+      "title": "UI quản lý học sinh",
+      "acceptance": "CRUD, chuyển lớp, trạng thái và enrollment hiện có dùng được; không nhập sĩ số giả",
+      "status": "PLANNED",
+      "Finish": false
+    },
+    {
+      "id": "C06",
+      "owner": "Member 2",
+      "hours": 6,
+      "depends_on": [
+        "C03",
+        "P02"
+      ],
+      "title": "Bổ sung roster buổi OPEN có kiểm soát",
+      "acceptance": "Supervisor thêm đúng lớp/active; version/audit; không rebuild hay sửa attendance cũ",
+      "status": "PLANNED",
+      "Finish": false
+    },
+    {
+      "id": "D01",
+      "owner": "Shared",
+      "hours": 12,
+      "depends_on": [
+        "P01"
+      ],
+      "title": "Quy chuẩn và chuẩn bị dataset trường",
+      "acceptance": "Nhãn, quyền sử dụng, crop áo, manifest/split theo người/buổi; báo số ảnh còn thiếu",
+      "status": "PLANNED",
+      "Finish": false
+    },
+    {
+      "id": "D02",
+      "owner": "Member 2",
+      "hours": 8,
+      "depends_on": [
+        "D01"
+      ],
+      "title": "Chọn baseline/model và license",
+      "acceptance": "So baseline với MobileNetV3-Small hoặc ứng viên nhẹ; kiểm tra quyền code/weights/dataset và khả năng ONNX OpenCV",
+      "status": "PLANNED",
+      "Finish": false
+    },
+    {
+      "id": "D03",
+      "owner": "Member 2",
+      "hours": 16,
+      "depends_on": [
+        "D02"
+      ],
+      "title": "Train offline, đánh giá, export ONNX",
+      "acceptance": "Script tái lập, seed/config, test độc lập, confusion matrix, precision/recall/coverage, latency/bytes và hash model",
+      "status": "PLANNED",
+      "Finish": false
+    },
+    {
+      "id": "D04",
+      "owner": "Member 1",
+      "hours": 8,
+      "depends_on": [
+        "D01",
+        "P02"
+      ],
+      "title": "API/UI ảnh mẫu đồng phục riêng",
+      "acceptance": "Supervisor quản lý/export riêng tư, scope ảnh; crop loại mặt; không public dataset hoặc train trong request",
+      "status": "PLANNED",
+      "Finish": false
+    },
+    {
+      "id": "U01",
+      "owner": "Member 2",
+      "hours": 6,
+      "depends_on": [
+        "P02"
+      ],
+      "title": "Profile/quy tắc đồng phục và model version",
+      "acceptance": "Theo loại buổi/lớp; snapshot lúc OPEN; kích hoạt version mới không viết lại lịch sử",
+      "status": "PLANNED",
+      "Finish": false
+    },
+    {
+      "id": "U02",
+      "owner": "Member 2",
+      "hours": 10,
+      "depends_on": [
+        "D03",
+        "U01"
+      ],
+      "title": "Runtime ROI áo và ONNX",
+      "acceptance": "Áo gắn đúng người; thiếu logo/thân áo hoặc bất định thành UNKNOWN; cache model/hash, không tải mạng trong request",
+      "status": "PLANNED",
+      "Finish": false
+    },
+    {
+      "id": "A01",
+      "owner": "Member 2",
+      "hours": 8,
+      "depends_on": [
+        "P02",
+        "C03"
+      ],
+      "title": "Service/API tự điểm danh",
+      "acceptance": "Hai frame khớp cùng roster pupil; server quyết định; idempotency và recheck trước atomic write; không cần model áo",
+      "status": "PLANNED",
+      "Finish": false
+    },
+    {
+      "id": "A02",
+      "owner": "Member 2",
+      "hours": 6,
+      "depends_on": [
+        "A01"
+      ],
+      "title": "Camera tự chụp cặp ảnh",
+      "acceptance": "Một request/4 giây, không chồng; giới hạn ảnh, CSRF, backoff; dừng khi đổi trang/tab/logout",
+      "status": "PLANNED",
+      "Finish": false
+    },
+    {
+      "id": "A03",
+      "owner": "Member 2",
+      "hours": 6,
+      "depends_on": [
+        "A02"
+      ],
+      "title": "Feedback quét và chống lặp UI",
+      "acceptance": "Hiện tên/kết quả/hướng dẫn; một camera; không spam toast, không ghi lại giờ đến đầu",
+      "status": "PLANNED",
+      "Finish": false
+    },
+    {
+      "id": "A04",
+      "owner": "Member 2",
+      "hours": 6,
+      "depends_on": [
+        "A01"
+      ],
+      "title": "Attribution và lịch sử auto/manual",
+      "acceptance": "AUTO_RECORDED tách CONFIRMED; không giả verified_by; không đè chỉnh sửa MANUAL/ABSENT/CLOSED",
+      "status": "PLANNED",
+      "Finish": false
+    },
+    {
+      "id": "U03",
+      "owner": "Member 2",
+      "hours": 6,
+      "depends_on": [
+        "U02",
+        "A01"
+      ],
+      "title": "Ghép đồng phục vào API scan",
+      "acceptance": "AUTO_ATTENDANCE và UNIFORM_ONLY; UNIFORM_ONLY không tự tạo PRESENT; thiếu model giữ NOT_CHECKED",
+      "status": "PLANNED",
+      "Finish": false
+    },
+    {
+      "id": "U04",
+      "owner": "Member 2",
+      "hours": 6,
+      "depends_on": [
+        "U03",
+        "A02",
+        "D04"
+      ],
+      "title": "Không gian Đồng phục có camera",
+      "acceptance": "Camera/framing, mẫu trường, profile và kết quả; chia sẻ controller với điểm danh",
+      "status": "PLANNED",
+      "Finish": false
+    },
+    {
+      "id": "R01",
+      "owner": "Member 1",
+      "hours": 6,
+      "depends_on": [
+        "U03",
+        "A04"
+      ],
+      "title": "UI/API xử lý ngoại lệ đồng phục",
+      "acceptance": "REVIEW_REQUIRED, giáo viên ghi lý do để NON_COMPLIANT hoặc sửa cảnh báo sai; không confirm danh tính lần nữa",
+      "status": "PLANNED",
+      "Finish": false
+    },
+    {
+      "id": "R02",
+      "owner": "Member 1",
+      "hours": 6,
+      "depends_on": [
+        "R01",
+        "C03"
+      ],
+      "title": "Báo cáo và export tương thích",
+      "acceptance": "Tách đúng/nghi sai/chưa kiểm tra/vi phạm đã ghi lý do; giữ snapshot lịch sử và scope",
+      "status": "PLANNED",
+      "Finish": false
+    },
+    {
+      "id": "Q01",
+      "owner": "Shared",
+      "hours": 8,
+      "depends_on": [
+        "C05",
+        "C06",
+        "U04",
+        "R02",
+        "A03"
+      ],
+      "title": "Regression bảo mật/nghiệp vụ",
+      "acceptance": "Role/CSRF/private ảnh, conflict, retry/concurrency, rollback, inactive/transfer giữa inference và write",
+      "status": "PLANNED",
+      "Finish": false
+    },
+    {
+      "id": "Q02",
+      "owner": "Shared",
+      "hours": 10,
+      "depends_on": [
+        "D03",
+        "U02",
+        "A03",
+        "R01"
+      ],
+      "title": "Kiểm chứng ảnh và camera thực",
+      "acceptance": "Test ngoài enrollment, người lạ/nhiều mặt, logo tương tự/che; calibration threshold, precision và coverage công khai",
+      "status": "PLANNED",
+      "Finish": false
+    },
+    {
+      "id": "Q03",
+      "owner": "Shared",
+      "hours": 8,
+      "depends_on": [
+        "Q01",
+        "Q02"
+      ],
+      "title": "Kiểm tra Vercel demo/API",
+      "acceptance": "Build và cold/warm CPU/RAM/bundle đo được; không thêm Torch runtime; không hứa SQLite chia sẻ; không deploy",
+      "status": "PLANNED",
+      "Finish": false
+    },
+    {
+      "id": "Q04",
+      "owner": "Shared",
+      "hours": 4,
+      "depends_on": [
+        "Q03"
+      ],
+      "title": "Review, tài liệu và kịch bản thuyết trình",
+      "acceptance": "Review độc lập, đóng lỗi quan trọng, ghi evidence và giới hạn; chỉ cập nhật Finish khi đủ kiểm chứng/phê duyệt",
+      "status": "PLANNED",
+      "Finish": false
+    }
+  ]
+}
