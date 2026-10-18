@@ -8,6 +8,7 @@ Implemented local YuNet2023mar + SFace2021dec FP32 under user-approved design. V
 - `legacy-upgrade-validation.txt` and `synthetic-exports/`: upgrade preserves old QR history; synthetic HTTP service workflow/export reconciliation passed. This harness explicitly mocks detection/alignment/embedding; it is not the real-image recognition evidence above.
 - `ui/`: thirteen broader browser scenarios passed, zero uncaught JS errors. Covers responsive layout, scope/student denial, camera denial/synthetic MediaStream, stale-response handling, lost-body idempotent retry, manual/uniform/close, protected real exports and session-expiry cleanup. Its proposal scenario is explicitly mocked and separate from real SFace browser evidence.
 - `model-bundle-budget.json`: verified FP32+YuNet bytes and previous Linux wheel unpacked size; estimate excludes actual Vercel runtime overhead.
+- `local-demo-upgrade.txt`: original user demo restarted with migrated DB; verified all20students, attendance IDs/status/source/version and3legacycrop IDs/digests preserved. Existing password works; authenticated metadata requires enrollment again. Consistent backup retained privately next to the runtime DB.
 
 Independent spec/quality reviews found no critical/important issues and reran61 targeted tests. A minor partial-enrollment inconsistency was fixed with RED→GREEN regression; reviewer separately reran both resume tests and that regression. Word v1.4 Unicode/content/structure, retained v1.2/v1.3 artifacts and tracker/Apps Script checks passed; seven-slide presentation rebuilt.
 

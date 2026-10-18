@@ -1,0 +1,5 @@
+Original local demo restarted on127.0.0.1:8000 with upgraded code: PASS
+Consistent SQLite backup created before migration. Original20students, attendance rows/status/source/version and3legacycrop IDs+SHA256 preserved: PASS
+Existing supervisor password works after restart; own verification session logged out: PASS
+Actual authenticated API advertises model_key=sface-2021dec-fp32, sample_count3, usable_sample_count0, requires_reenrollment=true: PASS
+No automatic enrollment, no changes to user attendance. Staff must sign in and enroll the3photos again.

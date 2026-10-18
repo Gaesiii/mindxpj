@@ -1,5 +1,7 @@
 # Nghiên cứu thay LBPH — 18/10/2026
 
+Ghi chú sau phê duyệt: bản YuNet + SFace FP32 đã được tích hợp theo nghiên cứu này; xem [kết quả triển khai](project-management/evidence/sface-upgrade/README.md). Các trạng thái “chưa tích hợp/đề xuất” bên dưới được giữ như bản ghi tại thời điểm nghiên cứu, trước khi người dùng duyệt.
+
 **Khuyến nghị cho dự án này: YuNet + SFace FP32 từ OpenCV Zoo.** Đã tải mô hình ONNX từ kho chính thức trên Hugging Face, đối chiếu SHA-256 với Git LFS của GitHub, chạy CPU bằng OpenCV4.13 hiện có. Chưa tích hợp vào ứng dụng; không sửa DB demo hay nâng ngưỡng LBPH.
 
 ## Vấn đề thực tế
