@@ -97,8 +97,9 @@ def analyze(user, session_id, upload, key):
         crop, box = engine.extract_face(image)
         samples = defaultdict(list)
         roster_samples = FaceSample.objects.filter(student_id__in=[row.student_id for row in roster])
-        for sample in roster_samples.filter(model_key=engine.MODEL_KEY, embedding__isnull=False):
-            samples[str(sample.student_id)].append(bytes(sample.embedding))
+        for student_id, embedding in roster_samples.filter(
+                model_key=engine.MODEL_KEY, embedding__isnull=False).values_list('student_id', 'embedding'):
+            samples[str(student_id)].append(bytes(embedding))
         samples = {student_id: vectors for student_id, vectors in samples.items() if len(vectors) >= 3}
         uniform = engine.suggest_uniform(image,box)
         if not samples and roster_samples.exists():

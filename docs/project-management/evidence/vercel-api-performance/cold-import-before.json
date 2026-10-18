@@ -1,0 +1,42 @@
+[
+  {
+    "elapsed_ms": 446.35,
+    "heavy_imports": [
+      "cv2",
+      "numpy",
+      "openpyxl"
+    ]
+  },
+  {
+    "elapsed_ms": 348.81,
+    "heavy_imports": [
+      "cv2",
+      "numpy",
+      "openpyxl"
+    ]
+  },
+  {
+    "elapsed_ms": 370.33,
+    "heavy_imports": [
+      "cv2",
+      "numpy",
+      "openpyxl"
+    ]
+  },
+  {
+    "elapsed_ms": 373.17,
+    "heavy_imports": [
+      "cv2",
+      "numpy",
+      "openpyxl"
+    ]
+  },
+  {
+    "elapsed_ms": 379.15,
+    "heavy_imports": [
+      "cv2",
+      "numpy",
+      "openpyxl"
+    ]
+  }
+]

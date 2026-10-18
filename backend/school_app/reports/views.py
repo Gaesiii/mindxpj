@@ -3,7 +3,6 @@ from school_app.core.api import api_view, json_response
 from school_app.core.enums import Role
 from school_app.reports.forms import read_filters
 from school_app.reports.services import report
-from school_app.reports.exporters import export_response
 
 
 def read_report(request, export=False):
@@ -25,4 +24,6 @@ def summary_report(request):
 
 @api_view('GET')
 def export_report(request):
-    return export_response(read_report(request, export=True), request.GET['format'])
+    result = read_report(request, export=True)
+    from school_app.reports.exporters import export_response
+    return export_response(result, request.GET['format'])

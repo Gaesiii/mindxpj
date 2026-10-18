@@ -1,5 +1,7 @@
 # Demo trên Vercel
 
+API đã được tối ưu để request thông thường không nạp OpenCV/NumPy/Excel trước khi cần; quét mặt chỉ đọc embedding, không kéo crop ảnh từ DB. Runtime đã khởi tạo bỏ qua copy-lock/tạo thư mục lặp lại, vẫn tự phục hồi khi mất DB tạm. [Kiểm chứng API/Vercel](project-management/evidence/vercel-api-performance/README.md). Đây là cấu hình bàn giao để bạn tự deploy; không có deployment được tạo tự động.
+
 Import repository `Gaesiii/mindxpj` vào Vercel, chọn **Root Directory: `backend`**, framework **Django**, giữ build command theo `pyproject.toml`. Python được khóa ở 3.12. Chưa thực hiện deploy trong lần bàn giao này.
 
 Chỉ cần thêm hai Environment Variables trước khi build:

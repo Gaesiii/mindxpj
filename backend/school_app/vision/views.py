@@ -2,12 +2,12 @@ from school_app.accounts.services import AccountError
 from school_app.core.api import api_view, json_response, read_json
 from school_app.students.services import require_student_profile
 from school_app.schedules.services import require_session
-from . import enrollment, services
 
 
 @api_view('GET','POST','DELETE')
 def samples(request, student_id):
     require_student_profile(request.user,student_id)
+    from . import enrollment
     if request.method == 'GET':
         if request.GET:
             raise AccountError('VALIDATION_ERROR','No filters are accepted.',422)
@@ -24,6 +24,7 @@ def samples(request, student_id):
 @api_view('GET','POST')
 def scans(request, session_id):
     require_session(request.user,session_id)
+    from . import services
     if request.GET:
         raise AccountError('VALIDATION_ERROR','No filters are accepted.',422)
     if request.method == 'GET':
@@ -36,6 +37,7 @@ def scans(request, session_id):
 
 @api_view('POST')
 def confirm(request, scan_id):
+    from . import services
     services.require_scan(request.user,scan_id)
     body,status = services.resolve(request.user,scan_id,read_json(request),request.headers.get('Idempotency-Key'),confirm=True)
     return json_response(body,status)
@@ -43,6 +45,7 @@ def confirm(request, scan_id):
 
 @api_view('POST')
 def reject(request, scan_id):
+    from . import services
     services.require_scan(request.user,scan_id)
     body,status = services.resolve(request.user,scan_id,read_json(request),request.headers.get('Idempotency-Key'),confirm=False)
     return json_response(body,status)

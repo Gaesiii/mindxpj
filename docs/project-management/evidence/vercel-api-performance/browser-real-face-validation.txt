@@ -1,0 +1,7 @@
+Legacy three crops retained; actual API/UI requires enrollment again: PASS
+Real three-photo enrollment replaces legacy samples; usable count3: PASS
+Different-person image rejected by real YuNet/SFace; no proposal: PASS
+Exact held-out user image matches demo student; cosine0.697729; not a probability. No automatic PRESENT/uniform: PASS
+Explicit identity confirmation persisted exactly one VISION attendance; private versioned512byte embeddings: PASS
+Restart --resume-runtime preserves account password, existing enrollment and confirmed attendance without reseeding: PASS
+Uncaught JavaScript errors:0. No detector/embedding/HTTP response mocks. Isolated temporary demo DB only; user DB unchanged. No camera/liveness or population accuracy claim.

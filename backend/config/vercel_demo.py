@@ -97,14 +97,17 @@ class DemoBootstrapMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
         self.prepared_date = None
+        self.storage_ready = False
 
     def __call__(self, request):
         from django.utils import timezone
         database = Path(settings.DATABASES['default']['NAME'])
-        if ensure_database(settings.VERCEL_DEMO_TEMPLATE, database):
-            self.prepared_date = None
-        Path(settings.PRIVATE_MEDIA_ROOT).mkdir(parents=True, exist_ok=True)
-        Path(settings.FILE_UPLOAD_TEMP_DIR).mkdir(parents=True, exist_ok=True)
+        if not self.storage_ready or not database.is_file():
+            if ensure_database(settings.VERCEL_DEMO_TEMPLATE, database):
+                self.prepared_date = None
+            Path(settings.PRIVATE_MEDIA_ROOT).mkdir(parents=True, exist_ok=True)
+            Path(settings.FILE_UPLOAD_TEMP_DIR).mkdir(parents=True, exist_ok=True)
+            self.storage_ready = True
         today = timezone.localdate()
         if self.prepared_date != today:
             marker = database.with_suffix('.sessions-date')

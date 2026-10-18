@@ -27,10 +27,11 @@ OUT = ROOT / 'docs/project-management/evidence/sface-upgrade'
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--images', required=True, type=Path)
+    parser.add_argument('--query', type=Path, help='Choose the held-out photo when the demo folder contains several images.')
     args = parser.parse_args()
     images = args.images.resolve()
     enrolled = sorted((images / '01-enroll').glob('*.jpg'))
-    query = list((images / 'demo').glob('*.jpg'))
+    query = [args.query.resolve()] if args.query else list((images / 'demo').glob('*.jpg'))
     assert len(enrolled) == 3 and len(query) == 1, 'Expected 3 enrollment and 1 held-out image.'
     OUT.mkdir(parents=True, exist_ok=True)
     notes, responses, errors = [], [], []
