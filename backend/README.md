@@ -1,8 +1,8 @@
 # Backend Django MVP — API trước frontend
 
-Theo MVP v1.4, luồng hiện tại là OpenCV gợi ý danh tính/đồng phục → nhân sự xác nhận → điểm danh; thủ công là dự phòng. Auth/session/CSRF, lớp, học sinh/ảnh private, lịch/roster và report/XLSX/CSV được giữ. QR tắt mặc định, dữ liệu lịch sử không bị xóa. Người dùng đã cho làm UI demo local trước gate; giao diện tại `/`. PM API gate vẫn chờ review, không có triển khai ngoài.
+Theo MVP v1.5, cặp ảnh → YuNet/SFace đủ điều kiện → tự ghi có mặt, không confirm từng học sinh; thủ công là dự phòng. Có CRUD lớp/học sinh, không gian Đồng phục/dataset riêng và report/export. Model đúng mẫu áo trường còn chờ dữ liệu/huấn luyện/nghiệm thu; thiếu model giữ NOT_CHECKED. API gate chờ PM review, chưa thực hiện deploy. Đọc [báo cáo và hướng dẫn hiện tại](../docs/bao-cao-tong-quan-va-huong-dan-su-dung-v1.5.md) và [evidence v1.5](../docs/project-management/evidence/v1.5/README.md). Các mô tả proposal/confirm/HSV bên dưới là luồng legacy.
 
-Đọc [thiết kế v1.4](../docs/thiet-ke-he-thong-diem-danh.md), [hợp đồng API](../docs/api-contract.md), [API acceptance](../docs/api-acceptance.md) và [hướng dẫn demo/test/thuyết trình](../docs/huong-dan-demo-opencv.md). Bằng chứng QR/backend v1.2 là lịch sử; ZIP cũ không chứa OpenCV. SQLite dùng demo nhỏ.
+Đọc [thiết kế v1.5](../docs/thiet-ke-he-thong-diem-danh.md), [hợp đồng API](../docs/api-contract.md), [API acceptance](../docs/api-acceptance.md) và [hướng dẫn demo/test/thuyết trình](../docs/huong-dan-demo-opencv.md). Bằng chứng QR/backend v1.2 là lịch sử; ZIP cũ không chứa OpenCV. SQLite dùng demo nhỏ.
 
 Kiểm chứng trước SFace (lịch sử): [149test + migrate/CSRF/export và review](../docs/project-management/evidence/opencv-backend.md). Chạy lại từ root bằng `backend/.venv/Scripts/python.exe .document-tools/verify_opencv.py`; script dùng DB tạm và xuất mẫu, không đổi DB hiện tại.
 
@@ -73,7 +73,7 @@ TIME_ZONE là Asia/Ho_Chi_Minh và USE_TZ=True. Khi DEBUG=false cookie Secure c�
 - mem1 làm accounts/academics/students/reports; mem2 làm schedules/attendance/vision và QR lịch sử. Core/config/contracts và migrations phối hợp theo kế hoạch 18/10/2026. Migration attendance/0003 chỉ thêm source VISION; vision/0001 thêm mẫu mặt và đề xuất quét; không xóa schema cũ.
 - Test nền và nghiệp vụ có assertion thực; permission cases nằm ở test_academics/test_students/test_qr/test_reports/test_http_contract. Hai file permission skeleton rỗng đã bỏ để tránh hiểu nhầm; không tính file tồn tại là test pass.
 
-## Giới hạn demo
+## Giới hạn luồng proposal/confirm legacy (v1.4)
 
 OpenCV chạy cục bộ bằng YuNet2023mar + SFace2021dec FP32; đăng ký3–10ảnh mặt màu khác nhau/học sinh, thay nguyên tử cả bộ. Crop BGR căn chỉnh112x112 PNG và embedding chuẩn hóa128float32 little-endian (512byte) lưu DB private với model_key=sface-2021dec-fp32. GET trả sample_count/usable_sample_count/requires_reenrollment/model_key, không bytes; DELETE xóa mẫu và vô hiệu proposal chờ. Mẫu LBPH cũ giữ lịch sử, không tự chuyển đổi, cần đăng ký lại ít nhất3ảnh. Không dùng ảnh hồ sơ thay cho đăng ký mẫu. Khung camera không được lưu; đề xuất hết hạn sau120s. Quét trả CANDIDATE/UNKNOWN/ALREADY_MARKED, UNKNOWN reason=REENROLLMENT_REQUIRED khi roster chỉ có mẫu legacy; luôn cần nhân sự xác nhận danh tính. Đồng phục là gợi ý màu vùng thân áo, UNKNOWN giữ NOT_CHECKED, không tự kết luận vi phạm. Không có nhận diện sống/chống ảnh chụp giả. Kiểm thử ảnh tổng hợp không chứng minh độ chính xác trên người thật.
 
