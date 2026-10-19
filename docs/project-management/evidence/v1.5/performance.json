@@ -1,0 +1,298 @@
+{
+  "measured_at_utc": "2026-10-19T06:16:38.274531+00:00",
+  "environment": {
+    "os": "Windows-10-10.0.19043-SP0",
+    "python": "3.12.2",
+    "processor": "Intel64 Family 6 Model 151 Stepping 2, GenuineIntel",
+    "logical_cpu_count": 12
+  },
+  "method": {
+    "execution": "fresh isolated Windows child process; local Django test Client, no network",
+    "authentication": "force_login SUPERVISOR; test Client CSRF enforcement disabled",
+    "database": "temporary SQLite, real migrations; 1 class, 1 student, 1 OPEN session today",
+    "vision": "real pinned YuNet/SFace OpenCV CPU, default production thresholds; no inference mocks",
+    "cold_definition": "first routed request after Django setup, migrations and login; not OS cold boot or Vercel cold start",
+    "memory": "GetProcessMemoryInfo WorkingSetSize and lifetime PeakWorkingSetSize; snapshots, not per-operation allocation",
+    "timing": "perf_counter wall time and process_time CPU; one process, sequential requests",
+    "privacy": "no images, embeddings, IDs, cookies, credentials or database retained in evidence"
+  },
+  "measurements": [
+    {
+      "label": "migrate_temporary_database",
+      "wall_ms": 785.862,
+      "process_cpu_ms": 453.125,
+      "memory_before": {
+        "working_set_bytes": 49659904,
+        "process_peak_working_set_bytes": 50376704
+      },
+      "memory_after": {
+        "working_set_bytes": 62648320,
+        "process_peak_working_set_bytes": 65351680
+      }
+    },
+    {
+      "label": "classes_first_routed_request",
+      "wall_ms": 36.778,
+      "process_cpu_ms": 46.875,
+      "memory_before": {
+        "working_set_bytes": 62795776,
+        "process_peak_working_set_bytes": 65351680
+      },
+      "memory_after": {
+        "working_set_bytes": 63569920,
+        "process_peak_working_set_bytes": 65351680
+      },
+      "http_status": 200
+    },
+    {
+      "label": "classes_warm_1",
+      "wall_ms": 2.081,
+      "process_cpu_ms": 0.0,
+      "memory_before": {
+        "working_set_bytes": 63569920,
+        "process_peak_working_set_bytes": 65351680
+      },
+      "memory_after": {
+        "working_set_bytes": 63582208,
+        "process_peak_working_set_bytes": 65351680
+      },
+      "http_status": 200
+    },
+    {
+      "label": "classes_warm_2",
+      "wall_ms": 1.91,
+      "process_cpu_ms": 0.0,
+      "memory_before": {
+        "working_set_bytes": 63582208,
+        "process_peak_working_set_bytes": 65351680
+      },
+      "memory_after": {
+        "working_set_bytes": 63582208,
+        "process_peak_working_set_bytes": 65351680
+      },
+      "http_status": 200
+    },
+    {
+      "label": "classes_warm_3",
+      "wall_ms": 1.984,
+      "process_cpu_ms": 0.0,
+      "memory_before": {
+        "working_set_bytes": 63582208,
+        "process_peak_working_set_bytes": 65351680
+      },
+      "memory_after": {
+        "working_set_bytes": 63582208,
+        "process_peak_working_set_bytes": 65351680
+      },
+      "http_status": 200
+    },
+    {
+      "label": "open_session",
+      "wall_ms": 75.401,
+      "process_cpu_ms": 78.125,
+      "memory_before": {
+        "working_set_bytes": 63582208,
+        "process_peak_working_set_bytes": 65351680
+      },
+      "memory_after": {
+        "working_set_bytes": 76206080,
+        "process_peak_working_set_bytes": 76210176
+      },
+      "http_status": 200
+    },
+    {
+      "label": "first_enrollment_including_model_initialization_and_3_embeddings",
+      "wall_ms": 377.043,
+      "process_cpu_ms": 359.375,
+      "memory_before": {
+        "working_set_bytes": 76222464,
+        "process_peak_working_set_bytes": 76226560
+      },
+      "memory_after": {
+        "working_set_bytes": 188063744,
+        "process_peak_working_set_bytes": 193384448
+      },
+      "http_status": 201,
+      "sample_count": 3,
+      "usable_sample_count": 3
+    },
+    {
+      "label": "heldout_pair_first_unique_key_real_inference",
+      "wall_ms": 118.825,
+      "process_cpu_ms": 109.375,
+      "memory_before": {
+        "working_set_bytes": 188067840,
+        "process_peak_working_set_bytes": 193384448
+      },
+      "memory_after": {
+        "working_set_bytes": 178876416,
+        "process_peak_working_set_bytes": 197271552
+      },
+      "http_status": 201,
+      "outcome": "RECORDED",
+      "reason": null,
+      "uniform": {
+        "observed_uniform": "UNKNOWN",
+        "uniform_status": "NOT_CHECKED",
+        "confidence": null,
+        "reason": "NO_APPROVED_MODEL",
+        "profile_version": null
+      }
+    },
+    {
+      "label": "heldout_pair_warm_unique_key_1_real_inference",
+      "wall_ms": 107.414,
+      "process_cpu_ms": 93.75,
+      "memory_before": {
+        "working_set_bytes": 178876416,
+        "process_peak_working_set_bytes": 197271552
+      },
+      "memory_after": {
+        "working_set_bytes": 182333440,
+        "process_peak_working_set_bytes": 199299072
+      },
+      "http_status": 200,
+      "outcome": "ALREADY_RECORDED",
+      "reason": null,
+      "uniform": {
+        "observed_uniform": "UNKNOWN",
+        "uniform_status": "NOT_CHECKED",
+        "confidence": null,
+        "reason": "NO_APPROVED_MODEL",
+        "profile_version": null
+      }
+    },
+    {
+      "label": "heldout_pair_warm_unique_key_2_real_inference",
+      "wall_ms": 106.894,
+      "process_cpu_ms": 109.375,
+      "memory_before": {
+        "working_set_bytes": 182333440,
+        "process_peak_working_set_bytes": 199299072
+      },
+      "memory_after": {
+        "working_set_bytes": 181170176,
+        "process_peak_working_set_bytes": 199299072
+      },
+      "http_status": 200,
+      "outcome": "ALREADY_RECORDED",
+      "reason": null,
+      "uniform": {
+        "observed_uniform": "UNKNOWN",
+        "uniform_status": "NOT_CHECKED",
+        "confidence": null,
+        "reason": "NO_APPROVED_MODEL",
+        "profile_version": null
+      }
+    },
+    {
+      "label": "heldout_pair_warm_unique_key_3_real_inference",
+      "wall_ms": 109.07,
+      "process_cpu_ms": 93.75,
+      "memory_before": {
+        "working_set_bytes": 181170176,
+        "process_peak_working_set_bytes": 199299072
+      },
+      "memory_after": {
+        "working_set_bytes": 181817344,
+        "process_peak_working_set_bytes": 199299072
+      },
+      "http_status": 200,
+      "outcome": "ALREADY_RECORDED",
+      "reason": null,
+      "uniform": {
+        "observed_uniform": "UNKNOWN",
+        "uniform_status": "NOT_CHECKED",
+        "confidence": null,
+        "reason": "NO_APPROVED_MODEL",
+        "profile_version": null
+      }
+    },
+    {
+      "label": "heldout_same_key_replay_no_inference",
+      "wall_ms": 4.869,
+      "process_cpu_ms": 0.0,
+      "memory_before": {
+        "working_set_bytes": 181821440,
+        "process_peak_working_set_bytes": 199299072
+      },
+      "memory_after": {
+        "working_set_bytes": 181837824,
+        "process_peak_working_set_bytes": 199299072
+      },
+      "http_status": 201,
+      "outcome": "RECORDED",
+      "reason": null,
+      "uniform": {
+        "observed_uniform": "UNKNOWN",
+        "uniform_status": "NOT_CHECKED",
+        "confidence": null,
+        "reason": "NO_APPROVED_MODEL",
+        "profile_version": null
+      }
+    }
+  ],
+  "fixtures": {
+    "enrollment_relative_paths": [
+      "01-enroll/01-obama-2012.jpg",
+      "01-enroll/02-obama-speech.jpg",
+      "01-enroll/03-obama-2009.jpg"
+    ],
+    "heldout_relative_paths": [
+      "demo/1753240560-trump-67651-width698height558.jpg",
+      "demo/1f64783ac2712b2f7260.jpg"
+    ],
+    "enrollment_bytes": 650925,
+    "heldout_bytes": [
+      52172,
+      15176
+    ]
+  },
+  "recorded_scans": [
+    {
+      "status": "AUTO_RECORDED",
+      "cosine_score": 0.659822,
+      "distance": 0.340178,
+      "model_key": "sface-2021dec-fp32"
+    }
+  ],
+  "runtime": {
+    "opencv_version": "4.13.0",
+    "opencv_threads": 1,
+    "torch_imported": false,
+    "final_memory": {
+      "working_set_bytes": 181841920,
+      "process_peak_working_set_bytes": 199299072
+    }
+  },
+  "limitations": [
+    "Local single-process synthetic minimal roster; no concurrency/load/browser/network benchmark.",
+    "No Vercel deployment, native Linux runtime, deployed bundle size or Vercel cold-start measured.",
+    "No approved trained uniform model available: NOT_CHECKED; trained-model benchmark pending.",
+    "Cosine scores are similarities, not probability or liveness/accuracy guarantees.",
+    "Three warm unique-key calls run full inference even when outcome ALREADY_RECORDED; replay is separate."
+  ],
+  "child_process_total_wall_ms": 2185.945,
+  "artifact_sizes": {
+    "runtime_source_extensions": [
+      ".py",
+      ".html",
+      ".js",
+      ".css"
+    ],
+    "source_roots": [
+      "backend/config",
+      "backend/school_app",
+      "backend/manage.py"
+    ],
+    "source_scope": "Current production source, including new unstaged files; excludes tests, venv, generated outputs, private data and weights.",
+    "runtime_source_files": 120,
+    "runtime_source_bytes": 351416,
+    "pinned_models": {
+      "face_detection_yunet_2023mar.onnx": 232589,
+      "face_recognition_sface_2021dec.onnx": 38696353
+    },
+    "linux_dependency_prior_estimate_mib": 267.45,
+    "estimate_caveat": "Prior Linux wheel dependency estimate only; not measured by this run, not deployed bundle or runtime RAM."
+  }
+}

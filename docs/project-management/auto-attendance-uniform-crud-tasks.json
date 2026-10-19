@@ -1,6 +1,6 @@
 {
-  "version": "v1.5-proposed",
-  "status": "PLAN_ONLY",
+  "version": "v1.5",
+  "status": "IMPLEMENTED_WITH_DATA_DEPENDENCIES",
   "API_Gate": "NOT_APPROVED",
   "tasks": [
     {
@@ -10,8 +10,10 @@
       "depends_on": [],
       "title": "Chốt contracts v1.5 và quyền",
       "acceptance": "State tự động, uniform review, CRUD, snapshot và lỗi được mô tả; PM gate độc lập",
-      "status": "PLANNED",
-      "Finish": false
+      "status": "IMPLEMENTED_VERIFIED_REVIEWED",
+      "Finish": true,
+      "note": "Implementation, relevant validation and independent technical review complete. PM acceptance remains separate.",
+      "evidence": "evidence/v1.5/README.md"
     },
     {
       "id": "P02",
@@ -22,8 +24,10 @@
       ],
       "title": "Schema và migration liên app",
       "acceptance": "Capacity/active/version, auto attribution, review/model/profile version; migrate dữ liệu cũ không đổi nghĩa CONFIRMED",
-      "status": "PLANNED",
-      "Finish": false
+      "status": "IMPLEMENTED_VERIFIED_REVIEWED",
+      "Finish": true,
+      "note": "Implementation, relevant validation and independent technical review complete. PM acceptance remains separate.",
+      "evidence": "evidence/v1.5/README.md"
     },
     {
       "id": "C01",
@@ -34,8 +38,10 @@
       ],
       "title": "Mở rộng API lớp",
       "acceptance": "Chi tiết, sửa, sức chứa, sĩ số tự tính; unique, version và role scope đúng",
-      "status": "PLANNED",
-      "Finish": false
+      "status": "IMPLEMENTED_VERIFIED_REVIEWED",
+      "Finish": true,
+      "note": "Implementation, relevant validation and independent technical review complete. PM acceptance remains separate.",
+      "evidence": "evidence/v1.5/README.md"
     },
     {
       "id": "C02",
@@ -46,8 +52,10 @@
       ],
       "title": "Mở rộng API học sinh",
       "acceptance": "Thêm/sửa mã/tên, trạng thái; kiểm tra lớp active/capacity; GVCN không tự chuyển lớp",
-      "status": "PLANNED",
-      "Finish": false
+      "status": "IMPLEMENTED_VERIFIED_REVIEWED",
+      "Finish": true,
+      "note": "Implementation, relevant validation and independent technical review complete. PM acceptance remains separate.",
+      "evidence": "evidence/v1.5/README.md"
     },
     {
       "id": "C03",
@@ -58,8 +66,10 @@
       ],
       "title": "Archive/restore và chuyển lớp",
       "acceptance": "Không hard-delete lịch sử; chặn archive lớp còn active/OPEN; chuyển nguồn/đích atomic, đúng quyền",
-      "status": "PLANNED",
-      "Finish": false
+      "status": "IMPLEMENTED_VERIFIED_REVIEWED",
+      "Finish": true,
+      "note": "Implementation, relevant validation and independent technical review complete. PM acceptance remains separate.",
+      "evidence": "evidence/v1.5/README.md"
     },
     {
       "id": "C04",
@@ -70,8 +80,10 @@
       ],
       "title": "UI quản lý lớp",
       "acceptance": "Tìm kiếm, tạo/sửa/lưu trữ/khôi phục, hiển thị sĩ số/sức chứa; xử lý conflict rõ",
-      "status": "PLANNED",
-      "Finish": false
+      "status": "IMPLEMENTED_VERIFIED_REVIEWED",
+      "Finish": true,
+      "note": "Implementation, relevant validation and independent technical review complete. PM acceptance remains separate.",
+      "evidence": "evidence/v1.5/README.md"
     },
     {
       "id": "C05",
@@ -82,8 +94,10 @@
       ],
       "title": "UI quản lý học sinh",
       "acceptance": "CRUD, chuyển lớp, trạng thái và enrollment hiện có dùng được; không nhập sĩ số giả",
-      "status": "PLANNED",
-      "Finish": false
+      "status": "IMPLEMENTED_VERIFIED_REVIEWED",
+      "Finish": true,
+      "note": "Implementation, relevant validation and independent technical review complete. PM acceptance remains separate.",
+      "evidence": "evidence/v1.5/README.md"
     },
     {
       "id": "C06",
@@ -95,8 +109,10 @@
       ],
       "title": "Bổ sung roster buổi OPEN có kiểm soát",
       "acceptance": "Supervisor thêm đúng lớp/active; version/audit; không rebuild hay sửa attendance cũ",
-      "status": "PLANNED",
-      "Finish": false
+      "status": "IMPLEMENTED_VERIFIED_REVIEWED",
+      "Finish": true,
+      "note": "Implementation, relevant validation and independent technical review complete. PM acceptance remains separate.",
+      "evidence": "evidence/v1.5/README.md"
     },
     {
       "id": "D01",
@@ -107,8 +123,10 @@
       ],
       "title": "Quy chuẩn và chuẩn bị dataset trường",
       "acceptance": "Nhãn, quyền sử dụng, crop áo, manifest/split theo người/buổi; báo số ảnh còn thiếu",
-      "status": "PLANNED",
-      "Finish": false
+      "status": "NEEDS_SCHOOL_DATA",
+      "Finish": false,
+      "note": "School garment dataset and hard negatives not supplied.",
+      "evidence": "evidence/v1.5/README.md"
     },
     {
       "id": "D02",
@@ -119,8 +137,10 @@
       ],
       "title": "Chọn baseline/model và license",
       "acceptance": "So baseline với MobileNetV3-Small hoặc ứng viên nhẹ; kiểm tra quyền code/weights/dataset và khả năng ONNX OpenCV",
-      "status": "PLANNED",
-      "Finish": false
+      "status": "TOOLING_READY_NEEDS_DATA",
+      "Finish": false,
+      "note": "Candidate/tooling ready; real school-data benchmark still needed.",
+      "evidence": "evidence/v1.5/README.md"
     },
     {
       "id": "D03",
@@ -131,8 +151,10 @@
       ],
       "title": "Train offline, đánh giá, export ONNX",
       "acceptance": "Script tái lập, seed/config, test độc lập, confusion matrix, precision/recall/coverage, latency/bytes và hash model",
-      "status": "PLANNED",
-      "Finish": false
+      "status": "TOOLING_READY_NEEDS_DATA",
+      "Finish": false,
+      "note": "Offline scripts ready; no trained school artifact or evaluation.",
+      "evidence": "evidence/v1.5/README.md"
     },
     {
       "id": "D04",
@@ -144,8 +166,10 @@
       ],
       "title": "API/UI ảnh mẫu đồng phục riêng",
       "acceptance": "Supervisor quản lý/export riêng tư, scope ảnh; crop loại mặt; không public dataset hoặc train trong request",
-      "status": "PLANNED",
-      "Finish": false
+      "status": "IMPLEMENTED_VERIFIED_REVIEWED",
+      "Finish": true,
+      "note": "Implementation, relevant validation and independent technical review complete. PM acceptance remains separate.",
+      "evidence": "evidence/v1.5/README.md"
     },
     {
       "id": "U01",
@@ -156,8 +180,10 @@
       ],
       "title": "Profile/quy tắc đồng phục và model version",
       "acceptance": "Theo loại buổi/lớp; snapshot lúc OPEN; kích hoạt version mới không viết lại lịch sử",
-      "status": "PLANNED",
-      "Finish": false
+      "status": "IMPLEMENTED_VERIFIED_REVIEWED",
+      "Finish": true,
+      "note": "Implementation, relevant validation and independent technical review complete. PM acceptance remains separate.",
+      "evidence": "evidence/v1.5/README.md"
     },
     {
       "id": "U02",
@@ -169,8 +195,10 @@
       ],
       "title": "Runtime ROI áo và ONNX",
       "acceptance": "Áo gắn đúng người; thiếu logo/thân áo hoặc bất định thành UNKNOWN; cache model/hash, không tải mạng trong request",
-      "status": "PLANNED",
-      "Finish": false
+      "status": "IMPLEMENTED_NEEDS_TRAINED_MODEL",
+      "Finish": false,
+      "note": "ROI/ONNX runtime tested; approved school artifact not available.",
+      "evidence": "evidence/v1.5/README.md"
     },
     {
       "id": "A01",
@@ -182,8 +210,10 @@
       ],
       "title": "Service/API tự điểm danh",
       "acceptance": "Hai frame khớp cùng roster pupil; server quyết định; idempotency và recheck trước atomic write; không cần model áo",
-      "status": "PLANNED",
-      "Finish": false
+      "status": "IMPLEMENTED_VERIFIED_REVIEWED",
+      "Finish": true,
+      "note": "Implementation, relevant validation and independent technical review complete. PM acceptance remains separate.",
+      "evidence": "evidence/v1.5/README.md"
     },
     {
       "id": "A02",
@@ -194,8 +224,10 @@
       ],
       "title": "Camera tự chụp cặp ảnh",
       "acceptance": "Một request/4 giây, không chồng; giới hạn ảnh, CSRF, backoff; dừng khi đổi trang/tab/logout",
-      "status": "PLANNED",
-      "Finish": false
+      "status": "IMPLEMENTED_VERIFIED_REVIEWED",
+      "Finish": true,
+      "note": "Implementation, relevant validation and independent technical review complete. PM acceptance remains separate.",
+      "evidence": "evidence/v1.5/README.md"
     },
     {
       "id": "A03",
@@ -206,8 +238,10 @@
       ],
       "title": "Feedback quét và chống lặp UI",
       "acceptance": "Hiện tên/kết quả/hướng dẫn; một camera; không spam toast, không ghi lại giờ đến đầu",
-      "status": "PLANNED",
-      "Finish": false
+      "status": "IMPLEMENTED_VERIFIED_REVIEWED",
+      "Finish": true,
+      "note": "Implementation, relevant validation and independent technical review complete. PM acceptance remains separate.",
+      "evidence": "evidence/v1.5/README.md"
     },
     {
       "id": "A04",
@@ -218,8 +252,10 @@
       ],
       "title": "Attribution và lịch sử auto/manual",
       "acceptance": "AUTO_RECORDED tách CONFIRMED; không giả verified_by; không đè chỉnh sửa MANUAL/ABSENT/CLOSED",
-      "status": "PLANNED",
-      "Finish": false
+      "status": "IMPLEMENTED_VERIFIED_REVIEWED",
+      "Finish": true,
+      "note": "Implementation, relevant validation and independent technical review complete. PM acceptance remains separate.",
+      "evidence": "evidence/v1.5/README.md"
     },
     {
       "id": "U03",
@@ -231,8 +267,10 @@
       ],
       "title": "Ghép đồng phục vào API scan",
       "acceptance": "AUTO_ATTENDANCE và UNIFORM_ONLY; UNIFORM_ONLY không tự tạo PRESENT; thiếu model giữ NOT_CHECKED",
-      "status": "PLANNED",
-      "Finish": false
+      "status": "IMPLEMENTED_VERIFIED_REVIEWED",
+      "Finish": true,
+      "note": "Implementation, relevant validation and independent technical review complete. PM acceptance remains separate.",
+      "evidence": "evidence/v1.5/README.md"
     },
     {
       "id": "U04",
@@ -245,8 +283,10 @@
       ],
       "title": "Không gian Đồng phục có camera",
       "acceptance": "Camera/framing, mẫu trường, profile và kết quả; chia sẻ controller với điểm danh",
-      "status": "PLANNED",
-      "Finish": false
+      "status": "IMPLEMENTED_VERIFIED_REVIEWED",
+      "Finish": true,
+      "note": "Implementation, relevant validation and independent technical review complete. PM acceptance remains separate.",
+      "evidence": "evidence/v1.5/README.md"
     },
     {
       "id": "R01",
@@ -258,8 +298,10 @@
       ],
       "title": "UI/API xử lý ngoại lệ đồng phục",
       "acceptance": "REVIEW_REQUIRED, giáo viên ghi lý do để NON_COMPLIANT hoặc sửa cảnh báo sai; không confirm danh tính lần nữa",
-      "status": "PLANNED",
-      "Finish": false
+      "status": "IMPLEMENTED_VERIFIED_REVIEWED",
+      "Finish": true,
+      "note": "Implementation, relevant validation and independent technical review complete. PM acceptance remains separate.",
+      "evidence": "evidence/v1.5/README.md"
     },
     {
       "id": "R02",
@@ -271,8 +313,10 @@
       ],
       "title": "Báo cáo và export tương thích",
       "acceptance": "Tách đúng/nghi sai/chưa kiểm tra/vi phạm đã ghi lý do; giữ snapshot lịch sử và scope",
-      "status": "PLANNED",
-      "Finish": false
+      "status": "IMPLEMENTED_VERIFIED_REVIEWED",
+      "Finish": true,
+      "note": "Implementation, relevant validation and independent technical review complete. PM acceptance remains separate.",
+      "evidence": "evidence/v1.5/README.md"
     },
     {
       "id": "Q01",
@@ -287,8 +331,10 @@
       ],
       "title": "Regression bảo mật/nghiệp vụ",
       "acceptance": "Role/CSRF/private ảnh, conflict, retry/concurrency, rollback, inactive/transfer giữa inference và write",
-      "status": "PLANNED",
-      "Finish": false
+      "status": "IMPLEMENTED_VERIFIED_REVIEWED",
+      "Finish": true,
+      "note": "Implementation, relevant validation and independent technical review complete. PM acceptance remains separate.",
+      "evidence": "evidence/v1.5/README.md"
     },
     {
       "id": "Q02",
@@ -302,8 +348,10 @@
       ],
       "title": "Kiểm chứng ảnh và camera thực",
       "acceptance": "Test ngoài enrollment, người lạ/nhiều mặt, logo tương tự/che; calibration threshold, precision và coverage công khai",
-      "status": "PLANNED",
-      "Finish": false
+      "status": "PARTIAL_NEEDS_DATA_AND_DEVICE",
+      "Finish": false,
+      "note": "Real face photos pass; full calibration, school uniform test and physical camera pending.",
+      "evidence": "evidence/v1.5/README.md"
     },
     {
       "id": "Q03",
@@ -315,8 +363,10 @@
       ],
       "title": "Kiểm tra Vercel demo/API",
       "acceptance": "Build và cold/warm CPU/RAM/bundle đo được; không thêm Torch runtime; không hứa SQLite chia sẻ; không deploy",
-      "status": "PLANNED",
-      "Finish": false
+      "status": "IMPLEMENTED_VERIFIED_REVIEWED",
+      "Finish": true,
+      "note": "Implementation, relevant validation and independent technical review complete. PM acceptance remains separate.",
+      "evidence": "evidence/v1.5/README.md"
     },
     {
       "id": "Q04",
@@ -327,8 +377,17 @@
       ],
       "title": "Review, tài liệu và kịch bản thuyết trình",
       "acceptance": "Review độc lập, đóng lỗi quan trọng, ghi evidence và giới hạn; chỉ cập nhật Finish khi đủ kiểm chứng/phê duyệt",
-      "status": "PLANNED",
-      "Finish": false
+      "status": "IMPLEMENTED_VERIFIED_REVIEWED",
+      "Finish": true,
+      "note": "Implementation, relevant validation and independent technical review complete. PM acceptance remains separate.",
+      "evidence": "evidence/v1.5/README.md"
     }
-  ]
+  ],
+  "updated_at": "2026-10-19",
+  "technical_finish_only": true,
+  "summary": {
+    "tasks": 26,
+    "technical_finish": 21,
+    "needs_data_or_device": 5
+  }
 }

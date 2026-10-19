@@ -21,7 +21,7 @@ def canonical_rows(classes, filters, *, limit=None):
                                  'student_code_snapshot', 'id').prefetch_related(Prefetch('scans',
         queryset=QrScan.objects.filter(status='CONFIRMED').order_by('-resolved_at', '-scanned_at'),
         to_attr='confirmed_scans'), Prefetch('vision_scans',
-        queryset=VisionScan.objects.filter(status='CONFIRMED').order_by('-resolved_at','-scanned_at'),
+        queryset=VisionScan.objects.filter(status__in=['CONFIRMED','AUTO_RECORDED']).order_by('-resolved_at','-scanned_at'),
         to_attr='confirmed_vision_scans'))
     if limit is not None:
         queryset = queryset[:limit]
@@ -45,6 +45,8 @@ def canonical_rows(classes, filters, *, limit=None):
             ('class_id', session.classroom_id), ('attendance_id', attendance.id))})
         row.update(school_date=session.school_date.isoformat(), slot=session.slot, session_status=session.status,
             status=attendance.status, arrival_status=arrival, source=attendance.source,
+            recognition_mode=attendance.recognition_mode, uniform_source=attendance.uniform_source,
+            recorded_by_id=str(attendance.recorded_by_id) if attendance.recorded_by_id else None,
             scanned_at=iso(scanned_at), arrived_at=iso(attendance.arrived_at), verified_at=iso(attendance.verified_at),
             required_uniform_snapshot=session.required_uniform_snapshot, observed_uniform=attendance.observed_uniform,
             uniform_status=attendance.uniform_status, absence_reason=attendance.absence_reason,

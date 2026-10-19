@@ -10,6 +10,7 @@ class Student(models.Model):
     classroom = models.ForeignKey("academics.Classroom", on_delete=models.PROTECT, related_name="students")
     photo_path = models.CharField(max_length=200, null=True, blank=True)
     active = models.BooleanField(default=True)
+    version = models.PositiveIntegerField(default=0)
 
     class Meta:
         ordering = ["student_code", "id"]

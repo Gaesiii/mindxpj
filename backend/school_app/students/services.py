@@ -1,6 +1,9 @@
 """Profile and photo writes enforce current classroom scope at the service boundary."""
 from django.db import IntegrityError, transaction
-from django.db.models import Q
+from django.db.models import Q, F
+from django.utils import timezone
+from school_app.core.idempotency import check_version, record_change
+from school_app.academics.models import Classroom
 
 from school_app.accounts.services import AccountError
 from school_app.academics.services import scoped_classes, assert_class_filter, require_class
@@ -37,7 +40,7 @@ def serialize_student(student, minimal=False):
               "full_name": student.full_name, "class_id": str(student.classroom_id),
               "grade_id": str(student.classroom.grade_id)}
     if not minimal:
-        result.update(active=student.active, has_photo=bool(student.photo_path))
+        result.update(active=student.active, has_photo=bool(student.photo_path), version=student.version)
     return result
 
 
@@ -62,31 +65,81 @@ def list_students(user, query):
     return rows
 
 
+def _lock_class(class_id):
+    Classroom.objects.filter(pk=class_id).update(version=F("version"))
+
+
+def _check_destination(classroom, active, exclude=None):
+    if not classroom.active:
+        raise AccountError("INVALID_STATE", "Classroom is archived.", 409)
+    if active and classroom.students.filter(active=True).exclude(pk=exclude).count() >= classroom.capacity:
+        raise AccountError("CAPACITY_CONFLICT", "Classroom capacity has been reached.", 409)
+
+
+def _invalidate_scans(student, user):
+    from school_app.vision.models import VisionScan
+    VisionScan.objects.filter(roster__student=student,status="PENDING").update(
+        status="SUPERSEDED",resolved_at=timezone.now(),resolved_by=user,
+        reason="Student profile changed",version=F("version")+1)
+
+
 def create_student(user, payload):
-    scoped_classes(user)  # Reject unauthorized actors before form/object reads.
-    values = form_data(StudentCreateForm(payload))
-    classroom = assert_class_filter(user, values.pop("class_id"))
+    scoped_classes(user)
+    values = form_data(StudentCreateForm({"active":True,**payload}))
+    class_id = values.pop("class_id")
+    assert_class_filter(user,class_id)
     try:
         with transaction.atomic():
-            return Student.objects.create(classroom=classroom, **values)
+            _lock_class(class_id)
+            classroom = assert_class_filter(user,class_id)
+            _check_destination(classroom,values["active"])
+            student = Student.objects.create(classroom=classroom,**values)
+            record_change(user,student,"CREATE",{},serialize_student(student))
+            return student
     except IntegrityError:
         raise AccountError("DUPLICATE", "Student code already exists.", 409) from None
 
 
 def update_student(user, student_id, payload):
     student = require_student_profile(user, student_id)
-    if "class_id" in payload and user.role != Role.SUPERVISOR:
-        raise AccountError("FORBIDDEN", "Only supervisors can transfer a student.", 403)
-    merged = {"full_name": student.full_name, "active": student.active,
-              "class_id": str(student.classroom_id), **payload}
-    values = form_data(StudentUpdateForm(merged))
-    classroom = require_class(user, values.pop("class_id"))
-    student.classroom = classroom
-    for key, value in values.items():
-        setattr(student, key, value)
-    with transaction.atomic():
-        student.save(update_fields=["full_name", "active", "classroom"])
-    return student
+    if {"class_id","student_code"} & set(payload) and user.role != Role.SUPERVISOR:
+        raise AccountError("FORBIDDEN", "Only supervisors can change student code or classroom.", 403)
+    payload = dict(payload)
+    expected = payload.pop("expected_version",None)
+    try:
+        with transaction.atomic():
+            Student.objects.filter(pk=student_id).update(version=F("version"))
+            student = require_student_profile(user,student_id)
+            check_version(student,expected)
+            before = serialize_student(student)
+            values = form_data(StudentUpdateForm({"student_code":student.student_code,
+                "full_name":student.full_name,"active":student.active,
+                "class_id":str(student.classroom_id),**payload}))
+            class_id = values.pop("class_id")
+            _lock_class(class_id)
+            classroom = require_class(user,class_id)
+            # Deactivation stays available for cleanup; other writes require an active class.
+            if values["active"] or class_id != student.classroom_id or payload.get("active") is not False:
+                _check_destination(classroom,values["active"],student.pk)
+            invalidate = class_id != student.classroom_id or (student.active and not values["active"])
+            changed = Student.objects.filter(pk=student_id,version=expected).update(
+                **values,classroom=classroom,version=F("version")+1)
+            if not changed:
+                raise AccountError("VERSION_CONFLICT", "Record changed; reload it.", 409)
+            student.refresh_from_db()
+            if invalidate:
+                _invalidate_scans(student,user)
+            record_change(user,student,"UPDATE",before,serialize_student(student))
+            return student
+    except IntegrityError:
+        raise AccountError("DUPLICATE", "Student code already exists.", 409) from None
+
+
+def archive_student(user, student_id, payload):
+    require_student_profile(user,student_id)
+    if set(payload) != {"expected_version"}:
+        raise AccountError("VALIDATION_ERROR", "Only expected_version is accepted.", 422)
+    return update_student(user,student_id,{**payload,"active":False})
 
 
 def _remove_old_photo(path):
@@ -100,12 +153,19 @@ def _remove_old_photo(path):
 
 
 def replace_photo(user, student_id, upload):
-    require_student_profile(user, student_id)
+    student = require_student_profile(user, student_id)
+    if not student.classroom.active:
+        raise AccountError("INVALID_STATE", "Classroom is archived.", 409)
     normalized = normalize_photo(upload)
     new_path = None
     try:
         with transaction.atomic():
+            Student.objects.filter(pk=student_id).update(version=F("version"))
             student = require_student_profile(user, student_id)
+            _lock_class(student.classroom_id)
+            student = require_student_profile(user, student_id)
+            if not student.classroom.active:
+                raise AccountError("INVALID_STATE", "Classroom is archived.", 409)
             old_path = student.photo_path
             new_path = store_photo(student.id, normalized)
             student.photo_path = new_path

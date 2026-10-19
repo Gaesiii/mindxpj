@@ -1,0 +1,7 @@
+# Install in a separate offline training environment; never backend runtime.
+torch==2.6.0
+torchvision==0.21.0
+onnx==1.17.0
+numpy>=1.26,<3
+Pillow>=10.4,<12
+opencv-python-headless>=4.10,<5

@@ -58,10 +58,11 @@ class UniformStatus(models.TextChoices):
     COMPLIANT = "COMPLIANT", "Đạt"
     NON_COMPLIANT = "NON_COMPLIANT", "Không đạt"
     NOT_APPLICABLE = "NOT_APPLICABLE", "Không áp dụng"
+    REVIEW_REQUIRED = "REVIEW_REQUIRED", "Cần ghi lý do"
 
 
 class AttendanceSource(models.TextChoices):
-    VISION = "VISION", "OpenCV đã xác minh"
+    VISION = "VISION", "Nhận diện OpenCV"
     QR = "QR", "QR đã xác minh"
     MANUAL = "MANUAL", "Thủ công"
 

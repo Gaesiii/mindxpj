@@ -9,6 +9,7 @@ tests/
 *.sqlite3
 private_media/
 private_exports/
+private_uniform_models/
 .vercel-demo/
 vision_models/
 README.md

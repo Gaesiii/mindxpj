@@ -8,7 +8,7 @@ from school_app.core.enums import Role
 
 def summarize(rows):
     counts = dict.fromkeys(('expected', 'present', 'absent', 'unmarked', 'on_time', 'late',
-                            'compliant', 'non_compliant', 'not_checked'), 0)
+                            'compliant', 'non_compliant', 'not_checked', 'review_required'), 0)
     for row in rows:
         counts['expected'] += 1
         counts[row['status'].lower()] += 1

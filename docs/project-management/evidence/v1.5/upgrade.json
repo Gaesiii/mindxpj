@@ -1,0 +1,8 @@
+{
+  "upgrade": "v1.4 local demo DB snapshot to v1.5",
+  "source_database": "read-only backup; untouched",
+  "attendance_rows_preserved": 20,
+  "face_samples_preserved": 7,
+  "student_profiles_preserved": 20,
+  "validation": "PASS; all selected values and private biometric bytes unchanged"
+}

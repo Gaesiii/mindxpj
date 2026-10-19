@@ -123,7 +123,10 @@ class VisionMigrationTests(TransactionTestCase):
         latest = executor.loader.graph.leaf_nodes()
         executor.migrate([('vision', '0001_initial')])
         self.addCleanup(lambda: MigrationExecutor(connection).migrate(latest))
-        old_apps = executor.loader.project_state([('vision', '0001_initial')]).apps
+        # Other apps remain at their applied versions when only vision rolls back.
+        # Use the actual applied graph, not vision's smaller dependency closure.
+        executor = MigrationExecutor(connection)
+        old_apps = executor.loader.project_state(list(executor.loader.applied_migrations)).apps
         User = old_apps.get_model('accounts', 'User')
         Grade = old_apps.get_model('academics', 'Grade')
         Classroom = old_apps.get_model('academics', 'Classroom')

@@ -36,7 +36,7 @@ def invalidate_samples(student, user):
 
 def replace_samples(user, student_id, uploads):
     student = require_student_profile(user, student_id)
-    if not student.active:
+    if not student.active or not student.classroom.active:
         raise AccountError('INVALID_STATE','Only active students may enroll.',409)
     budget = settings.VISION_ENROLLMENT_TOTAL_BYTES
     if not 3 <= len(uploads) <= 10 or sum(file.size for file in uploads) > budget:
@@ -53,7 +53,7 @@ def replace_samples(user, student_id, uploads):
         from school_app.students.models import Student
         Student.objects.filter(pk=student_id).update(active=F('active'))
         student = require_student_profile(user,student_id)
-        if not student.active:
+        if not student.active or not student.classroom.active:
             raise AccountError('INVALID_STATE','Only active students may enroll.',409)
         before = metadata(user, student_id)
         FaceSample.objects.filter(student=student).delete()

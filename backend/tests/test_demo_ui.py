@@ -42,3 +42,41 @@ class DemoUiTests(TestCase):
         self.assertEqual(self.client.get('/api/v1/ui-missing').json()['code'],'NOT_FOUND')
         response=self.client.get('/')
         self.assertNotContains(response,settings.SECRET_KEY)
+
+class AutomaticCameraBehaviorTests(TestCase):
+    def test_pair_validation_and_serial_camera_loop(self):
+        import shutil
+        import subprocess
+        node = shutil.which('node')
+        if not node:
+            self.skipTest('Node required for camera behavior test')
+        script = Path(settings.BASE_DIR) / 'school_app/demo_ui/static/demo_ui/camera.js'
+        program = r"""
+const assert=require('node:assert/strict');
+const {validatePair,createLoop,retryDelay}=require(process.argv[1]);
+const good={size:500000,type:'image/jpeg'};
+assert.throws(()=>validatePair([good]),/2/);
+assert.throws(()=>validatePair([good,{...good,size:1048577}]),/1 MiB/);
+validatePair([good,good]);
+assert.equal(retryDelay('9',0),9000);
+assert.equal(retryDelay('',2),16000);
+(async()=>{
+ let active=0,max=0,calls=0,release;
+ const pending=new Promise(r=>release=r);
+ const loop=createLoop(async()=>{calls++;active++;max=Math.max(max,active);await pending;active--;},()=>true,5);
+ loop.start();
+ await new Promise(r=>setTimeout(r,25));
+ assert.equal(calls,1);assert.equal(max,1);
+ loop.stop();release();
+ await new Promise(r=>setTimeout(r,25));assert.equal(calls,1);
+ console.log('pair limits, retry delay, no overlap, stop: passed');
+})().catch(e=>{console.error(e);process.exitCode=1});
+"""
+        result = subprocess.run([node, '-e', program, str(script)], capture_output=True, text=True, timeout=10)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_shell_exposes_automatic_and_separate_management_spaces(self):
+        response = self.client.get('/')
+        for element in ('view-uniform', 'view-uniform-samples', 'view-classes', 'scan-workspace', 'student-editor-dialog', 'class-editor-dialog', 'roster-add-button'):
+            self.assertContains(response, 'id="' + element + '"')
+        self.assertContains(response, 'demo_ui/camera.js')

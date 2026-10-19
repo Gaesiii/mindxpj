@@ -78,12 +78,12 @@ class StudentApiTests(TestCase):
         self.assertEqual(self.write("post", "/api/v1/students", {**payload, "student_code": "HS04", "class_id": str(self.foreign.id)}).status_code, 403)
 
     def test_teacher_updates_profile_and_active_but_only_supervisor_can_transfer(self):
-        response = self.write("patch", self.student_url(), {"full_name": "New Name", "active": False})
+        response = self.write("patch", self.student_url(), {"full_name": "New Name", "active": False, "expected_version": 0})
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.json()["active"])
         self.assertEqual(self.write("patch", self.student_url(), {"class_id": str(self.foreign.id)}).status_code, 403)
         self.client.force_login(self.supervisor)
-        moved = self.write("patch", self.student_url(), {"class_id": str(self.foreign.id)})
+        moved = self.write("patch", self.student_url(), {"class_id": str(self.foreign.id), "expected_version": 1})
         self.assertEqual(moved.status_code, 200)
         self.assertEqual(moved.json()["class_id"], str(self.foreign.id))
         self.client.force_login(self.teacher)
@@ -108,8 +108,8 @@ class StudentApiTests(TestCase):
                         {**valid, "full_name": 1}, {**valid, "student_code": " "},
                         {**valid, "class_id": True}):
             self.assertEqual(self.write("post", "/api/v1/students", payload).status_code, 422)
-        for payload in ({"active": "false"}, {"active": None}, {"student_code": "changed"}, {"student_id": str(self.another.id)}):
-            self.assertEqual(self.write("patch", self.student_url(), payload).status_code, 422)
+        for payload in ({"active": "false"}, {"active": None}, {"student_id": str(self.another.id)}):
+            self.assertEqual(self.write("patch", self.student_url(), {**payload, "expected_version": 0}).status_code, 422)
         for query in ({"class_id": "bad"}, {"active": "maybe"}, {"student_id": str(self.another.id)}):
             self.assertEqual(self.client.get("/api/v1/students", query).status_code, 422)
 

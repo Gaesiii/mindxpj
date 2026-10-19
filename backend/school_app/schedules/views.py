@@ -69,11 +69,14 @@ def session_close(request, session_id):
     values=form_data(SessionVersionForm(read_json(request)))
     return json_response(services.close_session(user,session_id,values['expected_version']))
 
-@api_view('GET')
+@api_view('GET','POST')
 def roster(request, session_id):
     from school_app.attendance.services import serialize_attendance
     from school_app.qr.services import expire_pending
     session=services.require_session(require_authenticated(request),session_id)
+    if request.method == 'POST':
+        body,status=services.append_roster(request.user,session_id,read_json(request),request.headers.get('Idempotency-Key'))
+        return json_response(body,status)
     expire_pending(session_id=session.pk)
     rows=session.roster.select_related('attendance','session').order_by('student_code_snapshot')
     return json_response({'items':[{'id':str(row.pk),'student_id':str(row.student_id), **{name:getattr(row,name) for name in ['student_code_snapshot','full_name_snapshot','class_code_snapshot','class_name_snapshot','grade_code_snapshot','grade_name_snapshot']},'attendance':serialize_attendance(row.attendance)} for row in rows]})

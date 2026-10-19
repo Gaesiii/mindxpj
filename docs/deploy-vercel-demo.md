@@ -1,5 +1,9 @@
 # Demo trên Vercel
 
+**v1.5:** camera tự gửi hai ảnh, server tự điểm danh nếu nhận diện đủ điều kiện; không yêu cầu xác nhận từng học sinh. CRUD và không gian Đồng phục đã tích hợp. Giữ hai biến môi trường cũ. Thiếu model trường giữ NOT_CHECKED, không dùng HSV kết luận mẫu/logo. [Dataset/model offline](../tools/uniform_training/README.md).
+
+Auto scan tối đa1MiB mỗi ảnh/2MiB tổng, một cặp/4giây; không chồng request. UI thu nhỏ/nén trước gửi. Không thêm Torch runtime. Export dataset từ4MiB ảnh hoặc trên500mẫu trả422 trước tạo ZIP, xử lý bộ lớn trên local. Build/test local không phải native Vercel build/deployment.
+
 API đã được tối ưu để request thông thường không nạp OpenCV/NumPy/Excel trước khi cần; quét mặt chỉ đọc embedding, không kéo crop ảnh từ DB. Runtime đã khởi tạo bỏ qua copy-lock/tạo thư mục lặp lại, vẫn tự phục hồi khi mất DB tạm. [Kiểm chứng API/Vercel](project-management/evidence/vercel-api-performance/README.md). Đây là cấu hình bàn giao để bạn tự deploy; không có deployment được tạo tự động.
 
 Import repository `Gaesiii/mindxpj` vào Vercel, chọn **Root Directory: `backend`**, framework **Django**, giữ build command theo `pyproject.toml`. Python được khóa ở 3.12. Chưa thực hiện deploy trong lần bàn giao này.
@@ -17,7 +21,7 @@ Nếu hai biến đều `set` nhưng seed thất bại, bản mới kiểm tra m
 
 Có thể tạo secret bằng `python -c "import secrets; print(secrets.token_urlsafe(64))"`. Lưu trong cấu hình Vercel; không đưa giá trị thật vào repository. Không cần `DATABASE_URL`, dịch vụ DB hay chạy migrate thủ công.
 
-Sau khi deploy, mở `/`, đăng nhập `demo_supervisor` với mật khẩu đã đặt. Có thêm `demo_teacher_a` và `demo_teacher_b` để trình bày phân quyền theo lớp. Dữ liệu gồm hai lớp, 20 học sinh giả; buổi sáng và chiều của ngày hiện tại tự mở để demo. Đóng buổi sẽ giữ trạng thái đóng trên instance đó. Xem [kịch bản demo](huong-dan-demo-opencv.md) và [slide](thuyet-trinh-opencv.pptx). Đăng ký 3–10 ảnh mẫu khác nhau trước khi thử nhận diện; kết quả phải được nhân sự xác nhận. Camera cần HTTPS và quyền trình duyệt.
+Sau khi deploy, mở `/`, đăng nhập `demo_supervisor` bằng mật khẩu đã đặt. Có thêm `demo_teacher_a` và `demo_teacher_b` để trình bày phân quyền. Có hai lớp,20học sinh giả; buổi sáng/chiều hôm nay tự mở. Đóng buổi giữ trạng thái trên instance đó. Xem [demo](huong-dan-demo-opencv.md) và [slide](thuyet-trinh-opencv.pptx). Đăng ký 3–10 ảnh khác nhau; luồng auto ghi có mặt khi đủ điều kiện, giáo viên xử lý ngoại lệ. Camera cần HTTPS và quyền trình duyệt.
 
 Build chạy prepare_vision_models để tải/kiểm SHA-256 model YuNet+SFace FP32 đã pin trước khi bundle, rồi migration, tạo DB mẫu có hash mật khẩu và thu gom static. Lần truy cập đầu của mỗi instance chỉ copy DB mẫu vào vùng tạm có khóa khởi tạo; không migrate hay hash mật khẩu tại cold start. Static được phục vụ qua cơ chế Django/CDN của Vercel. `config.wsgi` được chọn rõ ràng, timeout 60 giây; OpenCV dùng bản headless, không cần GUI hệ thống. Cấu hình theo [Django trên Vercel](https://vercel.com/docs/frameworks/full-stack/django) và [Python runtime](https://vercel.com/docs/functions/runtimes/python).
 

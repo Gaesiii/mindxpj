@@ -1,6 +1,6 @@
 # Đề xuất v1.5: camera tự động, đồng phục và CRUD
 
-Trạng thái: **PLAN_ONLY — chờ duyệt chi tiết, chưa triển khai**. Yêu cầu mới18/10/2026 cho phép lên thiết kế bỏ xác nhận danh tính thủ công và thêm quản lý lớp/học sinh. Đây là thay đổi so với v1.4; không được coi API_Gate là đã duyệt hoặc sửa hành vi bản đang chạy chỉ vì có tài liệu này. Khi triển khai, cập nhật đồng thời thiết kế chuẩn/AGENTS/contracts lên phiên bản được duyệt, giữ v1.4 làm lịch sử.
+Trạng thái: **APPROVED_FOR_IMPLEMENTATION — người dùng yêu cầu hoàn thành theo plan ngày19/10/2026**. Thiết kế chuẩn/AGENTS/contracts chuyển v1.5, giữ v1.4 làm lịch sử. Quyền triển khai không thay API_Gate/PM acceptance. Xem [evidence](../../project-management/evidence/v1.5/README.md) và phần thiếu ảnh trường.
 
 ## 1. Kết quả người dùng nhận được
 
@@ -85,4 +85,4 @@ Thứ tự: chốt contracts/schema → hoàn thiện CRUD backend → đồng p
 
 Nghiệm thu quan trọng: tự ghi đúng học sinh ngoài bộ mẫu mà không confirm; người lạ/nhiều người/không chắc không tự ghi; retry/concurrency chỉ một kết quả trên cùng DB; giáo viên chỉ ghi lý do vi phạm; UNKNOWN không thành đạt/vi phạm; teacher correction không bị auto đè; CRUD/sĩ số/chuyển lớp/archive không phá lịch sử; scope/CSRF/export đúng; API không cần secret/model network trong request. Không lấy bộ test hiện tại thay bằng chứng cho tính năng mới.
 
-Đây là plan và backlog, không có tính năng mới được bật ở runtime, không thay PM acceptance và không deploy. Xem [task breakdown](../plans/2026-10-18-auto-attendance-uniform-crud.md).
+Thiết kế đã được cho triển khai; trạng thái từng task trong [task breakdown](../plans/2026-10-18-auto-attendance-uniform-crud.md) và tracker mới. Không thay PM acceptance và không deploy.

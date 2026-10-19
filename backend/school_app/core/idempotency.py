@@ -8,6 +8,23 @@ from school_app.accounts.services import AccountError
 from .models import IdempotencyRequest, ChangeLog
 
 
+def lookup_idempotent(user, operation, key, payload):
+    """Read-only replay before expensive inference; caller must check current scope.
+
+    run_idempotent still claims/rechecks the key atomically at write time.
+    """
+    if not isinstance(key, str) or not key.strip() or len(key) > 128:
+        raise AccountError('VALIDATION_ERROR', 'Idempotency-Key must contain 1 to 128 characters.', 422)
+    digest = hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode()).hexdigest()
+    existing = IdempotencyRequest.objects.filter(actor=user, operation=operation, key=key,
+        expires_at__gt=timezone.now()).first()
+    if existing:
+        if existing.payload_hash != digest:
+            raise AccountError('IDEMPOTENCY_CONFLICT', 'Key already used with a different payload.', 409)
+        return existing.response_json, existing.response_status
+    return None
+
+
 def run_idempotent(user, operation, key, payload, callback):
     if not isinstance(key, str) or not key.strip() or len(key) > 128:
         raise AccountError('VALIDATION_ERROR', 'Idempotency-Key must contain 1 to 128 characters.', 422)

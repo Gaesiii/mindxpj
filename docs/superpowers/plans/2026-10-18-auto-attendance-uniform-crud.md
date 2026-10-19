@@ -1,8 +1,8 @@
 # Kế hoạch đề xuất: tự điểm danh, đồng phục trường và CRUD
 
-Ngày: 18/10/2026. Trạng thái: **DRAFT / PLAN_ONLY**. Đây là kế hoạch theo yêu cầu người dùng, chưa phải phê duyệt thiết kế hay bằng chứng tính năng đã chạy. API_Gate giữ nguyên NOT_APPROVED; không triển khai/deploy trong task lập kế hoạch này.
+Ngày lập:18/10/2026. **Người dùng yêu cầu triển khai ngày19/10/2026**. Code và evidence tại [bàn giao v1.5](../../project-management/evidence/v1.5/README.md); tracker ghi trạng thái từng task và phần thiếu bộ ảnh trường. API_Gate giữ nguyên NOT_APPROVED, không deploy.
 
-Đọc [thiết kế đề xuất](../specs/2026-10-18-auto-attendance-uniform-crud-design.md) trước khi thực hiện. Bản chuẩn v1.4 và tracker cũ được giữ nguyên. Sau khi thiết kế được duyệt, cập nhật hợp đồng v1.5 cùng quy tắc tự động thay cho xác nhận thủ công trước khi viết code.
+Đọc [thiết kế](../specs/2026-10-18-auto-attendance-uniform-crud-design.md). Bản v1.4 lưu archive, thiết kế chuẩn/AGENTS/contract chuyển v1.5 theo quyền mới. Tracker baseline 40 task cũ giữ nguyên.
 
 ## Kết quả và thứ tự ưu tiên
 
@@ -56,7 +56,7 @@ Tổng **26 task / 192 giờ công**: Member 1 trực tiếp 50 giờ, Member 2 
 | Q03 | Shared | 8 | Q01,Q02 | Kiểm tra Vercel demo/API | Build và cold/warm CPU/RAM/bundle đo được; không thêm Torch runtime; không hứa SQLite chia sẻ; không deploy |
 | Q04 | Shared | 4 | Q03 | Review, tài liệu và kịch bản thuyết trình | Review độc lập, đóng lỗi quan trọng, ghi evidence và giới hạn; chỉ cập nhật Finish khi đủ kiểm chứng/phê duyệt |
 
-File nhập tracker: [JSON](../../project-management/auto-attendance-uniform-crud-tasks.json), [CSV UTF-8](../../project-management/auto-attendance-uniform-crud-tasks.csv). Mọi task khởi tạo PLANNED, Finish=false; không sửa tracker 40 task cũ.
+File nhập tracker: [JSON](../../project-management/auto-attendance-uniform-crud-tasks.json), [CSV UTF-8](../../project-management/auto-attendance-uniform-crud-tasks.csv). Ban đầu PLANNED/Finish=false, nay cập nhật theo implementation+validation+review. Finish kỹ thuật không phải API_Gate/PM approval; không sửa tracker 40 task cũ.
 
 ## Bản đồ file dự kiến
 

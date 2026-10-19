@@ -1,8 +1,41 @@
-# Hợp đồng module/API — v1.4
+# Hợp đồng module/API — v1.5
 
-QR/v1.2 trong các ghi chú baseline dưới đây là lịch sử; mục 9 là hợp đồng vision hiện hành. PM gate vẫn NOT_APPROVED.
+Mục 10 là thay đổi v1.5 được người dùng cho triển khai ngày19/10/2026, ưu tiên khi khác baseline bên dưới. Mục 9 là proposal/confirm legacy, không phải luồng auto. PM gate vẫn NOT_APPROVED.
 
-Nguồn chuẩn: [MVP v1.4](thiet-ke-he-thong-diem-danh.md). Đây là hợp đồng kỹ thuật để mem1/mem2 nối module; không thay thế phê duyệt API gate. Backend auth, lớp/Student/ảnh, lịch/buổi, attendance/QR/uniform và report/export đã triển khai theo yêu cầu toàn bộ backend ngày14/10/2026. Kiểm chứng/review từng đợt nằm trong evidence/backend-api.md; PM/member review và gate chờ xác nhận. UI local Django shell/CSS/JS tại `/` được người dùng cho phép trước gate ngày18/10/2026 (“làm luôn UI để demo”); API/scope không đổi, không PM approval hoặc deploy.
+Nguồn chuẩn: [MVP v1.5](thiet-ke-he-thong-diem-danh.md). Đây là hợp đồng kỹ thuật để mem1/mem2 nối module; không thay thế phê duyệt API gate. Backend auth, lớp/Student/ảnh, lịch/buổi, attendance/QR/uniform và report/export đã triển khai theo yêu cầu toàn bộ backend ngày14/10/2026. Kiểm chứng/review từng đợt nằm trong evidence/backend-api.md; PM/member review và gate chờ xác nhận. UI local Django shell/CSS/JS tại `/` được người dùng cho phép trước gate ngày18/10/2026 (“làm luôn UI để demo”); API/scope không đổi, không PM approval hoặc deploy.
+
+## 10. Thay đổi hiện hành v1.5 — auto, school uniform, CRUD
+
+Phối hợp Member 1 (academics/students/reports), Member 2 (schedules/attendance/vision), core/config chung. Migrations bổ sung, không xóa migrations cũ: academics0002, students0002, schedules0002, attendance0004, vision0003/0004. Sau migrate, history cũ recognition_mode=LEGACY và dữ liệu CONFIRMED/verified_by cũ giữ nguyên. Đây là quyền triển khai theo người dùng, không PM acceptance.
+
+### CRUD lớp/học sinh
+
+- GET/POST `/classes`; GET/PATCH/DELETE `/classes/:id`. Response thêm `capacity` (1–50, mặc định50), `active`, `version`, `active_student_count`, `total_student_count`. POST nhận code/name/grade_id/teacher_id và capacity/active tùy chọn. PATCH cùng fields và **expected_version bắt buộc**. DELETE body `{expected_version}` là archive. Restore PATCH active=true. Chỉ SUPERVISOR ghi; read scoped như cũ. Không nhận student_count. Không hạ capacity dưới active_count, không archive lớp có active students hoặc OPEN sessions (409).
+- GET `/teachers` SUPERVISOR-only trả items id/username/full_name cho homeroom teachers active.
+- GET/POST `/students`; GET/PATCH/DELETE `/students/:id`. POST student_code/full_name/class_id và active tùy chọn; PATCH expected_version bắt buộc và full_name/active, SUPERVISOR thêm student_code/class_id. DELETE expected_version archive. Response staff có version; self minimal giữ scope cũ. GVCN chỉ lớp được giao; transfer/sửa mã supervisor-only. Create/restore/transfer kiểm tra active class và capacity, stale409, duplicate409, field/type sai422. Sửa ảnh vẫn endpoint cũ, không tự đổi enrollment.
+- Lưu trữ không hard-delete/history; list mặc định gồm cả archived, UI tự lọc. Snapshot tên/mã/lớp cũ bất biến. Inactive/transfer supersede PENDING vision. Class archived đọc lịch sử được, không mở buổi/enroll/ghi ảnh/dataset mới.
+- POST `/sessions/:id/roster`: supervisor-only, JSON `{student_id,expected_session_version}`, Idempotency-Key bắt buộc. Chỉ OPEN/class active/pupil active đúng lớp, cap roster theo capacity; tạo roster+UNMARKED duy nhất và tăng version buổi, audit, trả201 `{roster_id,student_id,session}`. Existing trả200; retry key cùng body giữ nguyên response. Không rebuild các hàng cũ, không endpoint xóa roster.
+
+### Tự điểm danh
+
+POST `/sessions/:id/auto-attendance-scans`: staff scoped, CSRF, Idempotency-Key. Multipart **hai file khác nhau cùng field images**, `scan_mode=AUTO_ATTENDANCE|UNIFORM_ONLY`, `expected_session_version` chuỗi số nguyên không âm. Không nhận student_id, identity_confirmed hoặc attribution client. Một frame≤1MiB/4MP, tổng≤2MiB. Hai frame cùng request, mặt rõ duy nhất/cùng học sinh trong roster, cosine auto .60/margin .15 khởi đầu. Không có liveness guarantee. Preview local; request cadence4giây, quota20cặp/phút/actor process cache,429/Retry-After.
+
+Response `{outcome,recognition,reason,uniform,student_id?,full_name_snapshot?,attendance?}`. Outcome RECORDED201, ALREADY_RECORDED/UNIFORM_UPDATED/NOT_PRESENT/UNKNOWN/AMBIGUOUS200; stale/state409, schema/ảnh422, thiếu model mặt503. UNKNOWN/AMBIGUOUS không ghi attendance; idempotency lưu kết quả để replay ổn định. Scope kiểm tra trước replay; cùng key khác cặp/mode/version trả409. Inference ngoài write transaction, commit kiểm tra lại current scope/class active/version, OPEN/ngày/giờ/version, roster/student, all-candidate enrollment revision và frozen profile. Không giả bước confirm cũ.
+
+AUTO_ATTENDANCE chỉ đổi UNMARKED→PRESENT; ALREADY_RECORDED không thay giờ đến hay manual result. UNIFORM_ONLY chỉ cập nhật uniform cho PRESENT, không tạo có mặt; chưa PRESENT trảNOT_PRESENT. Tự động lưu source VISION, recognition_mode AUTO, recorded_by_id operator, verified_by_id/verified_at null. VisionScan status AUTO_RECORDED. Legacy confirm lưu MANUAL_CONFIRM; chỉnh attendance thủ công lưu MANUAL. Client không được tùy chọn các trường này. Báo cáo thêm recognition_mode/uniform_source/recorded_by_id và scanned_at gồm AUTO_RECORDED.
+
+### Đồng phục trường và riêng tư
+
+- GET/POST `/classes/:id/uniform-profile`: read staff scoped; POST supervisor-only `{profile_id:UUID|null}` chọn/bỏ version đã import offline. Response `{profile,versions}`; version immutable. Session OPEN snapshot JSON profile, selection mới chỉ cho buổi mới.
+- GET/POST `/classes/:id/uniform-samples`: GET scoped metadata; POST supervisor-only multipart image, label=SHIRT|SPORTS|OTHER, capture_group token không định danh, split=train|val|test, roi JSON `[x,y,width,height]` theo ảnh sau EXIF/resize decoder max960. Crop≥96px, mặt gốc phải nằm hoàn toàn phía trên ROI và crop không phát hiện mặt. Chỉ lưu crop áo PNG private, không ảnh gốc. Detector có thể bỏ sót; nhân sự phải kiểm tra crop trước export. Tối đa1MiB crop,32MiB/class; digest unique và nhóm không qua split.
+- GET/DELETE `/uniform-samples/:id/image`: scoped image private/no-store, DELETE supervisor-only không body. GET `/classes/:id/uniform-dataset-export`: supervisor-only ZIP private (manifest+crop); không FaceSample. Không public URL hoặc model upload API. Model import là trusted local CLI, review riêng tư gắn report hash và đủ precision/evidence.
+- State mới REVIEW_REQUIRED khác NON_COMPLIANT. Profile model hai ảnh tự tin đúng yêu cầu buổi→COMPLIANT/uniform_source AUTO, không teacher confirm. Sai mẫu/loại tự tin→REVIEW_REQUIRED, teacher dùng PATCH `/attendance/:id/uniform` hiện có, expected_version/observed_uniform/uniform_status/reason/note; NON_COMPLIANT bắt buộc reason, OTHER còn cần note. Sửa false alarm thành COMPLIANT được, không cần xác nhận lại danh tính. checked_by/uniform_source MANUAL bảo vệ quyết định khỏi auto overwrite.
+- Thiếu/hỏng/chưa được duyệt model áo, thiếu torso, bất định/không nhất quán→UNKNOWN/NOT_CHECKED; auto face vẫn chạy. HSV legacy không quyết định đúng mẫu trường. Không lưu video/frame; không tự huấn luyện/tải weights trong request, không worker.
+- Summary thêm `review_required`; `checked` chỉ compliant+non_compliant. Violation rate không tính pending hoặc unknown thành vi phạm. Export thêm cách ghi nhận/nguồn uniform, không public evidence private.
+
+### Giới hạn triển khai demo
+
+SQLite /tmp trên Vercel là riêng từng instance và tạm thời; idempotency chỉ đảm bảo cùng DB, không shared-state toàn deployment. Không claim accuracy trên toàn trường, liveness hoặc ảnh đúng logo khi thiếu dataset/test độc lập. No-model mặc định NOT_CHECKED. Cài Torch offline riêng, model verified ONNX qua OpenCV runtime; không tăng runtime dependency. Không deploy trong task này.
 
 ## 1. Quy ước dùng chung
 
@@ -29,7 +62,7 @@ Nguồn chuẩn: [MVP v1.4](thiet-ke-he-thong-diem-danh.md). Đây là hợp đ�
 | ArrivalStatus | ON_TIME, LATE, NOT_APPLICABLE |
 | RequiredUniform | SHIRT, SPORTS |
 | ObservedUniform | SHIRT, SPORTS, OTHER, UNKNOWN |
-| UniformStatus | NOT_CHECKED, COMPLIANT, NON_COMPLIANT, NOT_APPLICABLE |
+| UniformStatus | NOT_CHECKED, COMPLIANT, NON_COMPLIANT, NOT_APPLICABLE, REVIEW_REQUIRED |
 | AttendanceSource | VISION, MANUAL, QR (legacy) |
 | QrScanStatus | PENDING, CONFIRMED, REJECTED, EXPIRED, SUPERSEDED |
 

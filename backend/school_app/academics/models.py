@@ -19,6 +19,10 @@ class Classroom(models.Model):
     name = models.CharField(max_length=100)
     grade = models.ForeignKey(Grade, on_delete=models.PROTECT, related_name="classrooms")
     teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="classrooms")
+    capacity = models.PositiveSmallIntegerField(default=50)
+    active = models.BooleanField(default=True)
+    version = models.PositiveIntegerField(default=0)
 
     class Meta:
         ordering = ["code", "id"]
+        constraints = [models.CheckConstraint(condition=models.Q(capacity__gte=1, capacity__lte=50), name="class_capacity_1_50")]

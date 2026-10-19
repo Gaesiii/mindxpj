@@ -37,4 +37,6 @@ class GradeForm(StrictForm):
 class ClassroomForm(GradeForm):
     grade_id = JsonUUIDField()
     teacher_id = JsonUUIDField()
-    scalar_types = {**GradeForm.scalar_types, "grade_id": str, "teacher_id": str}
+    capacity = forms.IntegerField(min_value=1, max_value=50)
+    active = forms.BooleanField(required=False)
+    scalar_types = {**GradeForm.scalar_types, "grade_id": str, "teacher_id": str, "capacity": int, "active": bool}

@@ -23,3 +23,8 @@ backend/.vercel-demo/
 /deliverables/
 /demo-images/
 backend/vision_models/
+backend/private_uniform_models/
+private_uniform_output/
+.venv-uniform-training/
+uniform-dataset/
+private-uniform-dataset/

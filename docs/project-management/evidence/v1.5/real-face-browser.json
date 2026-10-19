@@ -1,0 +1,17 @@
+{
+  "browser": "headless Edge",
+  "inference": "real local YuNet/SFace; no inference or HTTP mocks",
+  "enrolled_images": 3,
+  "held_out_images": 2,
+  "negative_outcome": "UNKNOWN",
+  "positive_outcome": "RECORDED",
+  "automatic_recognition_mode": "AUTO",
+  "verified_by": null,
+  "uniform_without_school_model": "NOT_CHECKED",
+  "same_key_replay": "PASS",
+  "new_key_first_arrival_preserved": "PASS",
+  "real_backend_ui_create": "PASS",
+  "real_backend_edit_archive": "PASS",
+  "uncaught_page_errors": [],
+  "limitations": "Only these fixture photos. No physical camera, liveness or population accuracy claim. School uniform training awaits private dataset."
+}

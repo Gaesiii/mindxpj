@@ -32,7 +32,7 @@ class VisionScan(models.Model):
     observed_uniform = models.CharField(max_length=16)
     color_coverage = models.FloatField()
     status = models.CharField(max_length=16, default='PENDING', choices=[(v,v) for v in (
-        'PENDING','CONFIRMED','REJECTED','EXPIRED','SUPERSEDED')])
+        'PENDING','CONFIRMED','REJECTED','EXPIRED','SUPERSEDED','AUTO_RECORDED')])
     version = models.PositiveIntegerField(default=0)
     resolved_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.PROTECT, related_name='resolved_vision_scans')
     resolved_at = models.DateTimeField(null=True)
@@ -40,3 +40,5 @@ class VisionScan(models.Model):
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=['roster'], condition=models.Q(status='PENDING'), name='unique_pending_vision_roster')]
+
+from .uniform_models import SchoolUniformProfile, SchoolUniformSelection, SchoolUniformSample

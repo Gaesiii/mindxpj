@@ -1,0 +1,8 @@
+{
+  "local_build": "python build_vercel.py",
+  "exit_code": 0,
+  "seconds": 22.243,
+  "platform": "Windows local; not native Vercel deployment",
+  "no_secret_values_in_log": true,
+  "runtime_torch_dependency": false
+}

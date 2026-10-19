@@ -87,7 +87,7 @@ class AcademicsTests(TestCase):
         self.assertNotEqual(unrelated.id, self.grade.id)
 
     def test_reassignment_changes_scope_and_auth_me_immediately(self):
-        response = self.write("patch", f"/api/v1/classes/{self.classroom.id}", {"teacher_id": str(self.other.id)})
+        response = self.write("patch", f"/api/v1/classes/{self.classroom.id}", {"teacher_id": str(self.other.id), "expected_version": 0})
         self.assertEqual(response.status_code, 200)
         self.client.force_login(self.teacher)
         self.assertEqual(self.client.get("/api/v1/auth/me").json()["class_ids"], [])

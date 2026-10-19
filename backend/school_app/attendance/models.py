@@ -18,6 +18,9 @@ class Attendance(models.Model):
     checked_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, related_name='checked_attendances')
     verified_at = models.DateTimeField(null=True)
     checked_at = models.DateTimeField(null=True)
+    recognition_mode = models.CharField(max_length=16, default='LEGACY')
+    recorded_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, related_name='recorded_attendances')
+    uniform_source = models.CharField(max_length=16, null=True)
     version = models.PositiveIntegerField(default=0)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:

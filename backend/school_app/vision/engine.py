@@ -143,7 +143,7 @@ def _decode_embedding(data):
     return vector
 
 
-def match_face(crop, samples):
+def match_face(crop, samples, *, min_cosine=None, min_margin=None):
     if not samples:
         return {'student_id':None, 'distance':None, 'cosine_score':None, 'reason':'NO_ENROLLMENT'}
     query = _decode_embedding(embed_face(crop))
@@ -156,9 +156,11 @@ def match_face(crop, samples):
     scores.sort(key=lambda item: (-item[0], item[1]))
     best, student_id = scores[0]
     reason = None
-    if best < getattr(settings, 'VISION_FACE_MIN_COSINE', .45):
+    threshold = getattr(settings, 'VISION_FACE_MIN_COSINE', .45) if min_cosine is None else min_cosine
+    margin = getattr(settings, 'VISION_FACE_MIN_COSINE_MARGIN', .10) if min_margin is None else min_margin
+    if best < threshold:
         reason = 'UNKNOWN_FACE'
-    elif len(scores) > 1 and best - scores[1][0] < getattr(settings, 'VISION_FACE_MIN_COSINE_MARGIN', .10):
+    elif len(scores) > 1 and best - scores[1][0] < margin:
         reason = 'AMBIGUOUS_FACE'
     return {'student_id':student_id if reason is None else None, 'distance':round(1-best,6),
             'cosine_score':round(best,6), 'reason':reason}

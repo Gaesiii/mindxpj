@@ -14,11 +14,11 @@ def serialize_attendance(attendance):
     present=attendance.status == AttendanceStatus.PRESENT
     arrival_status=('ON_TIME' if attendance.arrived_at <= attendance.roster.session.late_cutoff_at else 'LATE') if present else 'NOT_APPLICABLE'
     data={'id':str(attendance.pk),'roster_id':str(attendance.roster_id),'arrival_status':arrival_status}
-    for name in ['status','source','absence_reason','observed_uniform','uniform_status','uniform_reason','uniform_note','version']:
+    for name in ['status','source','absence_reason','observed_uniform','uniform_status','uniform_reason','uniform_note','version','recognition_mode','uniform_source']:
         data[name]=getattr(attendance,name)
     for name in ['arrived_at','verified_at','checked_at','updated_at']:
         data[name]=dt(getattr(attendance,name))
-    for name in ['verified_by_id','checked_by_id']:
+    for name in ['verified_by_id','checked_by_id','recorded_by_id']:
         value=getattr(attendance,name); data[name]=str(value) if value else None
     return data
 
@@ -48,10 +48,11 @@ def apply_uniform(attendance, payload, user, now):
         setattr(attendance,name,value)
     attendance.checked_by_id=user.pk
     attendance.checked_at=now
+    attendance.uniform_source='MANUAL'
 
 
 def commit_attendance(attendance, expected):
-    values={name:getattr(attendance,name) for name in ['status','source','arrived_at','absence_reason','observed_uniform','uniform_status','uniform_reason','uniform_note','verified_by_id','verified_at','checked_by_id','checked_at']}
+    values={name:getattr(attendance,name) for name in ['status','source','arrived_at','absence_reason','observed_uniform','uniform_status','uniform_reason','uniform_note','verified_by_id','verified_at','checked_by_id','checked_at','recognition_mode','recorded_by_id','uniform_source']}
     values.update(version=F('version')+1,updated_at=timezone.now())
     if not Attendance.objects.filter(pk=attendance.pk,version=expected).update(**values):
         raise AccountError('VERSION_CONFLICT','Attendance changed; reload it.',409)
@@ -106,6 +107,10 @@ def update_manual(user, attendance_id, payload, key):
             attendance.uniform_status=UniformStatus.NOT_APPLICABLE
             attendance.checked_by_id=attendance.checked_at=None
         attendance.status=status
+        attendance.recognition_mode='MANUAL'
+        attendance.recorded_by_id=user.pk
+        if status != AttendanceStatus.PRESENT:
+            attendance.uniform_source=None
         attendance.verified_by_id=user.pk; attendance.verified_at=now
         commit_attendance(attendance,expected)
         from school_app.vision.models import VisionScan

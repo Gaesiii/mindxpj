@@ -12,7 +12,7 @@ from docx import Document
 
 root = Path(__file__).resolve().parents[1]
 source = root / "docs/thiet-ke-he-thong-diem-danh.md"
-word = source.with_name("thiet-ke-he-thong-diem-danh-v1.4.docx")
+word = source.with_name("thiet-ke-he-thong-diem-danh-v1.5.docx")
 markdown = source.read_text(encoding="utf-8")
 current_word = source.with_suffix(".docx")
 archived_source = root / "docs/archive/thiet-ke-he-thong-diem-danh-v1.2.md"
@@ -24,7 +24,7 @@ v13_word = root / "docs/archive/thiet-ke-he-thong-diem-danh-v1.3.docx"
 assert v13_source.is_file() and v13_word.is_file(), "Missing v1.3 archive"
 assert "**Phiên bản 1.3" in v13_source.read_text(encoding="utf-8")
 assert (source.with_name("thiet-ke-he-thong-diem-danh-v1.3.docx")).read_bytes() == v13_word.read_bytes(), "v1.3 Word archive changed"
-assert current_word.read_bytes() == word.read_bytes(), "Current Word differs from v1.4 Word"
+assert current_word.read_bytes() == word.read_bytes(), "Current Word differs from v1.5 Word"
 
 
 def validate_package(path):
@@ -80,26 +80,29 @@ for line in markdown.splitlines():
 missing = [value for value in expected if value not in word_text]
 assert not missing, f"Word missing content: {missing[:5]}"
 sections = re.findall(r"^## (\d+)\. ", markdown, re.M)
-assert sections == [str(n) for n in range(1, 6)], sections
+assert sections == [str(n) for n in range(1, 7)], sections
 expected_headings = re.findall(r"^## (.+)$", markdown, re.M)
-assert len(expected_headings) == 5
-assert "**Phiên bản 1.4" in markdown
+assert len(expected_headings) == 6
+assert "**Phiên bản 1.5" in markdown
 for required in ("Python 3.12/Django 5.2", "OpenCV", "YuNet", "SFace", "HSV", "VISION", "QR_ENABLED=false",
-                 "NOT_APPROVED", "112x112", "512byte", "120 giây", "identity_confirmed=true", "manual",
-                 "start_at <= now <= close_at"):
-    assert required in markdown, f"Missing v1.4 scope constraint: {required}"
+                 "NOT_APPROVED", "112×112", "512 byte", "AUTO_RECORDED", "REVIEW_REQUIRED",
+                 "NOT_CHECKED", "cosine≥0.60", "margin≥0.15", "recorded_by", "expected_version"):
+    assert required in markdown, f"Missing v1.5 scope constraint: {required}"
 document = Document(word)
 expected_tables = len(re.findall(r"^\|(?:\s*:?-{3,}:?\s*\|)+\s*$", markdown, re.M))
 assert len(document.tables) == expected_tables
-assert expected_tables == 1, "v1.4 ownership table missing or unexpectedly changed"
-assert "UI demo cục bộ đã triển khai" in markdown and "làm luôn UI để demo" in markdown
-assert "không phải phê duyệt PM API" in markdown and "demo_ui" in markdown
+assert expected_tables == 2, "v1.5 ownership or uniform-state table missing"
+v14_source=root/'docs/archive/thiet-ke-he-thong-diem-danh-v1.4.md'
+v14_word=root/'docs/archive/thiet-ke-he-thong-diem-danh-v1.4.docx'
+assert v14_source.is_file() and '**Phiên bản 1.4' in v14_source.read_text(encoding='utf-8')
+assert v14_word.read_bytes()==source.with_name('thiet-ke-he-thong-diem-danh-v1.4.docx').read_bytes()
+validate_package(v14_word)
 assert not re.search(r"TypeScript|NestJS|React|npm run|\.tsx?\b|\.spec\.ts", markdown), "Old stack remains"
 actual_headings = [p.text for p in document.paragraphs if p.style.name == "Heading 1"]
 assert actual_headings == expected_headings, (actual_headings, expected_headings)
 print("PASS: Word ZIP and XML are valid; Vietnamese Unicode preserved.")
 print(f"PASS: {len(expected)} source content fragments present in Word.")
-print(f"PASS: v1.4 scope and {len(sections)} numbered sections match the current source.")
-print("PASS: v1.2/v1.3 Markdown/Word retained; current Word is byte-identical to v1.4 Word.")
+print(f"PASS: v1.5 scope and {len(sections)} numbered sections match the current source.")
+print("PASS: v1.2/v1.3/v1.4 Markdown/Word retained; current Word is byte-identical to v1.5 Word.")
 print(f"PASS: {len(document.tables)} tables; all section headings preserved.")
 print("Limit: checks verify content and document structure, not visual page rendering in Microsoft Word.")

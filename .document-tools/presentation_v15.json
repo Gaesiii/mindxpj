@@ -1,0 +1,30 @@
+[
+  ["Điểm danh tự động với OpenCV", "MVP v1.5 • Django • Demo 5–7 phút", [
+    ["Bài toán", ["Nhận diện mặt, ghi có mặt và giờ đến theo buổi.", "Giáo viên chỉ xử lý ngoại lệ đồng phục và ghi lý do."]],
+    ["Phạm vi", ["Quản lý lớp và học sinh, sức chứa và sĩ số thực tế.", "GVCN theo lớp được giao; giám thị quản lý toàn phạm vi."]]
+  ], "0:00–0:45. Nêu thay đổi v1.5 được người dùng yêu cầu: bỏ xác nhận từng học sinh. Phê duyệt PM API và validation kỹ thuật là hai việc riêng."],
+  ["Hai ảnh → nhận diện → tự điểm danh", "Server quyết định danh tính, không cần nút confirm", [
+    ["Chuẩn bị", ["Mở buổi đúng ngày/khung giờ và đăng ký 3–10 ảnh mỗi người.", "Hai ảnh khác nhau phải cùng một mặt rõ trong roster."]],
+    ["Tự ghi nhận", ["YuNet phát hiện/căn chỉnh; SFace so cosine với roster.", "Đủ điều kiện: PRESENT + giờ đến server; không chắc: chụp lại/manual."]]
+  ], "0:45–1:35. Ngưỡng auto khởi đầu cosine0.60/margin0.15 cần calibration. Hai frame kiểm tra nhất quán, không liveness. Không tuyên bố accuracy toàn trường từ ảnh demo."],
+  ["Đồng phục đúng mẫu trường", "Không dùng màu áo làm bằng chứng logo/mẫu", [
+    ["Dữ liệu và model", ["Bộ ảnh áo riêng, tách train/val/test theo người/buổi.", "Train offline → đánh giá → ONNX hash/version; runtime OpenCV."]],
+    ["Ba kết quả", ["Đúng mẫu rõ: tự ghi Đạt; nghi sai: giáo viên ghi lý do.", "Thiếu model hoặc ảnh chưa rõ: Chưa kiểm tra; không phạt tự động."]]
+  ], "1:35–2:25. Hiện chưa có bộ ảnh đồng phục trường nên chưa huấn luyện/nghiệm thu model. Có thể demo UI/no-model và cách chuẩn bị ảnh, không giả vờ nhận diện đúng logo."],
+  ["CRUD lớp và học sinh", "Sĩ số tự tính, sức chứa chỉnh được", [
+    ["Lớp", ["Mã/tên/khối/GVCN/sức chứa; lưu trữ và khôi phục.", "Không giảm sức chứa dưới sĩ số, không xóa lịch sử."]],
+    ["Học sinh", ["Thêm/sửa/lưu trữ/khôi phục; giám thị chuyển lớp/sửa mã.", "Học sinh mới vào buổi sau hoặc bổ sung OPEN có kiểm soát."]]
+  ], "2:25–3:10. Tạo và sửa một hồ sơ fictitious. Chỉ rõ thay đổi hồ sơ không viết lại snapshot buổi trước; version chống hai người ghi đè."],
+  ["Demo trực tiếp", "UI → API có scope/CSRF → database", [
+    ["Thực hiện", ["Đăng nhập, chọn lớp/buổi OPEN, đăng ký mẫu mặt riêng.", "Quét cặp ảnh ngoài enrollment: tự hiện Có mặt, không confirm."]],
+    ["Đối soát", ["Quét lại giữ giờ đến đầu; người lạ không ghi có mặt.", "Mở Đồng phục, báo cáo và xuất CSV/XLSX; UNKNOWN vẫn riêng."]]
+  ], "3:10–4:25. Dùng dữ liệu thử được phép, không public ảnh học sinh. Camera thật cần thiết bị và quyền. Ảnh upload hai tấm kiểm tra pipeline; không phải chứng minh live camera."],
+  ["Kiểm chứng và bảo vệ dữ liệu", "Bằng chứng kỹ thuật, không thay PM acceptance", [
+    ["Các kiểm tra", ["Role/CSRF/private ảnh, stale version, retry và rollback.", "Review độc lập; migrate DB cũ, ảnh mặt thật và browser."]],
+    ["Dữ liệu", ["Crop mặt và áo private, không lưu video/frame phân tích.", "Quyết định giáo viên không bị auto ghi đè; audit rõ nguồn."]]
+  ], "4:25–5:15. Mở docs/project-management/evidence/v1.5 thay vì đọc số test cố định trên slide. Workflow mock không chứng minh model accuracy; phân biệt rõ ảnh mặt thật và camera giả lập."],
+  ["Giới hạn và phần còn chờ", "Bộ ảnh trường là đầu vào cần thiết", [
+    ["Chưa nghiệm thu", ["Cần ảnh trường và đối chứng logo/mẫu, ánh sáng/che áo.", "Chưa đo camera vật lý, độ chính xác toàn trường hay liveness."]],
+    ["Demo Vercel", ["SQLite tạm theo instance, không đảm bảo dữ liệu dùng chung.", "API/build được chuẩn bị; người dùng tự deploy, PM gate riêng."]]
+  ], "5:15–6:20. Kết luận bằng việc mở backlog và chỉ task nào đã kiểm chứng, task nào thiếu dữ liệu. Không tick toàn bộ task vì có file hoặc vì demo nhỏ chạy được."]
+]

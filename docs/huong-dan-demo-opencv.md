@@ -1,5 +1,19 @@
 # Demo OpenCV — setup, API test và thuyết trình
 
+## Luồng hiện hành v1.5 — 19/10/2026
+
+Phần v1.4 bên dưới giữ làm hướng dẫn legacy; với bản hiện tại dùng luồng này:
+
+1. Chạy launcher như mục local, đăng nhập giám thị/GVCN và chọn buổi OPEN hôm nay. Đăng ký 3–10 ảnh rõ mặt ở Học sinh → Quản lý mẫu.
+2. Mở Điểm danh → Bật camera. Học sinh đứng lần lượt, thấy mặt và phần áo; ứng dụng tự chụp cặp ảnh và tự ghi có mặt khi đủ điều kiện. **Không cần xác nhận từng học sinh.** Có thể tải đúng hai ảnh khác nhau ngoài bộ đăng ký rồi chọn Quét cặp ảnh để thử.
+3. Quét lại giữ giờ đến đầu, không đổi vắng/thủ công. Không nhận diện được thì chụp lại hoặc ghi thủ công. Hai ảnh không bảo đảm chống ảnh giả.
+4. Mục Đồng phục dùng chung camera; chỉ kiểm tra học sinh đã PRESENT. Đúng mẫu rõ→Đạt tự động, nghi sai→giáo viên ghi lý do, chưa rõ→Chưa kiểm tra. Sửa cảnh báo sai được, quyết định thủ công không bị quét lại đè.
+5. Khi chưa có model đúng trường (trạng thái hiện tại), áo luôn Chưa kiểm tra. Giám thị vào Mẫu đồng phục để upload ảnh, kéo ROI chỉ phần áo, gán loại/nhóm chụp/split. [Pipeline offline và điều kiện duyệt model](../tools/uniform_training/README.md). Không tự train trong web.
+6. Mục Lớp cho giám thị thêm/sửa sức chứa/lưu trữ/khôi phục; sĩ số tự tính. Học sinh cho staff quản lý đúng phạm vi; giám thị sửa mã/chuyển lớp. Lưu trữ giữ lịch sử. Học sinh mới vào buổi sau hoặc giám thị chủ động bổ sung vào buổi OPEN.
+7. Báo cáo có nhóm Cần kiểm tra riêng, nguồn AUTO/MANUAL và CSV/XLSX. [Evidence v1.5](project-management/evidence/v1.5/README.md) phân biệt browser API fixture/camera giả, ảnh mặt thật và phần chưa có dữ liệu trường.
+
+Vercel vẫn chỉ hai biến môi trường cũ; không thêm cloud/API key. Người dùng tự deploy. SQLite/mẫu lưu tạm theo instance, không phải lưu trữ bền vững.
+
 Theo thiết kế v1.4, đây là hướng dẫn tái lập và checklist thiết bị thật. Không phải cam kết accuracy. API_Gate = NOT_APPROVED; ngoại lệ ngày18/10/2026: người dùng yêu cầu rõ “làm luôn UI để demo”, cho phép UI local trước gate. Đây không phải phê duyệt PM API; Finish? không tự thay đổi. UI tại `/` có evidence153test/browser lịch sử trước SFace bên dưới; nâng cấp YuNet/SFace cần validation mới; camera vật lý/accuracy chưa được kiểm chứng.
 
 ## 1. Chuẩn bị local

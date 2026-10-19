@@ -46,6 +46,8 @@ def save_rule(user, payload, *, classroom_id=None, rule=None):
     else:
         require_class(user,rule.classroom_id)
         values=form_data(ScheduleRuleForm(payload,current=rule_fields(rule)))
+    if not rule.classroom.active:
+        raise AccountError('CLASS_ARCHIVED','Classroom is archived.',409)
     for name,value in values.items():
         setattr(rule,name,value)
     try:
@@ -66,6 +68,8 @@ def find_rule(session):
 def create_session(user, payload):
     values=form_data(SessionCreateForm(payload))
     classroom=require_class(user,values.pop('class_id'))
+    if not classroom.active:
+        raise AccountError('CLASS_ARCHIVED','Classroom is archived.',409)
     with transaction.atomic():
         existing=Session.objects.filter(classroom=classroom,**values).first()
         if existing is not None:
@@ -81,6 +85,8 @@ def open_session(user, session_id, expected):
     require_session(user,session_id)
     with transaction.atomic():
         session=require_session(user,session_id)
+        if not session.classroom.active:
+            raise AccountError('CLASS_ARCHIVED','Classroom is archived.',409)
         if session.status == SessionStatus.OPEN:
             return session
         if session.status == SessionStatus.CLOSED:
@@ -90,7 +96,9 @@ def open_session(user, session_id, expected):
         start=timezone.make_aware(datetime.combine(session.school_date,rule.start_time))
         close=timezone.make_aware(datetime.combine(session.school_date,rule.close_time))
         before=serialize_session(session)
-        changed=Session.objects.filter(pk=session.pk,version=expected,status=SessionStatus.PLANNED).update(status=SessionStatus.OPEN,start_at=start,late_cutoff_at=start+timedelta(minutes=rule.grace_minutes),close_at=close,required_uniform_snapshot=rule.required_uniform,version=F('version')+1)
+        from school_app.vision.uniform_services import snapshot_for_class
+        profile = snapshot_for_class(session.classroom_id)
+        changed=Session.objects.filter(pk=session.pk,version=expected,status=SessionStatus.PLANNED).update(status=SessionStatus.OPEN,start_at=start,late_cutoff_at=start+timedelta(minutes=rule.grace_minutes),close_at=close,required_uniform_snapshot=rule.required_uniform,uniform_profile_snapshot=profile,version=F('version')+1)
         if not changed:
             raise AccountError('VERSION_CONFLICT','Session changed; reload it.',409)
         classroom=session.classroom
@@ -101,6 +109,49 @@ def open_session(user, session_id, expected):
         session.refresh_from_db()
         record_change(user,session,'OPEN',before,serialize_session(session))
         return session
+
+
+def append_roster(user, session_id, payload, key):
+    """Explicit append only; never rebuild an opened roster or its history."""
+    from school_app.academics.services import supervisor_user
+    from school_app.attendance.forms import strict_fields, integer
+    from school_app.attendance.models import Attendance
+    from school_app.core.api import parse_uuid
+    from school_app.core.idempotency import run_idempotent
+    from school_app.students.models import Student
+    supervisor_user(user)
+    require_session(user,session_id)
+    strict_fields(payload,['student_id','expected_session_version'],['student_id','expected_session_version'])
+    sid=parse_uuid(payload['student_id'])
+    expected=integer(payload,'expected_session_version')
+
+    def perform():
+        session=require_session(user,session_id)
+        if session.status != 'OPEN' or not session.classroom.active:
+            raise AccountError('INVALID_STATE','An active class and OPEN session are required.',409)
+        check_version(session,expected)
+        student=Student.objects.filter(pk=sid,classroom=session.classroom,active=True).first()
+        if student is None:
+            raise AccountError('ROSTER_CHANGED','Select an active pupil in this class.',409)
+        existing=SessionRoster.objects.filter(session=session,student=student).first()
+        if existing:
+            return {'roster_id':str(existing.pk),'session':serialize_session(session)},200
+        if session.roster.count() >= session.classroom.capacity:
+            raise AccountError('CAPACITY_EXCEEDED','Session roster is at capacity.',409)
+        before=serialize_session(session)
+        if not Session.objects.filter(pk=session.pk,version=expected,status='OPEN').update(version=F('version')+1):
+            raise AccountError('VERSION_CONFLICT','Session changed; reload it.',409)
+        classroom=session.classroom
+        row=SessionRoster.objects.create(session=session,student=student,student_code_snapshot=student.student_code,
+            full_name_snapshot=student.full_name,class_code_snapshot=classroom.code,class_name_snapshot=classroom.name,
+            grade_code_snapshot=classroom.grade.code,grade_name_snapshot=classroom.grade.name)
+        Attendance.objects.create(roster=row)
+        session.refresh_from_db()
+        body={'roster_id':str(row.pk),'student_id':str(student.pk),'session':serialize_session(session)}
+        record_change(user,session,'ROSTER_APPEND',before,body)
+        return body,201
+
+    return run_idempotent(user,'session.roster.append:'+str(session_id),key,payload,perform)
 
 
 def close_session(user, session_id, expected):

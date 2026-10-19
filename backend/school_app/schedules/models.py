@@ -25,6 +25,7 @@ class Session(models.Model):
     close_at = models.DateTimeField(null=True)
     required_uniform_snapshot = models.CharField(max_length=16, choices=RequiredUniform.choices, null=True)
     version = models.PositiveIntegerField(default=0)
+    uniform_profile_snapshot = models.JSONField(null=True, default=None)
     class Meta:
         constraints = [models.UniqueConstraint(fields=['classroom','school_date','slot'], name='unique_class_date_slot'), models.CheckConstraint(condition=models.Q(status='PLANNED') | models.Q(start_at__isnull=False, late_cutoff_at__isnull=False, close_at__isnull=False, required_uniform_snapshot__isnull=False), name='opened_session_has_snapshot')]
 

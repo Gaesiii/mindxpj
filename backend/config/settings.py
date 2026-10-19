@@ -77,6 +77,10 @@ if not 0 <= VISION_FACE_MIN_COSINE <= 1 or not 0 <= VISION_FACE_MIN_COSINE_MARGI
     raise ImproperlyConfigured('Face cosine threshold/margin is outside its valid range.')
 VISION_MIN_SHARPNESS = float(os.environ.get('VISION_MIN_SHARPNESS', '50'))
 VISION_ANALYSES_PER_MINUTE = 20
+VISION_AUTO_MIN_COSINE = float(os.environ.get('VISION_AUTO_MIN_COSINE', '0.60'))
+VISION_AUTO_MIN_MARGIN = float(os.environ.get('VISION_AUTO_MIN_MARGIN', '0.15'))
+if not 0 <= VISION_AUTO_MIN_COSINE <= 1 or not 0 <= VISION_AUTO_MIN_MARGIN <= 2:
+    raise ImproperlyConfigured('Automatic face thresholds are outside their valid range.')
 VISION_ENROLLMENT_TOTAL_BYTES = int(os.environ.get(
     'VISION_ENROLLMENT_TOTAL_BYTES', str((3 if VERCEL_DEMO else 15) * 1024 * 1024)))
 if VISION_ENROLLMENT_TOTAL_BYTES <= 0:

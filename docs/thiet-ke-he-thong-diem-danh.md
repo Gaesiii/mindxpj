@@ -1,50 +1,61 @@
 # Thiết kế MVP điểm danh học sinh — Python/Django + OpenCV
 
-**Phiên bản 1.4 — 18/10/2026.** Người dùng đã duyệt YuNet + SFace FP32 thay Haar/LBPH; [v1.3](archive/thiet-ke-he-thong-diem-danh-v1.3.md) và Word v1.3 được giữ nguyên làm lịch sử. Nguồn chuẩn theo yêu cầu thay QR bằng nhận diện mặt và gợi ý đồng phục, đã được người dùng cho triển khai (“làm đi”). Bản [v1.2](archive/thiet-ke-he-thong-diem-danh-v1.2.md) được lưu nguyên trạng để đối chiếu. Đề xuất [OpenCV](de-xuat-opencv-demo.md) là quyết định phạm vi, không phải bằng chứng chạy thành công. API_Gate = **NOT_APPROVED**; không tự đánh dấu Finish?. Ngoại lệ ngày18/10/2026: người dùng yêu cầu rõ “làm luôn UI để demo”, cho phép UI local trước gate. Đây không phải phê duyệt PM API; API_Gate vẫn NOT_APPROVED và Finish? không tự thay đổi.
+**Phiên bản 1.5 — 19/10/2026.** Người dùng yêu cầu “hoàn thành task theo plan” sau khi chốt đúng mẫu đồng phục trường bằng bộ ảnh riêng. Phạm vi theo [thiết kế](superpowers/specs/2026-10-18-auto-attendance-uniform-crud-design.md) và [plan](superpowers/plans/2026-10-18-auto-attendance-uniform-crud.md). [v1.4](archive/thiet-ke-he-thong-diem-danh-v1.4.md), v1.3 và v1.2 giữ nguyên làm lịch sử. Yêu cầu mới cho phép tự ghi PRESENT khi đủ điều kiện, thay quy tắc bắt buộc xác nhận danh tính của v1.4 ở luồng tự động. **API_Gate=NOT_APPROVED** là phê duyệt PM riêng, không đồng nghĩa quyền triển khai đã được người dùng cấp.
 
 ## 1. Mục tiêu và giới hạn
 
-GVCN/giám thị chọn buổi học thuộc quyền, gửi ảnh một người, xem ứng viên nhận diện và gợi ý đồng phục, xác minh trực tiếp rồi xác nhận. Chỉ bước xác nhận hợp lệ mới ghi PRESENT qua service attendance. Có đường nhập thủ công khi camera lỗi, không có mẫu hoặc thuật toán không chắc chắn. Không tự nhận diện để cấp quyền đăng nhập hay kết luận học sinh vi phạm.
+Nhân sự chọn lớp/buổi OPEN, bật camera và lần lượt cho học sinh vào khung thấy mặt cùng phần áo. Server nhận diện mặt đủ điều kiện thì ghi có mặt và giờ đến, không xác nhận từng em. Mục **Đồng phục** riêng dùng chung camera controller, xử lý người đã có mặt; chế độ chỉ kiểm tra áo không tạo điểm danh mới. Giáo viên xử lý danh sách nghi vi phạm, ghi lý do hoặc sửa cảnh báo sai. Không nhận diện được có nhập thủ công.
 
-Giữ tài khoản/session/CSRF; khối/lớp/một GVCN; học sinh/mã/họ tên/ảnh private; lịch tuần và buổi sáng/chiều; giờ bắt đầu/cutoff/đồng phục snapshot; roster khi mở buổi; manual/PRESENT/ABSENT/UNMARKED; đồng phục; version/idempotency/log; báo cáo và XLSX/CSV tối đa 5.000 dòng. Giáo viên chỉ lớp hiện tại được giao, giám thị toàn bộ; học sinh chỉ đọc phạm vi bản thân, không enroll/analyze/confirm/reject. Danh tính học sinh đăng nhập luôn lấy từ session, không body.
-
-OpenCV cục bộ là ngoại lệ mới được cho phép so với giới hạn không camera/nhận diện của v1.2. Không có liveness/khả năng chống ảnh giả được bảo đảm. Không thêm nhận diện cloud, dịch vụ AI ngoài, video liên tục, SMS, phụ huynh, workers, queues, cloud storage, module duyệt sửa, nhiều trường hoặc tải toàn trường. Hàng đợi scan là danh sách proposal DB đồng bộ, không phải worker queue.
+Giữ tài khoản/session/CSRF, khối/lớp/GVCN, hồ sơ/ảnh private, lịch/buổi sáng chiều, snapshot, attendance, audit/version/idempotency, CSV/XLSX tối đa 5.000 dòng. GVCN chỉ lớp hiện tại được giao, giám thị toàn phạm vi; STUDENT chỉ đọc bản thân, identity từ session. Không thêm đăng nhập bằng mặt, liveness/chống ảnh giả được bảo đảm, AI cloud, SMS, phụ huynh, cloud storage, worker/queue hay module duyệt sửa. Preview camera ở browser, chỉ gửi cặp ảnh rời, không stream/lưu video.
 
 ## 2. Kiến trúc và phân công
 
-Một project Django, Python 3.12/Django 5.2, ORM/Auth/Forms/JsonResponse, SQLite demo nhỏ, Pillow/OpenCV contrib headless/NumPy/openpyxl. Không DRF; phiên cookie HttpOnly, CSRF cho mọi request ghi; UUID; timezone Asia/Ho_Chi_Minh, lưu UTC. Phiên bản dependency khóa tại backend/requirements.txt.
+Python 3.12/Django 5.2, ORM/Auth/Forms/JsonResponse, SQLite demo, Pillow/OpenCV contrib headless/NumPy/openpyxl. Không DRF. Cookie HttpOnly, CSRF mọi request ghi, UUID; Asia/Ho_Chi_Minh và UTC lưu trữ. Dependency runtime khóa tại requirements/pyproject. Torch/torchvision/ONNX chỉ môi trường train offline riêng, không vào runtime Vercel.
 
 | Owner | Phạm vi |
 | --- | --- |
-| mem1 | accounts, academics, students, ảnh hồ sơ, reports/export; review scope và đăng ký/xóa mẫu của học sinh |
-| mem2 | schedules, attendance, vision (mẫu private/proposal/engine), QR legacy |
-| Phối hợp | core/config/enums/contracts và migration chéo trước khi đổi interface; xem kế hoạch OpenCV |
+| Member 1 | accounts, academics, students/ảnh, CRUD UI, reports/export, UI ghi lý do |
+| Member 2 | schedules/roster, attendance, vision/face/uniform/camera, QR legacy |
+| Chung | core/config/enums/contracts, migration liên app và review tích hợp |
 
-Giữ schema/migrations/dữ liệu QR cũ, không xóa lịch sử. QR không còn là đường đi demo hoạt động: QR_ENABLED=false mặc định; bật tương thích có chủ ý chỉ cho regression QR lịch sử. AttendanceSource bổ sung VISION cùng MANUAL và QR lịch sử. Hợp đồng chi tiết ở [api-contract.md](api-contract.md); trình tự migration/kiểm chứng ở [kế hoạch](superpowers/plans/2026-10-18-opencv-demo.md).
+QR_ENABLED=false mặc định; giữ lịch sử QR/LBPH/CONFIRMED. API mở rộng đọc; PATCH/DELETE lớp/học sinh yêu cầu expected_version. [Contract](api-contract.md) là giao diện dùng chung.
 
-## 3. Mẫu nhận diện và ảnh
+## 3. CRUD lớp và học sinh
 
-Ảnh hồ sơ không tự trở thành mẫu sinh trắc. Nhân sự có quyền đăng ký 3–10 ảnh bằng field multipart `images` lặp; thay toàn bộ nguyên tử, lỗi một ảnh giữ bộ cũ. Mỗi ảnh tối đa 2MiB/4MP, tổng enrollment tối đa 15MiB; phải có đúng một mặt, đủ độ nét. Lưu crop màu BGR căn chỉnh112x112 dạng PNG và embedding chuẩn hóa128float32 little-endian (512byte), model_key=sface-2021dec-fp32 trong BinaryField DB private, không endpoint byte, không public media URL, không log ảnh/base64. GET trả metadata/student_id/sample_count/usable_sample_count/requires_reenrollment/model_key, không byte mẫu (sample revision là nội bộ), DELETE xóa mẫu. Không lưu frame phân tích/video; proposal chỉ metadata và phiên bản liên quan. Bản sao lưu DB chứa mẫu private cũng phải được kiểm soát và xóa theo quy trình dữ liệu cục bộ.
+Lớp có mã/tên/khối/GVCN, sức chứa 1–50 (mặc định 50), active/version. Sĩ số active và tổng hồ sơ tính từ danh sách thật, không nhận student_count client. Giám thị tạo/sửa/lưu trữ/khôi phục lớp; GVCN đọc lớp được giao. Không giảm sức chứa dưới sĩ số active hoặc lưu trữ lớp còn học sinh active/buổi OPEN.
 
-Thuật toán demo: YuNet2023mar phát hiện5landmark, SFace2021dec FP32 căn chỉnh mặt màu112x112, embedding128chiều và so cosine trong đúng roster. MODEL_KEY=sface-2021dec-fp32; VISION_FACE_MIN_COSINE=0.45, VISION_FACE_MIN_COSINE_MARGIN=0.10, VISION_MIN_SHARPNESS=50. Cosine càng cao càng giống, không phải xác suất; metric=cosine và distance=1-cosine. Lịch sử LBPH vẫn metric=lbph_distance, không so trực tiếp hai metric. Mẫu grayscale128x128 cũ cần đăng ký lại3–10ảnh màu, không tự chuyển đổi hoặc nạp ảnh mạng. Metadata usable_sample_count chỉ số mẫu đúng model; requires_reenrollment báo bộ cũ chưa đủ3mẫu dùng được. Cần hiệu chỉnh bằng bộ ảnh đánh giá tách bộ đăng ký. Không có mặt/nhiều mặt/mờ/người lạ/ứng viên sát nhau → không có proposal đủ điều kiện xác nhận danh tính; chụp lại hoặc manual.
+Học sinh có mã/tên/lớp/active/version, ảnh hồ sơ và enrollment riêng. GVCN tạo/sửa tên/trạng thái trong lớp; giám thị sửa mã/chuyển lớp với kiểm tra nguồn/đích/sức chứa. Xóa là lưu trữ, restore phải kiểm tra active/capacity. Đổi mã/tên/lớp không viết lại snapshot lịch sử; inactive/transfer loại khỏi nhận diện mới và vô hiệu proposal chờ. Ảnh/export/read/write đều kiểm tra role scope server.
 
-Models pin revision/SHA-256, chuẩn bị bằng `manage.py prepare_vision_models` trước các lệnh chạy nhận diện hoặc launcher tự chuẩn bị; request không tải network. Thiếu/hỏng model báo VISION_UNAVAILABLE503. Giữ license/ghi công YuNet MIT và SFace Apache2.0 tại backend/third_party/opencv_zoo; không tuyên bố tự huấn luyện model. Nâng DB local có backup và migrate, không seed lại tài khoản/dữ liệu hiện tại; đăng nhập tài khoản cũ và enrollment lại ít nhất3ảnh.
+Roster tạo khi OPEN từ học sinh active. Học sinh mới mặc định vào buổi mở sau. Giám thị có thao tác riêng bổ sung vào buổi OPEN: thêm duy nhất roster+UNMARKED, version/audit/capacity; không rebuild hay sửa hàng cũ.
 
-HSV trên vùng áo chỉ gợi ý SHIRT/SPORTS/UNKNOWN theo dải màu cấu hình (mặc định trắng SHIRT, xanh SPORTS). Đây là heuristic màu, không nhận biết logo/chất liệu/đồng phục thật. Áo bị che, crop thiếu thân, nền nhiễu hoặc màu không trội → UNKNOWN. Nhân sự quyết định kết quả đồng phục và lý do; không tự chuyển UNKNOWN thành COMPLIANT/NON_COMPLIANT.
+## 4. Mẫu mặt và tự điểm danh
 
-## 4. Luồng nghiệp vụ và đồng thời
+Enrollment 3–10 ảnh riêng, đúng một mặt rõ nét. Lưu private crop BGR 112×112 PNG và embedding chuẩn hóa 128 float32 little-endian (512 byte), model_key=sface-2021dec-fp32. Không endpoint byte mẫu mặt. Mỗi ảnh 2 MiB/4 MP, tổng local 15 MiB, Vercel 3 MiB. Mẫu legacy phải đăng ký lại.
 
-1. Nhân sự đăng nhập; chọn session OPEN đúng ngày và `start_at <= now <= close_at` (kể cả hai biên), đúng lớp thuộc quyền; roster tối đa 50 học sinh cho phân tích demo.
-2. Gửi một multipart `image` cùng Idempotency-Key. Kiểm tra quyền, dữ liệu ảnh và rate limit 20 analysis/phút/actor theo phút cố định trong cache từng process trước phân tích (không rolling/global). Trả PENDING hoặc kết quả cần chụp lại/chuyển manual; tuyệt đối không ghi PRESENT khi scan.
-3. Proposal lưu scanned_at server, hết hạn sau 120 giây, ràng buộc sample revision và attendance version. Client không gửi student_id để chọn danh tính scan.
-4. Nhân sự xem người thực tế, bắt buộc `identity_confirmed=true`, gửi expected_scan_version và expected_attendance_version; có thể kèm uniform theo contract. Service kiểm tra lại scope, session, roster, thời hạn, mẫu còn hợp lệ và version rồi ghi attendance source VISION, arrived_at từ scanned_at. Uniform không hợp lệ phải rollback toàn bộ xác nhận.
-5. Retry cùng key/payload trả kết quả đã lưu, không nhân đôi attendance/log; key cũ với payload khác phải conflict. Proposal stale/hết hạn/rejected/superseded không được xác nhận. Manual sửa attendance, đóng buổi, chuyển lớp, đăng ký lại/xóa mẫu làm proposal cũ không còn hợp lệ.
-6. Reject chỉ đổi proposal với version/key và reason; không ghi PRESENT. Khi không thể xác nhận chắc chắn, nhập thủ công với scope/version/idempotency hiện có. Chốt buổi, xem báo cáo/export đối soát chỉ attendance đã ghi.
+YuNet2023mar phát hiện 5 landmark; SFace2021dec FP32 so cosine đúng roster. Cosine không phải xác suất. Model pinned revision/hash, license/ghi công tại backend/third_party/opencv_zoo. Chuẩn bị model trước request; không download lúc nhận diện. Thiếu/hỏng model báo 503. Không tuyên bố tự huấn luyện YuNet/SFace.
 
-UNMARKED/ABSENT không có arrived_at/source/observed_uniform; PRESENT không mặc nhiên COMPLIANT. Đến muộn suy từ arrived_at và late_cutoff_at snapshot. Roster bất biến bảo vệ báo cáo lịch sử khi hồ sơ đổi lớp/tên. CLOSED không cho vision ghi mới; chỉnh thủ công sau chốt theo quy tắc giám thị/lý do hiện có.
+Tự động nhận đúng hai ảnh khác nhau cùng request, mỗi ảnh ≤1 MiB/4 MP, tổng ≤2 MiB. Cả hai đúng một mặt rõ và cùng ứng viên. Ngưỡng auto khởi đầu cosine≥0.60, margin≥0.15; cần calibration bằng ảnh ngoài enrollment. Không mặt/nhiều mặt/mờ/người lạ/ứng viên khác nhau thì không ghi. Hai ảnh chỉ kiểm tra nhất quán, không chứng minh người thật.
 
-## 5. API gate, demo và bằng chứng
+Preview local liên tục, tối đa một cặp/4 giây, không chồng request; quota 20 cặp/phút/actor trong cache process, 429 có Retry-After. Dừng khi tab ẩn, đổi trang/lớp/buổi/logout/mất camera. Inference ngoài transaction ghi; ngay trước atomic write kiểm tra lại scope, buổi OPEN đúng ngày/giờ, lớp active/version, roster/học sinh active/lớp hiện tại, mẫu/profile snapshot và attendance version. Scope trước idempotency replay; retry không nhân bản bản ghi, không đổi giờ đến đầu, không đè MANUAL/ABSENT/CLOSED.
 
-[Tracker](project-management/README.md) giữ hai người và 40 ID để truy vết; các task QR hoạt động đã đổi thành vision. Lịch/giờ cũ là ước lượng tạm, cần đánh giá lại sau thử nghiệm mặt thật, không cam kết fit lịch QR. PM phải review quyền/mẫu/ảnh, thuật toán, retry/version/expiry/rollback, migrate DB mới và nâng cấp, report/XLSX/CSV, cùng regression backend trước khi duyệt gate. Test backend QR cũ (126 test lịch sử) không chứng minh vision đạt.
+PRESENT tự động có source=VISION, recognition_mode=AUTO, recorded_by là người vận hành camera; verified_by/verified_at=null. VisionScan AUTO_RECORDED khác CONFIRMED cũ. Luồng proposal/confirm v1.4 vẫn tương thích có chủ ý với ngưỡng 0.45/0.10; không lấy ngưỡng đó dùng cho auto. Không lưu frame/video/ảnh trong audit.
 
-UI demo cục bộ đã triển khai theo ngoại lệ được người dùng cho phép: Django shell tại `/` và CSS/JS trong app demo_ui, đăng nhập staff, tổng quan/điểm danh/học sinh/báo cáo; lịch và tạo/mở/chốt buổi; camera/upload → gợi ý → xác nhận bắt buộc → manual fallback; enrollment3–10ảnh, đồng phục và export qua API hiện có. STUDENT không dùng console và không được tăng quyền API. Chưa tuyên bố browser/full-suite/thiết bị thật đã đạt; evidence UI do lượt kiểm chứng riêng cung cấp. API giữ đường dẫn và scope, mở rộng metadata/metric có version. Chuẩn bị tương thích Vercel SQLite tạm được cho phép, chưa triển khai hosting. Kế hoạch [local demo UI](superpowers/plans/2026-10-18-local-demo-ui.md) ghi quyết định ngoại lệ; pha FRONTEND_LATER trong tracker là baseline lịch sử. [Hướng dẫn demo](huong-dan-demo-opencv.md) và [slide thuyết trình](thuyet-trinh-opencv.pptx) cung cấp setup, API requests, thuyết trình 5–7 phút và checklist thiết bị thật. Chưa có kết quả đo camera thực tế/độ chính xác/chống giả; các mục đó phải có log và người review trước khi đánh dấu hoàn tất. Không deploy, chia sẻ ngoài hoặc gửi lời mời/email.
+## 5. Đồng phục đúng trường
+
+HSV chỉ gợi ý legacy, không chứng minh mẫu/logo trường. Profile theo lớp có version ONNX bất biến; buổi OPEN đóng băng snapshot, selection mới áp dụng buổi mới. Giám thị quản lý dataset SHIRT/SPORTS/OTHER tách FaceSample. Ảnh gốc có mặt trên ROI áo, chỉ crop áo được lưu private; detector kiểm tra mặt và nhân sự phải xem lại crop vì phát hiện không bảo đảm tuyệt đối. Không dùng tên/ID học sinh làm capture_group. Chia train/val/test theo người/buổi, không rò ảnh augment.
+
+Quy trình offline: export private → kiểm manifest/hash/group split → train/fine-tune model nhẹ → test độc lập/OpenCV ONNX parity/latency → review logo/mẫu, đồng phục trường khác màu tương tự và che logo → import artifact/hash/evidence → chọn profile. Không train trong request, không worker. MobileNetV3-Small là baseline cần đo, không phải model trường có sẵn. Không publish dataset/model/review private lên GitHub. Hiện chưa có bộ ảnh trường; không đánh dấu nghiệm thu model chỉ vì có tooling.
+
+| Kết quả | Trạng thái | Giáo viên |
+| --- | --- | --- |
+| Hai ảnh rõ, nhất quán đúng yêu cầu buổi, model đủ điều kiện | COMPLIANT, uniform_source=AUTO | Không cần xác nhận |
+| Có bằng chứng, model tự tin sai mẫu/loại | REVIEW_REQUIRED | Ghi lý do để NON_COMPLIANT hoặc sửa cảnh báo sai |
+| Thiếu model/thân áo, chưa rõ/không nhất quán | NOT_CHECKED, UNKNOWN | Chụp lại hoặc kiểm tra thủ công |
+
+NON_COMPLIANT bắt buộc lý do nhân sự nhập. Không tự tạo lý do như thể giáo viên đã xác nhận. Quyết định thủ công có checked_by/uniform_source=MANUAL, không bị auto đè. Báo cáo tách REVIEW_REQUIRED/NOT_CHECKED khỏi vi phạm đã xác nhận.
+
+## 6. Demo, nghiệm thu và bằng chứng
+
+UI có tổng quan, điểm danh tự động, Đồng phục, lớp, học sinh/enrollment và báo cáo. Vercel demo dùng SQLite /tmp từng instance, có thể mất/lệch dữ liệu giữa request; không cam kết chia sẻ DB hay exactly-once toàn deployment. Vận hành thật cần DB dùng chung trong scope riêng. Model/dataset local không tự xuất hiện trên Vercel; thiếu model giữ Chưa kiểm tra. Người dùng tự deploy, lượt này không deploy.
+
+Nghiệm thu cần test role/CSRF/private ảnh, version/retry/concurrency/rollback, migration DB cũ, lịch sử, browser/camera và ảnh ngoài enrollment. Công bố precision/recall/coverage/UNKNOWN, số test và latency; synthetic/mocked workflow tests không chứng minh độ chính xác. Mục tiêu đề xuất uniform precision≥95% chỉ có ý nghĩa trên tập đã khai báo kèm coverage. Task thiếu bộ ảnh trường phải giữ chưa nghiệm thu. PM/API_Gate và validation kỹ thuật ghi riêng trong tracker/evidence.

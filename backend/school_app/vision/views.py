@@ -4,6 +4,22 @@ from school_app.students.services import require_student_profile
 from school_app.schedules.services import require_session
 
 
+@api_view('POST')
+def auto_scans(request, session_id):
+    require_session(request.user,session_id)
+    if (request.GET or set(request.POST) != {'scan_mode','expected_session_version'}
+            or any(len(request.POST.getlist(name)) != 1 for name in request.POST)
+            or set(request.FILES) != {'images'}):
+        raise AccountError('VALIDATION_ERROR','Submit two images, scan_mode and expected_session_version only.',422)
+    version = request.POST['expected_session_version']
+    if not version.isascii() or not version.isdigit() or len(version)>10:
+        raise AccountError('VALIDATION_ERROR','Expected session version must be an integer.',422)
+    from .auto_attendance import analyze_auto
+    body,status = analyze_auto(request.user,session_id,request.FILES.getlist('images'),
+        request.POST['scan_mode'],int(version),request.headers.get('Idempotency-Key'))
+    return json_response(body,status)
+
+
 @api_view('GET','POST','DELETE')
 def samples(request, student_id):
     require_student_profile(request.user,student_id)

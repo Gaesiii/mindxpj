@@ -1,0 +1,44 @@
+{
+  "status": "PASS",
+  "checked_at_utc": "2026-10-19T06:03:54.392675+00:00",
+  "database": "isolated temporary file-backed SQLite; migrated from zero",
+  "execution": "two threads, separate DB connections, real SQL write barriers",
+  "capacity_race": {
+    "workers": 2,
+    "capacity": 1,
+    "created": 1,
+    "capacity_conflicts": 1,
+    "active_students": 1,
+    "busy_retries": 0
+  },
+  "same_key_auto_race": {
+    "workers": 2,
+    "equal_response_body_and_status": true,
+    "response_status": 201,
+    "idempotency_claims": 1,
+    "attendance_version": 1,
+    "auto_recorded_scans": 1,
+    "auto_attendance_audits": 1,
+    "arrival_preserved_on_replay_and_new_key": true,
+    "busy_retries": 1
+  },
+  "real_components": [
+    "PNG decoding",
+    "scope/session/version checks",
+    "database transactions",
+    "unique idempotency claim",
+    "attendance write",
+    "scan and audit writes",
+    "uniform fallback without approved model"
+  ],
+  "controlled_workflow_mocks": [
+    "face extraction",
+    "face matching"
+  ],
+  "limitations": [
+    "No face or uniform accuracy claim; synthetic frames and controlled identity.",
+    "Threads in one process with local SQLite; not global serverless or multi-host persistence.",
+    "Service calls with bounded client-style busy retry; HTTP middleware is not exercised."
+  ],
+  "temporary_database_removed": true
+}

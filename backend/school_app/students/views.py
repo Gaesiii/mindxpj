@@ -12,17 +12,21 @@ def students_view(request):
         return json_response({"items": [services.serialize_student(row)
                              for row in services.list_students(request.user, request.GET)]})
     scoped_classes(request.user)
-    student = services.create_student(request.user, read_json(request, {"student_code", "full_name", "class_id"}))
+    student = services.create_student(request.user, read_json(request, {"student_code", "full_name", "class_id", "active"}))
     return json_response(services.serialize_student(student), 201)
 
 
-@api_view("GET", "PATCH")
+@api_view("GET", "PATCH", "DELETE")
 def student_view(request, student_id):
     if request.method == "GET":
         student = services.require_student_profile(request.user, student_id, allow_self=True)
         return json_response(services.serialize_student(student, minimal=request.user.role == Role.STUDENT))
     services.require_student_profile(request.user, student_id)
-    student = services.update_student(request.user, student_id, read_json(request, {"full_name", "active", "class_id"}))
+    if request.method == "DELETE":
+        student = services.archive_student(request.user,student_id,read_json(request,{"expected_version"}))
+    else:
+        student = services.update_student(request.user, student_id, read_json(request,
+            {"full_name", "active", "class_id", "student_code", "expected_version"}))
     return json_response(services.serialize_student(student))
 
 

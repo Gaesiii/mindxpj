@@ -51,6 +51,8 @@ def expire_pending(session_id):
 
 
 def require_open_today(session):
+    if not session.classroom.active:
+        raise AccountError('CLASS_ARCHIVED','Classroom is archived.',409)
     if session.status != 'OPEN':
         raise AccountError('SESSION_CLOSED','Vision requires an OPEN session.',409)
     if session.school_date != timezone.localdate():
@@ -166,6 +168,8 @@ def resolve(user, scan_id, payload, key, *, confirm):
             attendance.observed_uniform = attendance.uniform_reason = attendance.uniform_note = None
             attendance.checked_by_id = attendance.checked_at = None
             attendance.verified_by_id,attendance.verified_at = user.pk,now
+            attendance.recognition_mode='MANUAL_CONFIRM'
+            attendance.recorded_by_id=user.pk
             if 'uniform' in payload:
                 if isinstance(payload['uniform'],dict) and payload['uniform'].get('observed_uniform') == 'UNKNOWN':
                     invalid('UNKNOWN uniform must remain NOT_CHECKED; inspect before deciding.')
