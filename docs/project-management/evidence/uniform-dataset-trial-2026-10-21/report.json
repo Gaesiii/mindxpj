@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "source": "https://www.kaggle.com/datasets/sanjukumargiri/kendriya-vidyalaya-school-uniform-vs-nonuniform",
+  "source_license": "Unknown as reported by Kaggle; local experiment only; no redistribution",
+  "experiment_only": true,
+  "approved": false,
+  "production_imported": false,
+  "labels": [
+    "NON_UNIFORM",
+    "KV_UNIFORM"
+  ],
+  "architecture": "MobileNetV3 Small frozen ImageNet features + trained linear binary head",
+  "weights_sha256": "047dcff4addef86ea5bc2eff13c9614dc11f47ab1160d0a71a25e7db994f4e1f",
+  "manifest_sha256": "87d3f65efa9f285fe8bea83da58ab4c1f25578324d48fa66bdacc774e0b98164",
+  "model_sha256": "0b0bb07a3ab40d03a51104ba7d661d56590cd3ed0aae165429104b148351b14f",
+  "model_bytes": 3726424,
+  "seed": 2026,
+  "epochs": 150,
+  "best_validation_epoch": 150,
+  "threshold": 0.95,
+  "counts": {
+    "NON_UNIFORM": {
+      "train": 309,
+      "val": 66,
+      "test": 66
+    },
+    "KV_UNIFORM": {
+      "train": 74,
+      "val": 16,
+      "test": 16
+    }
+  },
+  "source_labeled_images": 2016,
+  "eligible_crops_before_deduplication": 603,
+  "duplicate_rows_removed": 56,
+  "skipped": {
+    "NOT_EXACTLY_ONE_FACE": 1412,
+    "INSUFFICIENT_TRAINING_CROP": 1
+  },
+  "strict_runtime_crop_counts": {
+    "NON_UNIFORM": 420,
+    "KV_UNIFORM": 12
+  },
+  "source_unlabeled_test_not_scored": 1000,
+  "confusion": [
+    [
+      66,
+      0
+    ],
+    [
+      0,
+      16
+    ]
+  ],
+  "accepted_confusion": [
+    [
+      63,
+      0
+    ],
+    [
+      0,
+      11
+    ]
+  ],
+  "metrics": {
+    "NON_UNIFORM": {
+      "precision_at_threshold": 1.0,
+      "recall_at_threshold": 0.9545454545454546,
+      "test_count": 66
+    },
+    "KV_UNIFORM": {
+      "precision_at_threshold": 1.0,
+      "recall_at_threshold": 0.6875,
+      "test_count": 16
+    }
+  },
+  "argmax_accuracy": 1.0,
+  "coverage": 0.9024390243902439,
+  "opencv_forward_ms_p50": 8.457949981675483,
+  "opencv_forward_ms_p95": 11.889835007605145,
+  "max_onnx_abs_error": 1.4066696166992188e-05,
+  "training_and_evaluation_seconds": 7.266563799988944,
+  "versions": {
+    "python": "3.12.2",
+    "torch": "2.6.0+cpu",
+    "opencv": "4.13.0",
+    "numpy": "2.2.6"
+  },
+  "limitations": [
+    "Binary external labels, not project SHIRT/SPORTS/OTHER.",
+    "Perceptual grouping does not establish different people/sessions.",
+    "Training crop allows low-resolution/clipped torso; stricter runtime crop is measured separately and unchanged.",
+    "Selection bias: only a single detected face and usable torso crops are retained.",
+    "Automatic face exclusion is fallible; retained crops need private human inspection.",
+    "CPU forward-only warmed timing excludes detection, crop, preprocessing, HTTP and two-frame gating.",
+    "Not a model for the target school; SPORTS class absent; license unresolved; cannot pass production school-profile import."
+  ]
+}

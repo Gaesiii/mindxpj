@@ -1,0 +1,14 @@
+{
+  "script_sha256": "9b31b8dc1263c69c3488f52b2428d22bc8d76006ffeaa2ea5bddba19c0f8a702",
+  "checked_prepared_image_count": 547,
+  "checked_test_predictions": 82,
+  "correct_thresholded_decisions": 74,
+  "abstentions": 8,
+  "artifact_and_manifest_hashes_verified": true,
+  "backend_and_production_training_tooling_unchanged": true,
+  "software_tests": {
+    "command": "manage.py test tests.test_school_uniform tests.test_uniforms --verbosity 1",
+    "passed": 23
+  },
+  "review": "Inline technical review of actual outputs and production import guard; no PM/model approval."
+}

@@ -1,0 +1,41 @@
+{
+  "controls": [
+    {
+      "control": "blank_gray",
+      "classifier_decision": "UNKNOWN",
+      "confidence": 0.5378302335739136
+    },
+    {
+      "control": "blank_white",
+      "classifier_decision": "UNKNOWN",
+      "confidence": 0.5635130405426025
+    },
+    {
+      "control": "blank_black",
+      "classifier_decision": "UNKNOWN",
+      "confidence": 0.675517201423645
+    },
+    {
+      "control": "random_noise",
+      "classifier_decision": "NON_UNIFORM",
+      "confidence": 0.9811218976974487
+    }
+  ],
+  "production_import_guard": {
+    "rejected": true,
+    "reason": "Artifact integrity, minimum precision or school-specific approval evidence missing"
+  },
+  "existing_runtime_without_approved_profile": {
+    "observed_uniform": "UNKNOWN",
+    "uniform_status": "NOT_CHECKED",
+    "confidence": null,
+    "reason": "NO_APPROVED_MODEL",
+    "profile_version": null
+  },
+  "strict_runtime_crop_test_counts": {
+    "NON_UNIFORM": 65,
+    "KV_UNIFORM": 4
+  },
+  "raw_dataset_split_labels": "Original test folder unlabeled; custom grouped train/validation/test made from original labeled train folder.",
+  "no_database_writes": true
+}

@@ -1,0 +1,19 @@
+{
+  "source": "https://www.kaggle.com/datasets/sanjukumargiri/kendriya-vidyalaya-school-uniform-vs-nonuniform",
+  "creator": "Sanju Kumar Giri (Kaggle: sanjukumargiri)",
+  "download_date": "2026-10-21",
+  "license_name": "Unknown (Kaggle API metadata)",
+  "redistribution_allowed_verified": false,
+  "purpose": "User-authorized local research trial only; not production school approval",
+  "archive_bytes": 199442311,
+  "archive_sha256": "2d47b2c200694edc5a2a7df5c8b8e1eb8b80bf666f6e8df586cd164e774365e9",
+  "label_mapping": {
+    "normal.*.jpg": "NON_UNIFORM",
+    "school.*.jpg": "KV_UNIFORM"
+  },
+  "unlabeled_test": "Dataset/test filenames do not encode labels; not scored as labeled test",
+  "imagenet_weights_source": "https://download.pytorch.org/models/mobilenet_v3_small-047dcff4.pth",
+  "imagenet_weights_sha256": "047dcff4addef86ea5bc2eff13c9614dc11f47ab1160d0a71a25e7db994f4e1f",
+  "label_mapping_evidence": "https://github.com/Sanju-Kumar-Giri/School-Uniform-Identification-using-Deep-Learning-based-Approach/blob/main/CODE/School_vs_Normal_Classification_using_CNN.ipynb",
+  "preparation_protocol": "Single YuNet face; torso only; current strict runtime torso rules counted separately; data-only fallback permits min face12px and torso24px with bounds clipping; no production gate changed."
+}

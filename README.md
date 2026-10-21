@@ -26,3 +26,5 @@ Member1: accounts/academics/students/reports; Member2: schedules/attendance/visi
 - [So sánh engine với source Face Attendance (21/10/2026)](docs/so-sanh-nhan-dien-face-attendance-2026-10-21.md): giữ YuNet + SFace theo kết quả benchmark local.
 
 - [Khảo sát GitHub nhận diện đồng phục qua camera (21/10/2026)](docs/nghien-cuu-github-nhan-dien-dong-phuc-2026-10-21.md).
+
+- [Thử nghiệm dataset đồng phục KV (21/10/2026)](docs/thu-nghiem-dataset-dong-phuc-kv-2026-10-21.md): dataset/model local, kết quả và cách test ảnh.
