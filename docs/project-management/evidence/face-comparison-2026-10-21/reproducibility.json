@@ -1,0 +1,17 @@
+{
+  "baseline_commit": "94cee7e932558c74364e690e5c8d03c6c598205d",
+  "benchmark_script_sha256": "78001c4598b8adb27842447d7f543c0fb4b0e379a177058fd1145ec93caf34f3",
+  "results_sha256": "3019a3f56fd860fc918b174a87e314ed42a34a08c1775f861fa7543e9bc91218",
+  "local_jpeg_sha256": {
+    "01-enroll/01-obama-2012.jpg": "0930e3aa8cae5920329c0c8cbc6a2ab70f47b0e67b432875beaa95cbf7e741f6",
+    "01-enroll/02-obama-speech.jpg": "a7efcc907375274796f39646510704aa86672d59f6d5469d69af3c85590976a6",
+    "01-enroll/03-obama-2009.jpg": "1ae6557acb9a44b9fafaf55f6b4a806c95cef51be038a152dc791dba3166400a",
+    "02-scan/multiple-detections.jpg": "76ac6bf97c36dc2da0ad16a537d6a5ac1b10f48d49aac29a0cca9a17cdbc3ca3",
+    "02-scan/no-face.jpg": "c2d1f09e7ef3042352b41e41286e6eb0522f64f88308be13886991b95db52117",
+    "02-scan/unknown-person.jpg": "3c17508bb91554c637a2eabddfae790e5bb1caba93130814fc2ac50be9760c4c",
+    "demo/1753240560-trump-67651-width698height558.jpg": "69f9b66f063b9cbf62db0e37a7f9fbeb668a7f3463623d76549ad728ccdffb80",
+    "demo/1f64783ac2712b2f7260.jpg": "025019357966eec997b0d187210cd3f1d67e6e5f9df1fcba23896b75709b1167",
+    "demo/qiamz8htjhpu1jluumkx832nphpje7pk20260926081546.jpg": "76b05681c2888a47ce5ea20ba03cb1ed49d776e4e66ed3f9c268578c5cbbe670"
+  },
+  "note": "Hashes only; local photo files are not published. See report for selected files and generated transforms."
+}

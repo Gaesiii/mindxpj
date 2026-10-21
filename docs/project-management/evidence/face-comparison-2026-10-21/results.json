@@ -1,0 +1,2773 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "94cee7e",
+  "runs": {
+    "production_current": {
+      "variant": "current",
+      "python": "3.12.2",
+      "opencv": "4.13.0",
+      "numpy": "2.2.6",
+      "opencv_threads": 1,
+      "initialization": {
+        "wall_ms": 1069.488,
+        "cpu_ms": 843.75,
+        "memory": {
+          "working_set_bytes": 267005952,
+          "peak_working_set_bytes": 267010048
+        }
+      },
+      "enrollment": {
+        "wall_ms": 319.265,
+        "cpu_ms": 328.125,
+        "dimensions": [
+          128,
+          128,
+          128
+        ],
+        "independent_photos": 3,
+        "stored_vectors": 3,
+        "memory": {
+          "working_set_bytes": 374915072,
+          "peak_working_set_bytes": 387280896
+        }
+      },
+      "metrics": {
+        "original": {
+          "known_probes": 2,
+          "correct_known_accepts": 2,
+          "known_rejections": 0,
+          "unknown_probes": 2,
+          "false_unknown_accepts": 0,
+          "unsafe_control_accepts": 0
+        },
+        "control": {
+          "known_probes": 0,
+          "correct_known_accepts": 0,
+          "known_rejections": 0,
+          "unknown_probes": 0,
+          "false_unknown_accepts": 0,
+          "unsafe_control_accepts": 0
+        },
+        "derived_stress": {
+          "known_probes": 10,
+          "correct_known_accepts": 9,
+          "known_rejections": 1,
+          "unknown_probes": 10,
+          "false_unknown_accepts": 0,
+          "unsafe_control_accepts": 0
+        },
+        "legacy_diagnostic": {
+          "known_probes": 2,
+          "correct_known_accepts": 2,
+          "known_rejections": 0,
+          "unknown_probes": 0,
+          "false_unknown_accepts": 0,
+          "unsafe_control_accepts": 0
+        }
+      },
+      "latency_all_probes_ms": {
+        "p50": 37.081,
+        "p95": 46.272
+      },
+      "pair_observations": {
+        "held_out_known": {
+          "all_recognized_as_known": true,
+          "note": "Per-image consistency only; current API additionally rejects different identities and duplicate bytes."
+        },
+        "unseen_people": {
+          "all_recognized_as_known": false,
+          "note": "Per-image consistency only; current API additionally rejects different identities and duplicate bytes."
+        }
+      },
+      "probes": [
+        {
+          "probe": "positive_1",
+          "truth": "known",
+          "group": "original",
+          "accepted": true,
+          "score": 0.697729,
+          "reason": null,
+          "encoding_dimension": 128,
+          "wall_ms_median": 45.571,
+          "wall_ms_samples": [
+            49.024,
+            45.571,
+            44.106
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "positive_2",
+          "truth": "known",
+          "group": "original",
+          "accepted": true,
+          "score": 0.659822,
+          "reason": null,
+          "encoding_dimension": 128,
+          "wall_ms_median": 32.557,
+          "wall_ms_samples": [
+            38.828,
+            32.286,
+            32.557
+          ],
+          "cpu_ms_median": 31.25
+        },
+        {
+          "probe": "negative_1",
+          "truth": "unknown",
+          "group": "original",
+          "accepted": false,
+          "score": 0.295977,
+          "reason": "UNKNOWN_FACE",
+          "encoding_dimension": 128,
+          "wall_ms_median": 35.629,
+          "wall_ms_samples": [
+            37.796,
+            34.765,
+            35.629
+          ],
+          "cpu_ms_median": 31.25
+        },
+        {
+          "probe": "negative_2",
+          "truth": "unknown",
+          "group": "original",
+          "accepted": false,
+          "score": 0.179193,
+          "reason": "UNKNOWN_FACE",
+          "encoding_dimension": 128,
+          "wall_ms_median": 43.821,
+          "wall_ms_samples": [
+            43.821,
+            39.948,
+            43.995
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "legacy_partial_portrait",
+          "truth": "known",
+          "group": "legacy_diagnostic",
+          "accepted": true,
+          "score": 0.900606,
+          "reason": null,
+          "encoding_dimension": 128,
+          "wall_ms_median": 36.72,
+          "wall_ms_samples": [
+            36.72,
+            37.817,
+            35.464
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "legacy_single_portrait",
+          "truth": "known",
+          "group": "legacy_diagnostic",
+          "accepted": true,
+          "score": 0.800939,
+          "reason": null,
+          "encoding_dimension": 128,
+          "wall_ms_median": 44.16,
+          "wall_ms_samples": [
+            44.16,
+            40.368,
+            48.003
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "generated_blank",
+          "truth": "no_face",
+          "group": "control",
+          "accepted": false,
+          "score": null,
+          "reason": "NO_FACE",
+          "encoding_dimension": null,
+          "wall_ms_median": 20.648,
+          "wall_ms_samples": [
+            20.648,
+            18.12,
+            21.8
+          ],
+          "cpu_ms_median": 15.625
+        },
+        {
+          "probe": "generated_two_faces",
+          "truth": "multiple",
+          "group": "control",
+          "accepted": false,
+          "score": null,
+          "reason": "MULTIPLE_FACES",
+          "encoding_dimension": null,
+          "wall_ms_median": 18.37,
+          "wall_ms_samples": [
+            34.905,
+            18.133,
+            18.37
+          ],
+          "cpu_ms_median": 15.625
+        },
+        {
+          "probe": "positive_1_light_0.65",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.702334,
+          "reason": null,
+          "encoding_dimension": 128,
+          "wall_ms_median": 45.472,
+          "wall_ms_samples": [
+            49.083,
+            45.472,
+            45.051
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "positive_1_light_1.3",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.721085,
+          "reason": null,
+          "encoding_dimension": 128,
+          "wall_ms_median": 45.25,
+          "wall_ms_samples": [
+            46.309,
+            45.25,
+            44.448
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "positive_1_roll_-12",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.733021,
+          "reason": null,
+          "encoding_dimension": 128,
+          "wall_ms_median": 45.288,
+          "wall_ms_samples": [
+            45.288,
+            44.077,
+            48.679
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "positive_1_roll_12",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.675602,
+          "reason": null,
+          "encoding_dimension": 128,
+          "wall_ms_median": 44.403,
+          "wall_ms_samples": [
+            44.393,
+            45.745,
+            44.403
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "positive_1_blur",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.720369,
+          "reason": null,
+          "encoding_dimension": 128,
+          "wall_ms_median": 44.546,
+          "wall_ms_samples": [
+            43.511,
+            46.061,
+            44.546
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "positive_2_light_0.65",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.645669,
+          "reason": null,
+          "encoding_dimension": 128,
+          "wall_ms_median": 33.204,
+          "wall_ms_samples": [
+            37.044,
+            32.762,
+            33.204
+          ],
+          "cpu_ms_median": 31.25
+        },
+        {
+          "probe": "positive_2_light_1.3",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.662792,
+          "reason": null,
+          "encoding_dimension": 128,
+          "wall_ms_median": 33.072,
+          "wall_ms_samples": [
+            33.336,
+            32.021,
+            33.072
+          ],
+          "cpu_ms_median": 31.25
+        },
+        {
+          "probe": "positive_2_roll_-12",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.645758,
+          "reason": null,
+          "encoding_dimension": 128,
+          "wall_ms_median": 33.461,
+          "wall_ms_samples": [
+            35.811,
+            32.478,
+            33.461
+          ],
+          "cpu_ms_median": 31.25
+        },
+        {
+          "probe": "positive_2_roll_12",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.615949,
+          "reason": null,
+          "encoding_dimension": 128,
+          "wall_ms_median": 32.532,
+          "wall_ms_samples": [
+            32.784,
+            32.532,
+            32.302
+          ],
+          "cpu_ms_median": 31.25
+        },
+        {
+          "probe": "positive_2_blur",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": null,
+          "reason": "BLURRY_FACE",
+          "encoding_dimension": null,
+          "wall_ms_median": 9.615,
+          "wall_ms_samples": [
+            9.615,
+            9.4,
+            9.711
+          ],
+          "cpu_ms_median": 15.625
+        },
+        {
+          "probe": "negative_1_light_0.65",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.272264,
+          "reason": "UNKNOWN_FACE",
+          "encoding_dimension": 128,
+          "wall_ms_median": 35.921,
+          "wall_ms_samples": [
+            37.118,
+            34.104,
+            35.921
+          ],
+          "cpu_ms_median": 31.25
+        },
+        {
+          "probe": "negative_1_light_1.3",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.29097,
+          "reason": "UNKNOWN_FACE",
+          "encoding_dimension": 128,
+          "wall_ms_median": 34.518,
+          "wall_ms_samples": [
+            34.934,
+            34.518,
+            34.131
+          ],
+          "cpu_ms_median": 31.25
+        },
+        {
+          "probe": "negative_1_roll_-12",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.195696,
+          "reason": "UNKNOWN_FACE",
+          "encoding_dimension": 128,
+          "wall_ms_median": 34.313,
+          "wall_ms_samples": [
+            34.274,
+            34.313,
+            38.898
+          ],
+          "cpu_ms_median": 31.25
+        },
+        {
+          "probe": "negative_1_roll_12",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.252018,
+          "reason": "UNKNOWN_FACE",
+          "encoding_dimension": 128,
+          "wall_ms_median": 34.403,
+          "wall_ms_samples": [
+            34.382,
+            34.403,
+            37.974
+          ],
+          "cpu_ms_median": 31.25
+        },
+        {
+          "probe": "negative_1_blur",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": null,
+          "reason": "BLURRY_FACE",
+          "encoding_dimension": null,
+          "wall_ms_median": 11.365,
+          "wall_ms_samples": [
+            14.239,
+            11.365,
+            11.297
+          ],
+          "cpu_ms_median": 15.625
+        },
+        {
+          "probe": "negative_2_light_0.65",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.208853,
+          "reason": "UNKNOWN_FACE",
+          "encoding_dimension": 128,
+          "wall_ms_median": 41.847,
+          "wall_ms_samples": [
+            43.563,
+            41.847,
+            40.022
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "negative_2_light_1.3",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.1528,
+          "reason": "UNKNOWN_FACE",
+          "encoding_dimension": 128,
+          "wall_ms_median": 41.273,
+          "wall_ms_samples": [
+            39.695,
+            41.273,
+            41.741
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "negative_2_roll_-12",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.20351,
+          "reason": "UNKNOWN_FACE",
+          "encoding_dimension": 128,
+          "wall_ms_median": 41.457,
+          "wall_ms_samples": [
+            42.346,
+            41.457,
+            40.714
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "negative_2_roll_12",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.183668,
+          "reason": "UNKNOWN_FACE",
+          "encoding_dimension": 128,
+          "wall_ms_median": 41.153,
+          "wall_ms_samples": [
+            39.702,
+            43.483,
+            41.153
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "negative_2_blur",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": null,
+          "reason": "BLURRY_FACE",
+          "encoding_dimension": null,
+          "wall_ms_median": 17.632,
+          "wall_ms_samples": [
+            17.415,
+            17.632,
+            19.936
+          ],
+          "cpu_ms_median": 15.625
+        }
+      ],
+      "final_memory": {
+        "working_set_bytes": 373936128,
+        "peak_working_set_bytes": 387280896
+      },
+      "no_database_or_physical_camera_access": true,
+      "child_total_wall_ms": 4501.552
+    },
+    "shared_runtime_current": {
+      "variant": "current",
+      "python": "3.14.0",
+      "opencv": "4.11.0",
+      "numpy": "1.26.4",
+      "opencv_threads": 1,
+      "initialization": {
+        "wall_ms": 1061.392,
+        "cpu_ms": 1078.125,
+        "memory": {
+          "working_set_bytes": 273633280,
+          "peak_working_set_bytes": 273637376
+        }
+      },
+      "enrollment": {
+        "wall_ms": 335.142,
+        "cpu_ms": 328.125,
+        "dimensions": [
+          128,
+          128,
+          128
+        ],
+        "independent_photos": 3,
+        "stored_vectors": 3,
+        "memory": {
+          "working_set_bytes": 382009344,
+          "peak_working_set_bytes": 394182656
+        }
+      },
+      "metrics": {
+        "original": {
+          "known_probes": 2,
+          "correct_known_accepts": 2,
+          "known_rejections": 0,
+          "unknown_probes": 2,
+          "false_unknown_accepts": 0,
+          "unsafe_control_accepts": 0
+        },
+        "control": {
+          "known_probes": 0,
+          "correct_known_accepts": 0,
+          "known_rejections": 0,
+          "unknown_probes": 0,
+          "false_unknown_accepts": 0,
+          "unsafe_control_accepts": 0
+        },
+        "derived_stress": {
+          "known_probes": 10,
+          "correct_known_accepts": 9,
+          "known_rejections": 1,
+          "unknown_probes": 10,
+          "false_unknown_accepts": 0,
+          "unsafe_control_accepts": 0
+        },
+        "legacy_diagnostic": {
+          "known_probes": 2,
+          "correct_known_accepts": 2,
+          "known_rejections": 0,
+          "unknown_probes": 0,
+          "false_unknown_accepts": 0,
+          "unsafe_control_accepts": 0
+        }
+      },
+      "latency_all_probes_ms": {
+        "p50": 38.544,
+        "p95": 49.194
+      },
+      "pair_observations": {
+        "held_out_known": {
+          "all_recognized_as_known": true,
+          "note": "Per-image consistency only; current API additionally rejects different identities and duplicate bytes."
+        },
+        "unseen_people": {
+          "all_recognized_as_known": false,
+          "note": "Per-image consistency only; current API additionally rejects different identities and duplicate bytes."
+        }
+      },
+      "probes": [
+        {
+          "probe": "positive_1",
+          "truth": "known",
+          "group": "original",
+          "accepted": true,
+          "score": 0.697729,
+          "reason": null,
+          "encoding_dimension": 128,
+          "wall_ms_median": 47.958,
+          "wall_ms_samples": [
+            52.509,
+            47.958,
+            47.878
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "positive_2",
+          "truth": "known",
+          "group": "original",
+          "accepted": true,
+          "score": 0.659822,
+          "reason": null,
+          "encoding_dimension": 128,
+          "wall_ms_median": 35.822,
+          "wall_ms_samples": [
+            38.819,
+            35.822,
+            34.289
+          ],
+          "cpu_ms_median": 31.25
+        },
+        {
+          "probe": "negative_1",
+          "truth": "unknown",
+          "group": "original",
+          "accepted": false,
+          "score": 0.295977,
+          "reason": "UNKNOWN_FACE",
+          "encoding_dimension": 128,
+          "wall_ms_median": 36.68,
+          "wall_ms_samples": [
+            40.282,
+            35.584,
+            36.68
+          ],
+          "cpu_ms_median": 31.25
+        },
+        {
+          "probe": "negative_2",
+          "truth": "unknown",
+          "group": "original",
+          "accepted": false,
+          "score": 0.179193,
+          "reason": "UNKNOWN_FACE",
+          "encoding_dimension": 128,
+          "wall_ms_median": 44.723,
+          "wall_ms_samples": [
+            44.723,
+            43.145,
+            49.222
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "legacy_partial_portrait",
+          "truth": "known",
+          "group": "legacy_diagnostic",
+          "accepted": true,
+          "score": 0.900606,
+          "reason": null,
+          "encoding_dimension": 128,
+          "wall_ms_median": 39.027,
+          "wall_ms_samples": [
+            39.027,
+            35.709,
+            40.175
+          ],
+          "cpu_ms_median": 31.25
+        },
+        {
+          "probe": "legacy_single_portrait",
+          "truth": "known",
+          "group": "legacy_diagnostic",
+          "accepted": true,
+          "score": 0.800939,
+          "reason": null,
+          "encoding_dimension": 128,
+          "wall_ms_median": 44.899,
+          "wall_ms_samples": [
+            44.899,
+            43.323,
+            45.438
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "generated_blank",
+          "truth": "no_face",
+          "group": "control",
+          "accepted": false,
+          "score": null,
+          "reason": "NO_FACE",
+          "encoding_dimension": null,
+          "wall_ms_median": 18.587,
+          "wall_ms_samples": [
+            21.338,
+            18.587,
+            18.068
+          ],
+          "cpu_ms_median": 15.625
+        },
+        {
+          "probe": "generated_two_faces",
+          "truth": "multiple",
+          "group": "control",
+          "accepted": false,
+          "score": null,
+          "reason": "MULTIPLE_FACES",
+          "encoding_dimension": null,
+          "wall_ms_median": 17.797,
+          "wall_ms_samples": [
+            17.797,
+            17.931,
+            17.686
+          ],
+          "cpu_ms_median": 15.625
+        },
+        {
+          "probe": "positive_1_light_0.65",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.702334,
+          "reason": null,
+          "encoding_dimension": 128,
+          "wall_ms_median": 48.025,
+          "wall_ms_samples": [
+            50.203,
+            48.025,
+            45.874
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "positive_1_light_1.3",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.721085,
+          "reason": null,
+          "encoding_dimension": 128,
+          "wall_ms_median": 48.471,
+          "wall_ms_samples": [
+            52.85,
+            48.471,
+            46.06
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "positive_1_roll_-12",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.733021,
+          "reason": null,
+          "encoding_dimension": 128,
+          "wall_ms_median": 47.38,
+          "wall_ms_samples": [
+            46.736,
+            47.38,
+            48.174
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "positive_1_roll_12",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.675602,
+          "reason": null,
+          "encoding_dimension": 128,
+          "wall_ms_median": 48.078,
+          "wall_ms_samples": [
+            46.528,
+            48.078,
+            48.2
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "positive_1_blur",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.720369,
+          "reason": null,
+          "encoding_dimension": 128,
+          "wall_ms_median": 49.037,
+          "wall_ms_samples": [
+            49.037,
+            49.542,
+            48.722
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "positive_2_light_0.65",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.645669,
+          "reason": null,
+          "encoding_dimension": 128,
+          "wall_ms_median": 35.611,
+          "wall_ms_samples": [
+            37.347,
+            35.611,
+            34.211
+          ],
+          "cpu_ms_median": 31.25
+        },
+        {
+          "probe": "positive_2_light_1.3",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.662792,
+          "reason": null,
+          "encoding_dimension": 128,
+          "wall_ms_median": 36.764,
+          "wall_ms_samples": [
+            35.215,
+            38.006,
+            36.764
+          ],
+          "cpu_ms_median": 31.25
+        },
+        {
+          "probe": "positive_2_roll_-12",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.645758,
+          "reason": null,
+          "encoding_dimension": 128,
+          "wall_ms_median": 34.239,
+          "wall_ms_samples": [
+            36.331,
+            33.97,
+            34.239
+          ],
+          "cpu_ms_median": 31.25
+        },
+        {
+          "probe": "positive_2_roll_12",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.615949,
+          "reason": null,
+          "encoding_dimension": 128,
+          "wall_ms_median": 34.786,
+          "wall_ms_samples": [
+            34.786,
+            36.464,
+            34.051
+          ],
+          "cpu_ms_median": 31.25
+        },
+        {
+          "probe": "positive_2_blur",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": null,
+          "reason": "BLURRY_FACE",
+          "encoding_dimension": null,
+          "wall_ms_median": 10.396,
+          "wall_ms_samples": [
+            10.396,
+            9.939,
+            11.375
+          ],
+          "cpu_ms_median": 15.625
+        },
+        {
+          "probe": "negative_1_light_0.65",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.272264,
+          "reason": "UNKNOWN_FACE",
+          "encoding_dimension": 128,
+          "wall_ms_median": 36.937,
+          "wall_ms_samples": [
+            40.547,
+            35.616,
+            36.937
+          ],
+          "cpu_ms_median": 31.25
+        },
+        {
+          "probe": "negative_1_light_1.3",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.29097,
+          "reason": "UNKNOWN_FACE",
+          "encoding_dimension": 128,
+          "wall_ms_median": 36.57,
+          "wall_ms_samples": [
+            35.791,
+            36.57,
+            39.401
+          ],
+          "cpu_ms_median": 31.25
+        },
+        {
+          "probe": "negative_1_roll_-12",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.195696,
+          "reason": "UNKNOWN_FACE",
+          "encoding_dimension": 128,
+          "wall_ms_median": 37.942,
+          "wall_ms_samples": [
+            37.942,
+            36.468,
+            38.269
+          ],
+          "cpu_ms_median": 31.25
+        },
+        {
+          "probe": "negative_1_roll_12",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.252018,
+          "reason": "UNKNOWN_FACE",
+          "encoding_dimension": 128,
+          "wall_ms_median": 35.858,
+          "wall_ms_samples": [
+            35.858,
+            36.086,
+            35.706
+          ],
+          "cpu_ms_median": 31.25
+        },
+        {
+          "probe": "negative_1_blur",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": null,
+          "reason": "BLURRY_FACE",
+          "encoding_dimension": null,
+          "wall_ms_median": 12.411,
+          "wall_ms_samples": [
+            13.274,
+            12.411,
+            11.912
+          ],
+          "cpu_ms_median": 15.625
+        },
+        {
+          "probe": "negative_2_light_0.65",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.208853,
+          "reason": "UNKNOWN_FACE",
+          "encoding_dimension": 128,
+          "wall_ms_median": 42.495,
+          "wall_ms_samples": [
+            45.538,
+            42.212,
+            42.495
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "negative_2_light_1.3",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.1528,
+          "reason": "UNKNOWN_FACE",
+          "encoding_dimension": 128,
+          "wall_ms_median": 42.314,
+          "wall_ms_samples": [
+            41.71,
+            42.314,
+            42.824
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "negative_2_roll_-12",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.20351,
+          "reason": "UNKNOWN_FACE",
+          "encoding_dimension": 128,
+          "wall_ms_median": 44.099,
+          "wall_ms_samples": [
+            44.839,
+            42.302,
+            44.099
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "negative_2_roll_12",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.183668,
+          "reason": "UNKNOWN_FACE",
+          "encoding_dimension": 128,
+          "wall_ms_median": 45.084,
+          "wall_ms_samples": [
+            45.084,
+            47.206,
+            42.068
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "negative_2_blur",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": null,
+          "reason": "BLURRY_FACE",
+          "encoding_dimension": null,
+          "wall_ms_median": 18.456,
+          "wall_ms_samples": [
+            18.236,
+            18.575,
+            18.456
+          ],
+          "cpu_ms_median": 15.625
+        }
+      ],
+      "final_memory": {
+        "working_set_bytes": 381333504,
+        "peak_working_set_bytes": 394182656
+      },
+      "no_database_or_physical_camera_access": true,
+      "child_total_wall_ms": 4680.749
+    },
+    "reference_dlib": {
+      "variant": "reference_dlib",
+      "python": "3.14.0",
+      "opencv": "4.11.0",
+      "numpy": "1.26.4",
+      "opencv_threads": 1,
+      "initialization": {
+        "wall_ms": 2264.266,
+        "cpu_ms": 2281.25,
+        "memory": {
+          "working_set_bytes": 393351168,
+          "peak_working_set_bytes": 393355264
+        }
+      },
+      "enrollment": {
+        "wall_ms": 907.367,
+        "cpu_ms": 906.25,
+        "dimensions": [
+          128,
+          128,
+          128
+        ],
+        "independent_photos": 1,
+        "stored_vectors": 3,
+        "memory": {
+          "working_set_bytes": 403587072,
+          "peak_working_set_bytes": 408629248
+        }
+      },
+      "metrics": {
+        "original": {
+          "known_probes": 2,
+          "correct_known_accepts": 1,
+          "known_rejections": 1,
+          "unknown_probes": 2,
+          "false_unknown_accepts": 0,
+          "unsafe_control_accepts": 0
+        },
+        "control": {
+          "known_probes": 0,
+          "correct_known_accepts": 0,
+          "known_rejections": 0,
+          "unknown_probes": 0,
+          "false_unknown_accepts": 0,
+          "unsafe_control_accepts": 1
+        },
+        "derived_stress": {
+          "known_probes": 10,
+          "correct_known_accepts": 7,
+          "known_rejections": 3,
+          "unknown_probes": 10,
+          "false_unknown_accepts": 0,
+          "unsafe_control_accepts": 0
+        },
+        "legacy_diagnostic": {
+          "known_probes": 2,
+          "correct_known_accepts": 2,
+          "known_rejections": 0,
+          "unknown_probes": 0,
+          "false_unknown_accepts": 0,
+          "unsafe_control_accepts": 0
+        }
+      },
+      "latency_all_probes_ms": {
+        "p50": 276.127,
+        "p95": 296.95
+      },
+      "pair_observations": {
+        "held_out_known": {
+          "all_recognized_as_known": false,
+          "note": "Per-image consistency only; current API additionally rejects different identities and duplicate bytes."
+        },
+        "unseen_people": {
+          "all_recognized_as_known": false,
+          "note": "Per-image consistency only; current API additionally rejects different identities and duplicate bytes."
+        }
+      },
+      "probes": [
+        {
+          "probe": "positive_1",
+          "truth": "known",
+          "group": "original",
+          "accepted": true,
+          "score": 0.4889957904815674,
+          "reason": null,
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 278.77,
+          "wall_ms_samples": [
+            276.602,
+            293.528,
+            278.77
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "positive_2",
+          "truth": "known",
+          "group": "original",
+          "accepted": false,
+          "score": 0.5572396516799927,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 283.25,
+          "wall_ms_samples": [
+            283.25,
+            280.039,
+            293.232
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "negative_1",
+          "truth": "unknown",
+          "group": "original",
+          "accepted": false,
+          "score": 0.880304753780365,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 273.533,
+          "wall_ms_samples": [
+            291.923,
+            269.805,
+            273.533
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "negative_2",
+          "truth": "unknown",
+          "group": "original",
+          "accepted": false,
+          "score": 1.4243346452713013,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 2336,
+          "mixed_encoding_dimensions": true,
+          "wall_ms_median": 46.32,
+          "wall_ms_samples": [
+            46.32,
+            45.819,
+            49.644
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "legacy_partial_portrait",
+          "truth": "known",
+          "group": "legacy_diagnostic",
+          "accepted": true,
+          "score": 0.34003081917762756,
+          "reason": null,
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 280.657,
+          "wall_ms_samples": [
+            273.194,
+            280.657,
+            300.302
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "legacy_single_portrait",
+          "truth": "known",
+          "group": "legacy_diagnostic",
+          "accepted": true,
+          "score": 0.33631765842437744,
+          "reason": null,
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 289.669,
+          "wall_ms_samples": [
+            297.423,
+            289.669,
+            275.935
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "generated_blank",
+          "truth": "no_face",
+          "group": "control",
+          "accepted": false,
+          "score": null,
+          "reason": "NO_FACE",
+          "encoding_dimension": null,
+          "wall_ms_median": 9.542,
+          "wall_ms_samples": [
+            9.171,
+            9.542,
+            10.012
+          ],
+          "cpu_ms_median": 15.625
+        },
+        {
+          "probe": "generated_two_faces",
+          "truth": "multiple",
+          "group": "control",
+          "accepted": true,
+          "score": 0.08425185084342957,
+          "reason": null,
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 276.488,
+          "wall_ms_samples": [
+            280.369,
+            276.488,
+            276.445
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "positive_1_light_0.65",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.49662014842033386,
+          "reason": null,
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 276.271,
+          "wall_ms_samples": [
+            270.879,
+            276.271,
+            285.964
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "positive_1_light_1.3",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.49001598358154297,
+          "reason": null,
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 278.703,
+          "wall_ms_samples": [
+            284.16,
+            273.966,
+            278.703
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "positive_1_roll_-12",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.48565974831581116,
+          "reason": null,
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 281.939,
+          "wall_ms_samples": [
+            279.438,
+            281.939,
+            284.406
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "positive_1_roll_12",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.48295092582702637,
+          "reason": null,
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 281.095,
+          "wall_ms_samples": [
+            276.076,
+            281.095,
+            285.143
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "positive_1_blur",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.48563551902770996,
+          "reason": null,
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 277.062,
+          "wall_ms_samples": [
+            277.062,
+            274.04,
+            280.655
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "positive_2_light_0.65",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.5625467896461487,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 278.059,
+          "wall_ms_samples": [
+            285.003,
+            278.059,
+            273.973
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "positive_2_light_1.3",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.549564003944397,
+          "reason": null,
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 267.289,
+          "wall_ms_samples": [
+            267.289,
+            270.564,
+            265.88
+          ],
+          "cpu_ms_median": 265.625
+        },
+        {
+          "probe": "positive_2_roll_-12",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.5551542639732361,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 265.96,
+          "wall_ms_samples": [
+            265.345,
+            271.55,
+            265.96
+          ],
+          "cpu_ms_median": 265.625
+        },
+        {
+          "probe": "positive_2_roll_12",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": null,
+          "reason": "NO_FACE",
+          "encoding_dimension": null,
+          "wall_ms_median": 4.356,
+          "wall_ms_samples": [
+            4.356,
+            4.382,
+            4.354
+          ],
+          "cpu_ms_median": 0.0
+        },
+        {
+          "probe": "positive_2_blur",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.5421063303947449,
+          "reason": null,
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 276.303,
+          "wall_ms_samples": [
+            276.303,
+            282.023,
+            265.981
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "negative_1_light_0.65",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.8763944506645203,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 271.471,
+          "wall_ms_samples": [
+            276.179,
+            270.386,
+            271.471
+          ],
+          "cpu_ms_median": 265.625
+        },
+        {
+          "probe": "negative_1_light_1.3",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.8722125887870789,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 276.371,
+          "wall_ms_samples": [
+            274.052,
+            276.371,
+            299.283
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "negative_1_roll_-12",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.8796464800834656,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 273.539,
+          "wall_ms_samples": [
+            273.539,
+            272.523,
+            283.358
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "negative_1_roll_12",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.8747842311859131,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 283.065,
+          "wall_ms_samples": [
+            279.052,
+            283.065,
+            291.747
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "negative_1_blur",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.8364408612251282,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 295.061,
+          "wall_ms_samples": [
+            287.939,
+            304.782,
+            295.061
+          ],
+          "cpu_ms_median": 296.875
+        },
+        {
+          "probe": "negative_2_light_0.65",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 1.4239416122436523,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 2336,
+          "mixed_encoding_dimensions": true,
+          "wall_ms_median": 42.996,
+          "wall_ms_samples": [
+            46.901,
+            42.996,
+            42.874
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "negative_2_light_1.3",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 1.4187945127487183,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 2336,
+          "mixed_encoding_dimensions": true,
+          "wall_ms_median": 42.586,
+          "wall_ms_samples": [
+            42.586,
+            42.143,
+            42.71
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "negative_2_roll_-12",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": null,
+          "reason": "NO_FACE",
+          "encoding_dimension": null,
+          "wall_ms_median": 15.922,
+          "wall_ms_samples": [
+            16.051,
+            15.922,
+            15.721
+          ],
+          "cpu_ms_median": 15.625
+        },
+        {
+          "probe": "negative_2_roll_12",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.8057453036308289,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 286.617,
+          "wall_ms_samples": [
+            286.617,
+            277.746,
+            297.283
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "negative_2_blur",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 1.4248303174972534,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 2336,
+          "mixed_encoding_dimensions": true,
+          "wall_ms_median": 42.331,
+          "wall_ms_samples": [
+            43.571,
+            42.164,
+            42.331
+          ],
+          "cpu_ms_median": 46.875
+        }
+      ],
+      "final_memory": {
+        "working_set_bytes": 451444736,
+        "peak_working_set_bytes": 454782976
+      },
+      "no_database_or_physical_camera_access": true,
+      "face_recognition_imported": true,
+      "mixed_descriptor_probe_count": 4,
+      "dlib": "20.0.1",
+      "face_recognition_module_version": "1.2.3",
+      "child_total_wall_ms": 21663.612
+    },
+    "reference_dlib_distinct": {
+      "variant": "reference_dlib_distinct",
+      "python": "3.14.0",
+      "opencv": "4.11.0",
+      "numpy": "1.26.4",
+      "opencv_threads": 1,
+      "initialization": {
+        "wall_ms": 2241.578,
+        "cpu_ms": 2296.875,
+        "memory": {
+          "working_set_bytes": 393789440,
+          "peak_working_set_bytes": 393793536
+        }
+      },
+      "enrollment": {
+        "wall_ms": 969.635,
+        "cpu_ms": 968.75,
+        "dimensions": [
+          128,
+          128,
+          128
+        ],
+        "independent_photos": 3,
+        "stored_vectors": 3,
+        "memory": {
+          "working_set_bytes": 406712320,
+          "peak_working_set_bytes": 415850496
+        }
+      },
+      "metrics": {
+        "original": {
+          "known_probes": 2,
+          "correct_known_accepts": 1,
+          "known_rejections": 1,
+          "unknown_probes": 2,
+          "false_unknown_accepts": 0,
+          "unsafe_control_accepts": 0
+        },
+        "control": {
+          "known_probes": 0,
+          "correct_known_accepts": 0,
+          "known_rejections": 0,
+          "unknown_probes": 0,
+          "false_unknown_accepts": 0,
+          "unsafe_control_accepts": 1
+        },
+        "derived_stress": {
+          "known_probes": 10,
+          "correct_known_accepts": 7,
+          "known_rejections": 3,
+          "unknown_probes": 10,
+          "false_unknown_accepts": 0,
+          "unsafe_control_accepts": 0
+        },
+        "legacy_diagnostic": {
+          "known_probes": 2,
+          "correct_known_accepts": 2,
+          "known_rejections": 0,
+          "unknown_probes": 0,
+          "false_unknown_accepts": 0,
+          "unsafe_control_accepts": 0
+        }
+      },
+      "latency_all_probes_ms": {
+        "p50": 276.569,
+        "p95": 292.368
+      },
+      "pair_observations": {
+        "held_out_known": {
+          "all_recognized_as_known": false,
+          "note": "Per-image consistency only; current API additionally rejects different identities and duplicate bytes."
+        },
+        "unseen_people": {
+          "all_recognized_as_known": false,
+          "note": "Per-image consistency only; current API additionally rejects different identities and duplicate bytes."
+        }
+      },
+      "probes": [
+        {
+          "probe": "positive_1",
+          "truth": "known",
+          "group": "original",
+          "accepted": true,
+          "score": 0.4893493354320526,
+          "reason": null,
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 278.729,
+          "wall_ms_samples": [
+            278.729,
+            281.51,
+            278.55
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "positive_2",
+          "truth": "known",
+          "group": "original",
+          "accepted": false,
+          "score": 0.5505871176719666,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 271.398,
+          "wall_ms_samples": [
+            295.687,
+            265.134,
+            271.398
+          ],
+          "cpu_ms_median": 265.625
+        },
+        {
+          "probe": "negative_1",
+          "truth": "unknown",
+          "group": "original",
+          "accepted": false,
+          "score": 0.87331622838974,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 284.797,
+          "wall_ms_samples": [
+            272.042,
+            284.797,
+            292.51
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "negative_2",
+          "truth": "unknown",
+          "group": "original",
+          "accepted": false,
+          "score": 1.425660490989685,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 2336,
+          "mixed_encoding_dimensions": true,
+          "wall_ms_median": 45.547,
+          "wall_ms_samples": [
+            46.046,
+            43.591,
+            45.547
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "legacy_partial_portrait",
+          "truth": "known",
+          "group": "legacy_diagnostic",
+          "accepted": true,
+          "score": 0.42185017466545105,
+          "reason": null,
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 281.409,
+          "wall_ms_samples": [
+            281.409,
+            273.444,
+            285.086
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "legacy_single_portrait",
+          "truth": "known",
+          "group": "legacy_diagnostic",
+          "accepted": true,
+          "score": 0.3646145164966583,
+          "reason": null,
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 288.355,
+          "wall_ms_samples": [
+            306.407,
+            288.355,
+            279.203
+          ],
+          "cpu_ms_median": 296.875
+        },
+        {
+          "probe": "generated_blank",
+          "truth": "no_face",
+          "group": "control",
+          "accepted": false,
+          "score": null,
+          "reason": "NO_FACE",
+          "encoding_dimension": null,
+          "wall_ms_median": 8.81,
+          "wall_ms_samples": [
+            9.216,
+            8.791,
+            8.81
+          ],
+          "cpu_ms_median": 0.0
+        },
+        {
+          "probe": "generated_two_faces",
+          "truth": "multiple",
+          "group": "control",
+          "accepted": true,
+          "score": 0.2666018605232239,
+          "reason": null,
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 281.278,
+          "wall_ms_samples": [
+            281.278,
+            274.046,
+            286.622
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "positive_1_light_0.65",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.4909355640411377,
+          "reason": null,
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 283.723,
+          "wall_ms_samples": [
+            283.723,
+            289.965,
+            280.349
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "positive_1_light_1.3",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.4890863001346588,
+          "reason": null,
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 278.097,
+          "wall_ms_samples": [
+            278.097,
+            286.46,
+            274.046
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "positive_1_roll_-12",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.4875389635562897,
+          "reason": null,
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 278.361,
+          "wall_ms_samples": [
+            278.361,
+            274.457,
+            289.978
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "positive_1_roll_12",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.48264455795288086,
+          "reason": null,
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 273.025,
+          "wall_ms_samples": [
+            273.025,
+            271.122,
+            283.772
+          ],
+          "cpu_ms_median": 265.625
+        },
+        {
+          "probe": "positive_1_blur",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.48791980743408203,
+          "reason": null,
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 280.997,
+          "wall_ms_samples": [
+            303.569,
+            274.948,
+            280.997
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "positive_2_light_0.65",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.5581221580505371,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 285.836,
+          "wall_ms_samples": [
+            285.836,
+            287.256,
+            280.98
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "positive_2_light_1.3",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.542012631893158,
+          "reason": null,
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 271.226,
+          "wall_ms_samples": [
+            276.121,
+            271.226,
+            266.009
+          ],
+          "cpu_ms_median": 265.625
+        },
+        {
+          "probe": "positive_2_roll_-12",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.5507420897483826,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 269.747,
+          "wall_ms_samples": [
+            269.747,
+            268.523,
+            276.477
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "positive_2_roll_12",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": null,
+          "reason": "NO_FACE",
+          "encoding_dimension": null,
+          "wall_ms_median": 7.514,
+          "wall_ms_samples": [
+            7.514,
+            7.546,
+            7.153
+          ],
+          "cpu_ms_median": 0.0
+        },
+        {
+          "probe": "positive_2_blur",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.5364618301391602,
+          "reason": null,
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 278.049,
+          "wall_ms_samples": [
+            268.054,
+            308.036,
+            278.049
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "negative_1_light_0.65",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.8660821914672852,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 280.343,
+          "wall_ms_samples": [
+            278.244,
+            291.564,
+            280.343
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "negative_1_light_1.3",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.8675708770751953,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 273.773,
+          "wall_ms_samples": [
+            276.18,
+            273.773,
+            270.329
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "negative_1_roll_-12",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.8722014427185059,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 281.135,
+          "wall_ms_samples": [
+            281.135,
+            286.833,
+            279.659
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "negative_1_roll_12",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.8673694729804993,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 280.094,
+          "wall_ms_samples": [
+            276.661,
+            280.094,
+            281.122
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "negative_1_blur",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.8254947662353516,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 278.029,
+          "wall_ms_samples": [
+            278.029,
+            275.103,
+            290.364
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "negative_2_light_0.65",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 1.425187110900879,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 2336,
+          "mixed_encoding_dimensions": true,
+          "wall_ms_median": 44.16,
+          "wall_ms_samples": [
+            47.091,
+            43.638,
+            44.16
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "negative_2_light_1.3",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 1.419804573059082,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 2336,
+          "mixed_encoding_dimensions": true,
+          "wall_ms_median": 43.241,
+          "wall_ms_samples": [
+            51.317,
+            42.647,
+            43.241
+          ],
+          "cpu_ms_median": 46.875
+        },
+        {
+          "probe": "negative_2_roll_-12",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": null,
+          "reason": "NO_FACE",
+          "encoding_dimension": null,
+          "wall_ms_median": 16.262,
+          "wall_ms_samples": [
+            16.262,
+            15.878,
+            16.941
+          ],
+          "cpu_ms_median": 15.625
+        },
+        {
+          "probe": "negative_2_roll_12",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.8172721862792969,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 128,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 284.01,
+          "wall_ms_samples": [
+            284.01,
+            278.632,
+            290.544
+          ],
+          "cpu_ms_median": 281.25
+        },
+        {
+          "probe": "negative_2_blur",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 1.426118016242981,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 2336,
+          "mixed_encoding_dimensions": true,
+          "wall_ms_median": 43.214,
+          "wall_ms_samples": [
+            42.277,
+            43.214,
+            51.624
+          ],
+          "cpu_ms_median": 46.875
+        }
+      ],
+      "final_memory": {
+        "working_set_bytes": 453951488,
+        "peak_working_set_bytes": 457277440
+      },
+      "no_database_or_physical_camera_access": true,
+      "face_recognition_imported": true,
+      "mixed_descriptor_probe_count": 4,
+      "dlib": "20.0.1",
+      "face_recognition_module_version": "1.2.3",
+      "child_total_wall_ms": 21769.347
+    },
+    "reference_fallback": {
+      "variant": "reference_fallback",
+      "python": "3.14.0",
+      "opencv": "4.11.0",
+      "numpy": "1.26.4",
+      "opencv_threads": 1,
+      "initialization": {
+        "wall_ms": 1087.827,
+        "cpu_ms": 1125.0,
+        "memory": {
+          "working_set_bytes": 275726336,
+          "peak_working_set_bytes": 275730432
+        }
+      },
+      "enrollment": {
+        "wall_ms": 77.544,
+        "cpu_ms": 78.125,
+        "dimensions": [
+          2336,
+          2336,
+          2336
+        ],
+        "independent_photos": 1,
+        "stored_vectors": 3,
+        "memory": {
+          "working_set_bytes": 282853376,
+          "peak_working_set_bytes": 290693120
+        }
+      },
+      "metrics": {
+        "original": {
+          "known_probes": 2,
+          "correct_known_accepts": 1,
+          "known_rejections": 1,
+          "unknown_probes": 2,
+          "false_unknown_accepts": 0,
+          "unsafe_control_accepts": 0
+        },
+        "control": {
+          "known_probes": 0,
+          "correct_known_accepts": 0,
+          "known_rejections": 0,
+          "unknown_probes": 0,
+          "false_unknown_accepts": 0,
+          "unsafe_control_accepts": 1
+        },
+        "derived_stress": {
+          "known_probes": 10,
+          "correct_known_accepts": 4,
+          "known_rejections": 6,
+          "unknown_probes": 10,
+          "false_unknown_accepts": 0,
+          "unsafe_control_accepts": 0
+        },
+        "legacy_diagnostic": {
+          "known_probes": 2,
+          "correct_known_accepts": 0,
+          "known_rejections": 2,
+          "unknown_probes": 0,
+          "false_unknown_accepts": 0,
+          "unsafe_control_accepts": 0
+        }
+      },
+      "latency_all_probes_ms": {
+        "p50": 19.445,
+        "p95": 30.624
+      },
+      "pair_observations": {
+        "held_out_known": {
+          "all_recognized_as_known": false,
+          "note": "Per-image consistency only; current API additionally rejects different identities and duplicate bytes."
+        },
+        "unseen_people": {
+          "all_recognized_as_known": false,
+          "note": "Per-image consistency only; current API additionally rejects different identities and duplicate bytes."
+        }
+      },
+      "probes": [
+        {
+          "probe": "positive_1",
+          "truth": "known",
+          "group": "original",
+          "accepted": false,
+          "score": 0.5886759757995605,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 2336,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 30.021,
+          "wall_ms_samples": [
+            30.021,
+            29.43,
+            33.114
+          ],
+          "cpu_ms_median": 31.25
+        },
+        {
+          "probe": "positive_2",
+          "truth": "known",
+          "group": "original",
+          "accepted": true,
+          "score": 0.5482566356658936,
+          "reason": null,
+          "encoding_dimension": 2336,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 11.39,
+          "wall_ms_samples": [
+            12.293,
+            11.149,
+            11.39
+          ],
+          "cpu_ms_median": 15.625
+        },
+        {
+          "probe": "negative_1",
+          "truth": "unknown",
+          "group": "original",
+          "accepted": false,
+          "score": 0.6088119745254517,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 2336,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 19.612,
+          "wall_ms_samples": [
+            19.612,
+            19.615,
+            19.611
+          ],
+          "cpu_ms_median": 15.625
+        },
+        {
+          "probe": "negative_2",
+          "truth": "unknown",
+          "group": "original",
+          "accepted": false,
+          "score": null,
+          "reason": "NO_FACE",
+          "encoding_dimension": null,
+          "wall_ms_median": 17.774,
+          "wall_ms_samples": [
+            17.774,
+            17.193,
+            18.169
+          ],
+          "cpu_ms_median": 15.625
+        },
+        {
+          "probe": "legacy_partial_portrait",
+          "truth": "known",
+          "group": "legacy_diagnostic",
+          "accepted": false,
+          "score": null,
+          "reason": "NO_FACE",
+          "encoding_dimension": null,
+          "wall_ms_median": 19.425,
+          "wall_ms_samples": [
+            19.425,
+            18.917,
+            19.465
+          ],
+          "cpu_ms_median": 15.625
+        },
+        {
+          "probe": "legacy_single_portrait",
+          "truth": "known",
+          "group": "legacy_diagnostic",
+          "accepted": false,
+          "score": 0.7013139128684998,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 2336,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 34.818,
+          "wall_ms_samples": [
+            34.818,
+            34.729,
+            34.876
+          ],
+          "cpu_ms_median": 31.25
+        },
+        {
+          "probe": "generated_blank",
+          "truth": "no_face",
+          "group": "control",
+          "accepted": false,
+          "score": null,
+          "reason": "NO_FACE",
+          "encoding_dimension": null,
+          "wall_ms_median": 1.441,
+          "wall_ms_samples": [
+            1.959,
+            1.312,
+            1.441
+          ],
+          "cpu_ms_median": 0.0
+        },
+        {
+          "probe": "generated_two_faces",
+          "truth": "multiple",
+          "group": "control",
+          "accepted": true,
+          "score": 0.47816911339759827,
+          "reason": null,
+          "encoding_dimension": 2336,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 21.219,
+          "wall_ms_samples": [
+            20.331,
+            22.163,
+            21.219
+          ],
+          "cpu_ms_median": 15.625
+        },
+        {
+          "probe": "positive_1_light_0.65",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.5818532109260559,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 2336,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 27.24,
+          "wall_ms_samples": [
+            27.942,
+            27.24,
+            27.142
+          ],
+          "cpu_ms_median": 31.25
+        },
+        {
+          "probe": "positive_1_light_1.3",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.5883999466896057,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 2336,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 29.338,
+          "wall_ms_samples": [
+            28.27,
+            30.731,
+            29.338
+          ],
+          "cpu_ms_median": 31.25
+        },
+        {
+          "probe": "positive_1_roll_-12",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.6050729751586914,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 2336,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 26.999,
+          "wall_ms_samples": [
+            26.988,
+            28.671,
+            26.999
+          ],
+          "cpu_ms_median": 31.25
+        },
+        {
+          "probe": "positive_1_roll_12",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.5918567776679993,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 2336,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 25.672,
+          "wall_ms_samples": [
+            25.672,
+            25.476,
+            26.521
+          ],
+          "cpu_ms_median": 31.25
+        },
+        {
+          "probe": "positive_1_blur",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.5938110947608948,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 2336,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 28.386,
+          "wall_ms_samples": [
+            27.877,
+            28.97,
+            28.386
+          ],
+          "cpu_ms_median": 31.25
+        },
+        {
+          "probe": "positive_2_light_0.65",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.5455748438835144,
+          "reason": null,
+          "encoding_dimension": 2336,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 11.469,
+          "wall_ms_samples": [
+            16.074,
+            11.469,
+            11.331
+          ],
+          "cpu_ms_median": 15.625
+        },
+        {
+          "probe": "positive_2_light_1.3",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.549493134021759,
+          "reason": null,
+          "encoding_dimension": 2336,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 11.282,
+          "wall_ms_samples": [
+            11.303,
+            11.242,
+            11.282
+          ],
+          "cpu_ms_median": 15.625
+        },
+        {
+          "probe": "positive_2_roll_-12",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.5981827974319458,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 2336,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 10.551,
+          "wall_ms_samples": [
+            10.256,
+            10.551,
+            12.165
+          ],
+          "cpu_ms_median": 15.625
+        },
+        {
+          "probe": "positive_2_roll_12",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.49814310669898987,
+          "reason": null,
+          "encoding_dimension": 2336,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 10.804,
+          "wall_ms_samples": [
+            11.475,
+            10.804,
+            10.425
+          ],
+          "cpu_ms_median": 15.625
+        },
+        {
+          "probe": "positive_2_blur",
+          "truth": "known",
+          "group": "derived_stress",
+          "accepted": true,
+          "score": 0.5435163378715515,
+          "reason": null,
+          "encoding_dimension": 2336,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 11.119,
+          "wall_ms_samples": [
+            11.261,
+            11.003,
+            11.119
+          ],
+          "cpu_ms_median": 15.625
+        },
+        {
+          "probe": "negative_1_light_0.65",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.6052398085594177,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 2336,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 19.486,
+          "wall_ms_samples": [
+            20.446,
+            19.486,
+            19.27
+          ],
+          "cpu_ms_median": 15.625
+        },
+        {
+          "probe": "negative_1_light_1.3",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.6058714389801025,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 2336,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 21.252,
+          "wall_ms_samples": [
+            22.145,
+            19.919,
+            21.252
+          ],
+          "cpu_ms_median": 15.625
+        },
+        {
+          "probe": "negative_1_roll_-12",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": null,
+          "reason": "NO_FACE",
+          "encoding_dimension": null,
+          "wall_ms_median": 15.067,
+          "wall_ms_samples": [
+            15.033,
+            15.251,
+            15.067
+          ],
+          "cpu_ms_median": 15.625
+        },
+        {
+          "probe": "negative_1_roll_12",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.6155497431755066,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 2336,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 20.608,
+          "wall_ms_samples": [
+            20.466,
+            20.608,
+            21.056
+          ],
+          "cpu_ms_median": 15.625
+        },
+        {
+          "probe": "negative_1_blur",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.6136085391044617,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 2336,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 20.508,
+          "wall_ms_samples": [
+            19.65,
+            21.736,
+            20.508
+          ],
+          "cpu_ms_median": 15.625
+        },
+        {
+          "probe": "negative_2_light_0.65",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": null,
+          "reason": "NO_FACE",
+          "encoding_dimension": null,
+          "wall_ms_median": 17.25,
+          "wall_ms_samples": [
+            17.25,
+            18.56,
+            16.69
+          ],
+          "cpu_ms_median": 15.625
+        },
+        {
+          "probe": "negative_2_light_1.3",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": null,
+          "reason": "NO_FACE",
+          "encoding_dimension": null,
+          "wall_ms_median": 17.576,
+          "wall_ms_samples": [
+            18.017,
+            17.476,
+            17.576
+          ],
+          "cpu_ms_median": 15.625
+        },
+        {
+          "probe": "negative_2_roll_-12",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": null,
+          "reason": "NO_FACE",
+          "encoding_dimension": null,
+          "wall_ms_median": 16.201,
+          "wall_ms_samples": [
+            15.874,
+            16.264,
+            16.201
+          ],
+          "cpu_ms_median": 15.625
+        },
+        {
+          "probe": "negative_2_roll_12",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": 0.6713073253631592,
+          "reason": "UNKNOWN",
+          "encoding_dimension": 2336,
+          "mixed_encoding_dimensions": false,
+          "wall_ms_median": 20.788,
+          "wall_ms_samples": [
+            20.788,
+            21.274,
+            20.071
+          ],
+          "cpu_ms_median": 15.625
+        },
+        {
+          "probe": "negative_2_blur",
+          "truth": "unknown",
+          "group": "derived_stress",
+          "accepted": false,
+          "score": null,
+          "reason": "NO_FACE",
+          "encoding_dimension": null,
+          "wall_ms_median": 17.125,
+          "wall_ms_samples": [
+            17.265,
+            17.053,
+            17.125
+          ],
+          "cpu_ms_median": 15.625
+        }
+      ],
+      "final_memory": {
+        "working_set_bytes": 330383360,
+        "peak_working_set_bytes": 334958592
+      },
+      "no_database_or_physical_camera_access": true,
+      "face_recognition_imported": false,
+      "mixed_descriptor_probe_count": 0,
+      "child_total_wall_ms": 2979.761
+    }
+  },
+  "source_sha256": {
+    "camera.py": "134bf4e158f2d7e3e5298c41bda4e37c32b3ea790ccc1eaf36a79116f6377ed9",
+    "utils/face_utils.py": "8a1d820128b0c9c5661091710f65a4a433c6623f31b2d5f67f9a3e0ad4aeec72",
+    "ui/attendance.py": "3b0391a50b697adcee88a0e5335072737204d8e320cae8b2714afd5e9fbe3b54",
+    "ui/touch_utils.py": "e1e33e6162bf5b16a146b2cb85fed814817d8c7c0f8a62eba9775ea14ff39ac6",
+    "requirements.txt": "5a88e2ac84c82d9d5a799974a6363e9608e6fedb1c50b32397ff7f53862ec0ec"
+  },
+  "method": {
+    "input": "Same decoded local photos, EXIF-normalized/max960px, per-engine original crop/matching.",
+    "dataset": "Three known enrollment photos; two independent held-out known photos; two unseen people; in-memory blank/two-face controls; 20 correlated stress derivatives and 2 legacy diagnostic portraits reported separately. Legacy filenames are not ground truth.",
+    "reference_stock_enrollment": "First enrollment crop encoded three times, as shipped.",
+    "reference_distinct_experiment": "Three different enrollment crops; experimental setup, not shipped UI.",
+    "latency": "Image decode excluded; actual detection/crop/encoding/matching included; fresh camera geometry per probe, no preview cache speedup. Single inference plus source history helper, not elapsed three-camera-frame confirmation.",
+    "scores": "SFace cosine and dlib/fallback Euclidean distances are not comparable numbers.",
+    "scope": "Small, one enrolled identity; no full-school accuracy, multi-roster ambiguity, physical camera or native Vercel claims.",
+    "python_runtime": "Shared314 runs reuse supplied binary dependencies with public dlib models in ASCII temporary path. Production312 current measured separately. No dependency changed in Django env."
+  }
+}
