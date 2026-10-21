@@ -24,3 +24,5 @@ GVCN chỉ lớp được giao; giám thị toàn phạm vi; STUDENT không dùn
 Member1: accounts/academics/students/reports; Member2: schedules/attendance/vision/QR legacy; core/config/contracts/migrations phối hợp chung. **API_Gate=NOT_APPROVED** là PM acceptance riêng. Người dùng đã cho phép UI local, triển khai plan, push repository và chuẩn bị Vercel; việc deploy thực không được thực hiện trong các lượt bàn giao này.
 
 - [So sánh engine với source Face Attendance (21/10/2026)](docs/so-sanh-nhan-dien-face-attendance-2026-10-21.md): giữ YuNet + SFace theo kết quả benchmark local.
+
+- [Khảo sát GitHub nhận diện đồng phục qua camera (21/10/2026)](docs/nghien-cuu-github-nhan-dien-dong-phuc-2026-10-21.md).

@@ -1,0 +1,129 @@
+{
+  "checked_date": "2026-10-21",
+  "comparison_type": "source/artifact audit; no accuracy or latency benchmark",
+  "queries": [
+    "uniform detection",
+    "school uniform",
+    "uniform recognition",
+    "dress code detection"
+  ],
+  "clones": [
+    {
+      "licenseInfo": {
+        "key": "gpl-3.0",
+        "name": "GNU General Public License v3.0",
+        "nickname": "GNU GPLv3"
+      },
+      "nameWithOwner": "hynjxn/uniform-detection-using-YOLOv5",
+      "pushedAt": "2022-04-05T02:24:39Z",
+      "stargazerCount": 16,
+      "url": "https://github.com/hynjxn/uniform-detection-using-YOLOv5",
+      "commit": "addc62b1059251cdc2a14fba654ac2ce8ecbf4a9",
+      "clone_folder": "hynjxn",
+      "artifacts": [
+        {
+          "path": "server/model/weight/best.pt",
+          "bytes": 42204077,
+          "sha256": "28ea0d3af878627376fd2994bb1f73da1ddb1100802462a5d9692fa05610dfbd"
+        }
+      ],
+      "source_hashes": {
+        "server/model/detect.py": "8ec388f927ddae264e3e90dbb0d244ce80b578ab4e8f3e96864f91b57dc26684",
+        "server/model/yolov5/detect.py": "325e99b8e9c58354f3273d30a331aed97816fbd4b3ce709e16a0865e20894203"
+      }
+    },
+    {
+      "licenseInfo": null,
+      "nameWithOwner": "Muhammad-Muzammil-Shah/School-Uniform-detection",
+      "pushedAt": "2025-11-29T09:15:33Z",
+      "stargazerCount": 6,
+      "url": "https://github.com/Muhammad-Muzammil-Shah/School-Uniform-detection",
+      "commit": "a7b67f3ed7ac455839634169596b1be5a6759351",
+      "clone_folder": "Muhammad-Muzammil-Shah",
+      "artifacts": [],
+      "source_hashes": {}
+    },
+    {
+      "licenseInfo": null,
+      "nameWithOwner": "LaThanhTrong/Monitoring-Attendance-and-Checking-School-Uniforms",
+      "pushedAt": "2024-05-30T04:01:57Z",
+      "stargazerCount": 2,
+      "url": "https://github.com/LaThanhTrong/Monitoring-Attendance-and-Checking-School-Uniforms",
+      "commit": "973b0f545be32780d502a383e8fe24afa6bad484",
+      "clone_folder": "LaThanhTrong",
+      "artifacts": [
+        {
+          "path": "models/yolov8m-clothes.pt",
+          "bytes": 51992288,
+          "sha256": "806d82f4a355e9687dffd6427ae01fe1ebc896ce9af875bc4d2e4a8e0e3e2a2b"
+        },
+        {
+          "path": "models/yolov8m-clothes_v2.pt",
+          "bytes": 52022934,
+          "sha256": "5c16b3e2f91c8196bcce0b1c1b15d2bb29d041b3c54b3d98d96ad5306119d007"
+        },
+        {
+          "path": "models/yolov8m-pants.pt",
+          "bytes": 52008160,
+          "sha256": "56daba924328871a9a0316667fd94736eacfc488fd98e9967550e1f2adfe86d7"
+        },
+        {
+          "path": "models/yolov8m-pants_v2.pt",
+          "bytes": 52022934,
+          "sha256": "b52bb5f31ed982cc3824a2cd018dd642eb5f5f74ffd4b708e02c847e265aaef5"
+        },
+        {
+          "path": "models/yolov8n-card.pt",
+          "bytes": 6221688,
+          "sha256": "6d5e0ff5db1956cfda8e673fac3a040f16faf71ddda2e6e55a074c3063488800"
+        },
+        {
+          "path": "models/yolov8n-card_v2.pt",
+          "bytes": 6241198,
+          "sha256": "57fbca6925bceb166f1e799e43659e58e5649236f95c9659bc1846da00e862ed"
+        },
+        {
+          "path": "models/yolov8n-face.pt",
+          "bytes": 6250099,
+          "sha256": "d17b38523a994b13ee604b67f02791ca0f43b9f446a32fd7bc44e17c56ead077"
+        },
+        {
+          "path": "models/yolov8n.pt",
+          "bytes": 6534387,
+          "sha256": "31e20dde3def09e2cf938c7be6fe23d9150bbbe503982af13345706515f2ef95"
+        }
+      ],
+      "source_hashes": {
+        "application.py": "35498b29780c226800cbde1676ceaaad74b7435462138872f8e8471f6b785d67"
+      }
+    },
+    {
+      "licenseInfo": null,
+      "nameWithOwner": "yixin16/Staff_Uniform_SOP_Compliance_Analysis",
+      "pushedAt": "2025-11-13T05:37:35Z",
+      "stargazerCount": 0,
+      "url": "https://github.com/yixin16/Staff_Uniform_SOP_Compliance_Analysis",
+      "commit": "4cf1247dea928f1ba25e6bfbdde171a718243317",
+      "clone_folder": "yixin16",
+      "artifacts": [
+        {
+          "path": "top_wear_detector.pt",
+          "bytes": 5444506,
+          "sha256": "db513e665729ba369b39bbb31c364f9251e8452c30d0c612bc18a9714be9d3b0"
+        },
+        {
+          "path": "yolo11n.pt",
+          "bytes": 5613764,
+          "sha256": "0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1"
+        }
+      ],
+      "source_hashes": {
+        "fine_tune_model.py": "36c01d635ea1bbe9169783497de01eafd9a0d0ca6e7cdcdfe41bee412ec5ff92",
+        "main.py": "63ffecf18ae883f02e844a98a33454ac5d2912d44d5db44139d770c053d10b3b"
+      }
+    }
+  ],
+  "excluded_unavailable": [
+    "https://github.com/gisketch/complete-uniform-detection-YOLOv8 (live API and web 404)"
+  ]
+}
