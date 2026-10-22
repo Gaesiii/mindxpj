@@ -54,6 +54,25 @@ let browser;
  await page.locator('#uniform-capture-group').fill('group-01');await page.locator('#uniform-sample-form button[type="submit"]').click();await page.waitForTimeout(200);
  const cropWrite=writes.find(w=>w.path==='/classes/c1/uniform-samples'&&w.method==='POST');assert(cropWrite,'crop upload submitted');
  const match=cropWrite.body.match(/name="roi"\r\n\r\n([^\r]+)/);assert(match);const roi=JSON.parse(match[1]);assert(Math.abs(roi[0]-240)<=1&&Math.abs(roi[1]-216)<=1&&Math.abs(roi[2]-480)<=1&&Math.abs(roi[3]-270)<=1,'1920 source maps to 960 decoder ROI: '+roi);
+ const large=await page.evaluate(()=>{
+  const tile=document.createElement('canvas');tile.width=640;tile.height=480;const t=tile.getContext('2d');
+  const pixels=t.createImageData(640,480);let seed=19;
+  for(let i=0;i<pixels.data.length;i+=4){seed=(1664525*seed+1013904223)>>>0;pixels.data[i]=seed&255;pixels.data[i+1]=(seed>>>8)&255;pixels.data[i+2]=(seed>>>16)&255;pixels.data[i+3]=255;}
+  t.putImageData(pixels,0,0);const c=document.createElement('canvas');c.width=8000;c.height=6000;
+  const ctx=c.getContext('2d');for(let y=0;y<6000;y+=480)for(let x=0;x<8000;x+=640)ctx.drawImage(tile,x,y);
+  return c.toDataURL('image/jpeg',.65).split(',')[1];
+ });
+ const original=Buffer.from(large,'base64');assert(original.length>2*1048576&&original.length<=32*1048576);
+ await page.locator('#uniform-sample-file').setInputFiles({name:'camera48mp.jpg',mimeType:'image/jpeg',buffer:original});
+ await page.waitForFunction(()=>document.querySelector('#uniform-crop-status').textContent.includes('Đã tối ưu'),{},{timeout:30000});
+ await page.locator('#uniform-crop-canvas').scrollIntoViewIfNeeded();const largeBox=await page.locator('#uniform-crop-canvas').boundingBox();
+ await page.mouse.move(largeBox.x+largeBox.width*.25,largeBox.y+largeBox.height*.4);await page.mouse.down();await page.mouse.move(largeBox.x+largeBox.width*.75,largeBox.y+largeBox.height*.9);await page.mouse.up();
+ await page.locator('#uniform-capture-group').fill('camera-48mp');await page.locator('#uniform-sample-form button[type="submit"]').click();await page.waitForTimeout(250);
+ const largeWrite=writes.filter(w=>w.path==='/classes/c1/uniform-samples'&&w.method==='POST').at(-1);
+ assert(largeWrite.body.includes('camera-48mp'));assert(Buffer.byteLength(largeWrite.body,'latin1')<2*1048576,'optimized uniform multipart fits server budget');
+ const largeRoi=JSON.parse(largeWrite.body.match(/name="roi"\r\n\r\n([^\r]+)/)[1]);
+ assert.deepEqual(largeRoi,[240,288,480,360],'48 MP optimized source preserves decoder ROI coordinates');
+ console.log(JSON.stringify({uniform48mpOriginalBytes:original.length,optimizedMultipartBytes:Buffer.byteLength(largeWrite.body,'latin1'),roi:largeRoi}));
  role='HOMEROOM_TEACHER';await page.reload();await page.waitForTimeout(400);assert(await page.locator('[data-view="uniform-samples"]').isHidden());await page.locator('[data-view="students"]').click();assert(await page.locator('#student-create-button').isVisible());await page.locator('#student-create-button').click();assert(await page.locator('#student-class').isDisabled());await page.locator('#student-code').fill('HS03');await page.locator('#student-name').fill('Lê Cường');await page.locator('#student-editor-form button[type="submit"]').click();await page.waitForTimeout(200);assert(writes.some(w=>w.path==='/students'&&w.body.includes('HS03')));assert(await page.locator('#students-table').getByText('Lưu trữ',{exact:true}).isVisible());await page.locator('#session-select').selectOption('q0');await page.waitForTimeout(150);page.once('dialog',d=>d.accept());await page.locator('#students-table').getByText('Lưu trữ',{exact:true}).click();await page.waitForTimeout(200);assert(writes.some(w=>w.path==='/students/s1'&&w.method==='DELETE'&&JSON.parse(w.body).expected_version===1));assert.equal(await page.locator('#session-select').inputValue(),'q0','archive refresh preserves selected historical session');await page.locator('[data-view="classes"]').click();assert((await page.locator('#classes-table').textContent()).includes('0 / 50'),'archive updates live class count');await page.locator('[data-view="students"]').click();page.once('dialog',d=>d.accept());await page.locator('#students-table').getByText('Khôi phục',{exact:true}).click();await page.waitForTimeout(200);assert(writes.some(w=>w.path==='/students/s1'&&w.method==='PATCH'&&JSON.parse(w.body).active===true));assert.equal(await page.locator('#session-select').inputValue(),'q0','restore refresh preserves historical session');await page.locator('[data-view="classes"]').click();assert((await page.locator('#classes-table').textContent()).includes('1 / 50'),'restore updates live class count');
  assert.deepEqual(errors,[]);console.log(JSON.stringify({passed:true,automaticRequests:scans.length,checks:['camera pair multipart/idempotency','5s success hold and blur receipt preservation','navigation stop','student create','class capacity','uniform correction','uniform-only camera','role controls and own-class create/archive','1920x1080 garment ROI','no page errors']}));
  await browser.close();

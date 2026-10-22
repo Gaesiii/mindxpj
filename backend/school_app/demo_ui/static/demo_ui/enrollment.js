@@ -15,7 +15,7 @@
           if(blob&&blob.size<=budget)return new File([blob],`face-${index+1}.jpg`,{type:'image/jpeg'});
         }
       }
-      throw new Error('Ảnh còn quá lớn sau tối ưu; chọn ảnh rõ mặt và ít chi tiết nền hơn.');
+      throw new Error('Ảnh còn quá lớn sau tối ưu; chọn ảnh rõ và ít chi tiết nền hơn.');
     }finally{URL.revokeObjectURL(url);image.src='';}
   }
   async function prepare(files,total,encoder=optimize,progress=()=>{},isCurrent=()=>true){
@@ -35,5 +35,14 @@
     if(out.reduce((n,f)=>n+f.size,0)>total)throw new Error('Bộ mẫu vượt dung lượng sau tối ưu.');
     return out;
   }
-  const api={prepare};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.MindXEnrollment=api;
+  async function prepareUniform(file,encoder=optimize,isCurrent=()=>true){
+    if(!file||file.size>32*MiB)throw new Error('Ảnh gốc đồng phục tối đa 32 MiB.');
+    if(!['image/jpeg','image/png','image/webp'].includes(file.type))throw new Error('Chọn ảnh JPEG, PNG hoặc WebP; chuyển HEIC/RAW sang JPEG trước.');
+    if(!isCurrent())return null;
+    const budget=Math.floor(1.9*MiB),prepared=await encoder(file,budget,0);
+    if(!isCurrent())return null;
+    if(!prepared||prepared.size>budget)throw new Error('Ảnh đồng phục vượt dung lượng sau tối ưu.');
+    return prepared;
+  }
+  const api={prepare,prepareUniform};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.MindXEnrollment=api;
 })(typeof window!=='undefined'?window:globalThis);

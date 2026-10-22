@@ -10,6 +10,8 @@
   const attendanceGate=MindXCamera.createAttendanceGate();
   let savedAttendanceFeedback='';
   let classEdit=null, studentEdit=null, cropImage=null, cropRoi=null, cropStart=null, cropScale=1;
+  let uniformUpload=null,uniformUploadGeneration=0;
+  function clearUniformUpload(){uniformUploadGeneration++;uniformUpload=null;cropImage=null;cropRoi=null;cropStart=null;}
   const labels = {MORNING:'Buổi sáng',AFTERNOON:'Buổi chiều',PLANNED:'Chưa mở',OPEN:'Đang điểm danh',CLOSED:'Đã chốt',
     PRESENT:'Có mặt',ABSENT:'Vắng',UNMARKED:'Chưa ghi nhận',COMPLIANT:'Đạt',NON_COMPLIANT:'Không đạt',
     REVIEW_REQUIRED:'Cần kiểm tra',NOT_CHECKED:'Chưa kiểm tra',NOT_APPLICABLE:'—',SHIRT:'Sơ mi',SPORTS:'Thể dục',OTHER:'Loại khác',UNKNOWN:'Chưa rõ',
@@ -112,6 +114,7 @@
   function clearProposal() {state.scan=null;$('confirm-scan-form').hidden=true;$('identity-confirmed').checked=false;$('candidate-reason').value='';for(const id of ['candidate-name','candidate-code','candidate-expiry','uniform-hint'])$(id).textContent='';$('candidate-uniform').value='';}
   function closeDialogs() {document.querySelectorAll('dialog[open]').forEach(d=>d.close());}
   function resetClient() {
+    clearUniformUpload();
     state.epoch++;state.authEpoch++;state.reportEpoch++;stopCamera();clearCapture();clearProposal();closeDialogs();
     Object.assign(state,{user:null,classes:[],students:[],sessions:[],roster:[],session:null,classId:'',enroll:null,manual:null,uniform:null});
     cropImage=null;cropRoi=null;cropStart=null;paintCrop();$('uniform-sample-file').value='';$('uniform-samples-table').replaceChildren();$('uniform-profile-select').replaceChildren();$('uniform-model-status').textContent='Chưa có bộ nhận biết đã duyệt.';classEdit=null;studentEdit=null;
@@ -124,7 +127,7 @@
   function setView(view) {
     if(!headings[view])return;
     if(view==='uniform-samples'&&state.user?.role!=='SUPERVISOR')return;
-    stopCamera();clearCapture();clearProposal();state.view=view;
+    stopCamera();clearCapture();clearProposal();clearUniformUpload();paintCrop();$('uniform-sample-file').value='';state.view=view;
     if(view==='uniform')$('uniform-camera-host').append($('scan-workspace'));else $('view-attendance').querySelector('.attendance-grid').append($('scan-workspace'));
     $('scan-workspace').querySelector('h2').textContent=view==='uniform'?'Camera đồng phục':'Camera điểm danh tự động';
     if(view==='uniform-samples')run(null,loadUniformSamples);
@@ -152,6 +155,7 @@
     setView('dashboard');await loadClass($('class-select').value);
   }
   async function loadClass(classId,preferredSession) {
+    clearUniformUpload();
     const token=++state.epoch;stopCamera();clearCapture();clearProposal();closeDialogs();clearReports();
     state.classId=classId;state.students=[];state.sessions=[];state.roster=[];state.session=null;renderData();
     options($('session-select'),[],()=>'',null,'Đang tải buổi học…');renderControls();
@@ -525,17 +529,21 @@
   });
   onSubmit('roster-add-form',async()=>{const s=state.session,studentId=$('roster-add-student').value;if(!s||!studentId)throw new Error('Chọn học sinh cần bổ sung.');await mutateThenRefresh(()=>write(`/sessions/${s.id}/roster`,'POST',{expected_session_version:s.version,student_id:studentId}),'Đã bổ sung học sinh vào buổi đang mở.');});
   $('uniform-sample-file').addEventListener('change',()=>run(null,async()=>{
-    cropImage=null;cropRoi=null;paintCrop();const file=$('uniform-sample-file').files[0];if(!file)return;validateFiles([file],1,1,2*1048576);
-    const context=contextStamp(),url=URL.createObjectURL(file),image=new Image();try{image.src=url;await image.decode();if(!sameContext(context))return;if(image.naturalWidth*image.naturalHeight>4000000)throw new Error('Chọn ảnh tối đa 4 triệu pixel.');cropImage=image;const decodedRatio=Math.min(960/image.naturalWidth,960/image.naturalHeight,1);cropScale=Math.min(600/(image.naturalWidth*decodedRatio),360/(image.naturalHeight*decodedRatio),1);const canvas=$('uniform-crop-canvas');canvas.width=Math.round(image.naturalWidth*decodedRatio*cropScale);canvas.height=Math.round(image.naturalHeight*decodedRatio*cropScale);paintCrop();$('uniform-crop-status').textContent='Kéo chuột chọn riêng vùng áo, tránh khuôn mặt.';}finally{URL.revokeObjectURL(url);}
+    clearUniformUpload();paintCrop();const file=$('uniform-sample-file').files[0];if(!file)return;
+    const context=contextStamp(),generation=uniformUploadGeneration;
+    const current=()=>generation===uniformUploadGeneration&&sameContext(context)&&$('uniform-sample-file').files[0]===file;
+    $('uniform-crop-status').textContent='Đang tối ưu ảnh lớn…';
+    const prepared=await MindXEnrollment.prepareUniform(file,undefined,current);if(!prepared||!current())return;
+    const url=URL.createObjectURL(prepared),image=new Image();try{image.src=url;await image.decode();if(!current())return;uniformUpload=prepared;cropImage=image;const decodedRatio=Math.min(960/image.naturalWidth,960/image.naturalHeight,1);cropScale=Math.min(600/(image.naturalWidth*decodedRatio),360/(image.naturalHeight*decodedRatio),1);const canvas=$('uniform-crop-canvas');canvas.width=Math.round(image.naturalWidth*decodedRatio*cropScale);canvas.height=Math.round(image.naturalHeight*decodedRatio*cropScale);paintCrop();$('uniform-crop-status').textContent=`Đã tối ưu ${(file.size/1048576).toFixed(1)} → ${(prepared.size/1048576).toFixed(1)} MiB. Kéo chọn riêng vùng áo, tránh khuôn mặt.`;}finally{URL.revokeObjectURL(url);}
   }));
   const cropPoint=event=>{const c=$('uniform-crop-canvas'),r=c.getBoundingClientRect();return [Math.max(0,Math.min(c.width,(event.clientX-r.left)*c.width/r.width)),Math.max(0,Math.min(c.height,(event.clientY-r.top)*c.height/r.height))];};
   $('uniform-crop-canvas').addEventListener('pointerdown',event=>{if(!cropImage)return;cropStart=cropPoint(event);event.currentTarget.setPointerCapture(event.pointerId);});
   $('uniform-crop-canvas').addEventListener('pointermove',event=>{if(!cropStart)return;const end=cropPoint(event);cropRoi=[Math.min(cropStart[0],end[0]),Math.min(cropStart[1],end[1]),Math.abs(end[0]-cropStart[0]),Math.abs(end[1]-cropStart[1])].map(v=>Math.round(v/cropScale));paintCrop();});
   $('uniform-crop-canvas').addEventListener('pointerup',()=>{cropStart=null;$('uniform-crop-status').textContent=cropRoi?'Đã chọn vùng áo. Kiểm tra để bảo đảm không có khuôn mặt.':'Kéo chọn một vùng áo trước khi lưu.';});
   onSubmit('uniform-sample-form',async()=>{
-    const context=contextStamp(),file=$('uniform-sample-file').files[0];if(!file||!cropRoi||cropRoi[2]<96||cropRoi[3]<96)throw new Error('Chọn ảnh và kéo chọn một vùng áo đủ lớn.');
+    const context=contextStamp(),file=uniformUpload,generation=uniformUploadGeneration;if(!file||!cropRoi||cropRoi[2]<96||cropRoi[3]<96)throw new Error('Đợi tối ưu ảnh xong và kéo chọn một vùng áo đủ lớn.');
     const form=new FormData();form.append('image',file);form.append('label',$('uniform-sample-label').value);form.append('capture_group',$('uniform-capture-group').value.trim());form.append('split',$('uniform-sample-split').value);form.append('roi',JSON.stringify(cropRoi));
-    await api(`/classes/${context.classId}/uniform-samples`,{method:'POST',body:form});if(!sameContext(context))return;$('uniform-sample-file').value='';cropImage=null;cropRoi=null;paintCrop();await loadUniformSamples();notify('Đã lưu ảnh mẫu vùng áo.');
+    await api(`/classes/${context.classId}/uniform-samples`,{method:'POST',body:form});if(!sameContext(context)||generation!==uniformUploadGeneration)return;$('uniform-sample-file').value='';clearUniformUpload();paintCrop();await loadUniformSamples();notify('Đã lưu ảnh mẫu vùng áo.');
   });
   onSubmit('uniform-profile-form',async()=>{const context=contextStamp();await api(`/classes/${context.classId}/uniform-profile`,{method:'POST',body:{profile_id:$('uniform-profile-select').value||null}});if(sameContext(context)){await loadUniformProfile();notify('Đã cập nhật bộ nhận biết cho lớp.');}});
   onClick('uniform-export-button',async()=>{const context=contextStamp();const blob=await api(`/classes/${context.classId}/uniform-dataset-export`,{blob:true});if(!sameContext(context))return;const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='mau-dong-phuc.zip';a.click();setTimeout(()=>URL.revokeObjectURL(url),5000);});

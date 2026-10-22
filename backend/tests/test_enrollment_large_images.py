@@ -10,6 +10,30 @@ from school_app.vision import engine
 
 
 class EnrollmentLargeImageTests(SimpleTestCase):
+    def test_uniform_large_original_is_prepared_with_camera_payload_budget(self):
+        node=shutil.which('node')
+        if not node:self.skipTest('Node required')
+        module=Path(__file__).resolve().parents[1]/'school_app/demo_ui/static/demo_ui/enrollment.js'
+        code=r'''
+const assert=require('node:assert/strict');
+const {prepareUniform}=require(process.argv[1]);
+(async()=>{
+ const original={size:25*1048576,type:'image/jpeg'};
+ const result=await prepareUniform(original,async(file,budget)=>{
+  assert.equal(file,original);assert.ok(budget<2*1048576);
+  return {size:1000000,type:'image/jpeg'};
+ });
+ assert.equal(result.size,1000000);
+ await assert.rejects(()=>prepareUniform({...original,size:33*1048576}),/32/);
+ await assert.rejects(()=>prepareUniform({...original,type:'image/heic'}),/JPEG/);
+ await assert.rejects(()=>prepareUniform(original,async()=>({size:3*1048576})),/dung lượng/);
+ let current=true;
+ assert.equal(await prepareUniform(original,async()=>{current=false;return result;},()=>current),null);
+})().catch(e=>{console.error(e);process.exit(1)});
+'''
+        result=subprocess.run([node,'-e',code,str(module)],capture_output=True,text=True)
+        self.assertEqual(result.returncode,0,result.stderr)
+
     def test_large_photo_allowed_only_with_explicit_enrollment_budget(self):
         buffer=BytesIO();Image.new('RGB',(5000,3000),(40,80,120)).save(buffer,format='JPEG')
         data=buffer.getvalue()

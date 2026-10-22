@@ -46,6 +46,8 @@ Camera gửi tối đa một cặp/4 giây khi không nghỉ/backoff, mỗi ản
 
 UI nhận JPEG/PNG/WebP gốc ≤32 MiB/120 MP mỗi ảnh, thu nhỏ/nén tuần tự trước khi gửi. Enrollment Vercel tổng ≤3 MiB sau tối ưu, mỗi ảnh ≤2 MiB/4 MP; local API ≤16 MiB/64 MP mỗi ảnh và tổng ≤64 MiB. HEIC/RAW cần đổi sang JPEG. Mẫu đã đăng ký bằng SQLite tạm có thể cần đăng ký lại khi chuyển DB: API metadata không xuất ảnh/embedding để khôi phục đầy đủ.
 
+**Mẫu đồng phục** cũng nhận ảnh gốc ≤32 MiB/120 MP qua UI. Ảnh tự thu nhỏ/nén xuống ≤1,9 MiB và cạnh tối đa1920px trước khi chọn vùng áo; chỉ ảnh đã tối ưu được gửi lên server. Tọa độ vùng áo được ánh xạ về ảnh decoder960px như API hiện có. API đồng phục giữ giới hạn2MiB/4MP; không gửi ảnh gốc lớn trực tiếp vào API. Backend vẫn kiểm tra một khuôn mặt nằm phía trên vùng áo và chỉ lưu phần áo; ảnh có mặt không được giữ trong dataset. Đổi ảnh/lớp/view khi đang tối ưu hủy kết quả cũ.
+
 Đồng phục trường cần model local đã được đánh giá riêng; thiếu bằng chứng giữ `NOT_CHECKED`. Không dùng màu áo để khẳng định logo/mẫu trường. Phòng thử dataset KV chỉ chạy local, không được xuất bản trong deployment này.
 
 Ảnh đại diện học sinh và file export dùng filesystem vẫn là file tạm trên Vercel; PostgreSQL ở đây bảo đảm dữ liệu bản ghi và mẫu nhận diện trong BinaryField, không bổ sung cloud object storage. Không đưa DB/runtime, ảnh người dùng, mật khẩu hay `.env` vào Git. Phân quyền và CSRF vẫn do backend kiểm tra trên mỗi API.
