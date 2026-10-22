@@ -17,7 +17,15 @@ parser=argparse.ArgumentParser()
 parser.add_argument('--port',type=int,default=8000)
 parser.add_argument('--ready-file',type=Path)
 parser.add_argument('--resume-runtime',type=Path,help='Reuse an existing temporary demo DB and login; do not seed/reset.')
+parser.add_argument('--uniform-trial-dir',type=Path,help='Explicit private KV demo bundle; never a production school profile.')
 args=parser.parse_args()
+if args.uniform_trial_dir:
+    trial_root=args.uniform_trial_dir.resolve()
+    if not (trial_root/'bundle.json').is_file() or not (trial_root/'model.onnx').is_file():
+        parser.error('Prepare the private KV demo bundle first.')
+    os.environ['UNIFORM_DEMO_ROOT']=str(trial_root)
+else:
+    os.environ.pop('UNIFORM_DEMO_ROOT',None)
 if not 1024<=args.port<=65535:parser.error('Use an unprivileged TCP port.')
 url=f'http://127.0.0.1:{args.port}/'
 sys.path.insert(0,str(ROOT/'backend'))

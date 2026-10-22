@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-22",
+  "full_suite": {
+    "working_directory": "backend",
+    "command": "manage.py test tests --verbosity 1",
+    "passed": 260,
+    "seconds": 67.96,
+    "system_check_issues": 0
+  },
+  "review": "Independent reviewer found no remaining blockers for local recording demo; school-model and PM approval remain separate.",
+  "scope": "Local only; no attendance writes, model/profile activation, deployment or external message.",
+  "camera_evidence": "Synthetic browser stream validates geometry/lifecycle only; physical camera not verified.",
+  "source_sha256": {
+    ".document-tools/run_demo.py": "5f97a83114341658205973ebfa1bd69c80a53cc8dcd50991fdbb1e13bcd11af5",
+    ".document-tools/prepare_uniform_demo.py": "855136a19ea61615c15c5f3bb6e0aa2e21913c14ea36ef1e9a49d0e787a78021",
+    ".document-tools/check_uniform_demo_browser.py": "e180017147577809e1b7e044be4e211445780ddb811cfb70affc7664f18277de",
+    "backend/school_app/demo_ui/uniform_demo.py": "665dab2b8cf13e48b973ebd7e0612c9f1d324dc54b240a2fdb6a0563259dc70a",
+    "backend/school_app/demo_ui/static/demo_ui/uniform_demo.js": "e55c3ab2d7af1ed052bfb69f2bd0149a2aece05d80d16bffd4c9062e1f32d930",
+    "backend/tests/test_uniform_demo.py": "b9af6610df6fe1eccbee551f98fb136dd52c1934796d6186332345972354cb8f"
+  },
+  "private_bundle_samples": 8,
+  "private_dataset_rows": 547
+}

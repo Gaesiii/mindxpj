@@ -1,5 +1,7 @@
 # Nhập và thử dataset đồng phục KV — 21/10/2026
 
+Cập nhật 22/10: đã bổ sung [UI demo KV local có ảnh mẫu và camera để quay cho PM](demo-dong-phuc-cho-pm-2026-10-22.md). Trang thử riêng này không kích hoạt model trong điểm danh hoặc school profile.
+
 **Đã tải dữ liệu, nhập vào bộ thử local, huấn luyện classifier hai lớp và kiểm tra model ONNX bằng OpenCV. Chưa nhập model vào hồ sơ lớp hoặc bật trên UI điểm danh.** Dataset ngoài trường, thiếu nhãn thể dục và chưa rõ quyền tái phân phối nên không thể coi là model đồng phục trường đã nghiệm thu.
 
 ## Dataset và cách chuẩn bị

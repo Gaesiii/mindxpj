@@ -1,0 +1,55 @@
+{
+  "gallery_count": 8,
+  "real_model_gallery_results": [
+    {
+      "sample": "s01",
+      "expected": "NON_UNIFORM",
+      "result_text": "Trang phục khác"
+    },
+    {
+      "sample": "s02",
+      "expected": "NON_UNIFORM",
+      "result_text": "Trang phục khác"
+    },
+    {
+      "sample": "s03",
+      "expected": "NON_UNIFORM",
+      "result_text": "Trang phục khác"
+    },
+    {
+      "sample": "s04",
+      "expected": "KV_UNIFORM",
+      "result_text": "Đồng phục KV"
+    },
+    {
+      "sample": "s05",
+      "expected": "KV_UNIFORM",
+      "result_text": "Đồng phục KV"
+    },
+    {
+      "sample": "s06",
+      "expected": "KV_UNIFORM",
+      "result_text": "Đồng phục KV"
+    },
+    {
+      "sample": "s07",
+      "expected": "NON_UNIFORM",
+      "result_text": "Chưa đủ tin cậy"
+    },
+    {
+      "sample": "s08",
+      "expected": "NON_UNIFORM",
+      "result_text": "Chưa đủ tin cậy"
+    }
+  ],
+  "rapid_upload_latest_image_processed": true,
+  "camera_layout_geometry": {
+    "rendered": 1.3333333333333333,
+    "source": 1.3333333333333333
+  },
+  "camera_stop_cleanup": true,
+  "camera_test_input": "Chromium synthetic stream, not physical camera proof",
+  "javascript_errors": [],
+  "private_recording": "pm-demo.webm",
+  "recording_contains_camera_simulation": false
+}

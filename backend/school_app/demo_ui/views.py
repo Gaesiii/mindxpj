@@ -11,7 +11,9 @@ from django.views.decorators.http import require_GET
 def index(request):
     # This public shell contains no business data. All data/actions use scoped APIs.
     limit = settings.VISION_ENROLLMENT_TOTAL_BYTES
+    from .uniform_demo import available
     return render(request,'demo_ui/index.html', {
         'enrollment_limit_bytes': limit,
         'enrollment_limit_mib': limit // (1024 * 1024),
+        'uniform_demo_enabled': available(request),
     })

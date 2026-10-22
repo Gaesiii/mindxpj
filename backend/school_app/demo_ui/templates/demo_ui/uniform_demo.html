@@ -1,0 +1,14 @@
+{% load static %}<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Demo đồng phục KV · mindx</title>
+<link rel="stylesheet" href="{% static 'demo_ui/uniform_demo.css' %}"><script defer src="{% static 'demo_ui/uniform_demo.js' %}"></script></head><body>
+<header><a href="/">← Điểm danh mindx</a><span class="tag">DEMO LOCAL · KV</span></header>
+<main><h1>Nhận diện đồng phục</h1><p class="intro">Chọn ảnh mẫu, tải ảnh vùng áo hoặc đặt áo trong khung camera để thử model KV.</p>
+<p class="notice">Thử nghiệm hai lớp: đồng phục Kendriya Vidyalaya / trang phục khác. Chưa phải model trường mình; không ghi điểm danh hoặc kết luận vi phạm.</p>
+{% csrf_token %}<p id="lab-error" role="alert" hidden></p>
+<div class="layout"><section><h2>1. Chọn đầu vào</h2><div class="actions"><label class="button">Tải ảnh vùng áo<input id="lab-upload" type="file" accept="image/png,image/jpeg,image/webp" hidden></label><button id="lab-camera" type="button">Bật camera</button><button id="lab-stop" type="button" disabled>Dừng camera</button></div>
+<p class="hint">Ảnh JPEG/PNG/WebP ≤2 MiB. Ảnh tải lên cần được crop riêng vùng áo.</p>
+<div id="camera-box" hidden><div class="video-wrap"><video id="lab-video" autoplay muted playsinline></video><div class="roi"><span>Đặt vùng áo trong khung này</span></div></div><p class="hint">Tự quét vùng khung khoảng mỗi 1,5 giây. Căn áo thủ công; không ghép với danh tính học sinh.</p></div>
+<img id="lab-preview" alt="Vùng áo đang kiểm tra" hidden><h2>Ảnh mẫu từ tập test</h2><p class="hint">Có mẫu đồng phục KV, trang phục khác và ảnh chưa đủ tin cậy. Nhãn kỳ vọng dùng để đối chiếu; kết quả được tính từ ảnh.</p><div id="lab-gallery" class="gallery"></div></section>
+<aside><h2>2. Kết quả nhận diện</h2><div id="lab-result" class="result" role="status" aria-live="polite"><span class="result-label">SẴN SÀNG</span><h3 id="lab-decision">Chọn một ảnh để bắt đầu</h3><p id="lab-confidence"></p><p id="lab-timing"></p></div>
+<p id="lab-source" class="hint"></p><p class="hint">Confidence là điểm của model, không phải tỷ lệ chính xác ngoài thực tế. UNKNOWN nghĩa là ảnh chưa đủ điều kiện hoặc chưa đủ tin cậy.</p>
+<h2>Kịch bản quay nhanh</h2><ol><li>Chọn ảnh KV: xem kết quả đồng phục.</li><li>Chọn áo thường: xem trang phục khác.</li><li>Chọn mẫu khó: xem UNKNOWN.</li><li>Bật camera hoặc tải một ảnh mới để thử.</li></ol><p class="hint">Mẫu thuộc dataset ngoài trường. Ảnh và frame camera xử lý local, không lưu lần quét.</p></aside></div>
+</main></body></html>

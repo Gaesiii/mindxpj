@@ -28,3 +28,5 @@ Member1: accounts/academics/students/reports; Member2: schedules/attendance/visi
 - [Khảo sát GitHub nhận diện đồng phục qua camera (21/10/2026)](docs/nghien-cuu-github-nhan-dien-dong-phuc-2026-10-21.md).
 
 - [Thử nghiệm dataset đồng phục KV (21/10/2026)](docs/thu-nghiem-dataset-dong-phuc-kv-2026-10-21.md): dataset/model local, kết quả và cách test ảnh.
+
+- [Demo đồng phục KV để quay gửi PM (22/10/2026)](docs/demo-dong-phuc-cho-pm-2026-10-22.md): UI local, ảnh mẫu, camera và kịch bản quay.

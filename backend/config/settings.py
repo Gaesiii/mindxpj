@@ -99,6 +99,7 @@ TEMPLATES = [{
 }]
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+UNIFORM_DEMO_ROOT = os.environ.get('UNIFORM_DEMO_ROOT','')
 
 if VERCEL_DEMO:
     platform_hosts = [os.environ.get(name, '').strip() for name in
