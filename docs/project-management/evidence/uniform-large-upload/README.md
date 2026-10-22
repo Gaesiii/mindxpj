@@ -15,3 +15,9 @@ Kiểm chứng:
 - Review độc lập: không có blocker về ngân sách request/pixel, ánh xạ ROI hoặc vòng đời lựa chọn ảnh.
 
 Ảnh48MP là fixture tổng hợp để kiểm tra kích thước/luồng tải; không dùng để kết luận độ chính xác nhận diện đồng phục. Giữ các giới hạn backend để request phù hợp Vercel. HEIC/RAW phải đổi sang JPEG trước.
+
+## Sửa chẩn đoán ảnh mẫu
+
+Sau rollout, người dùng thấy câu “tối đa2MiB/4MP”. Kiểm tra mã cho thấy UI ghi đè mọi `INVALID_IMAGE` bằng câu này, kể cả các kiểm tra không thấy mặt/vùng áo chạm mặt/crop lưu trữ. Native probe ảnh trống từ lượt deploy trước cũng trả INVALID_IMAGE dù file nhỏ và đúng định dạng. Chưa có ảnh gốc người dùng để xác định điều kiện cụ thể bị vi phạm.
+
+Backend nay giữ mã lỗi/status cũ và trả thêm `details.reason` phân biệt thiếu mặt, nhiều mặt, vị trí ROI, mặt nằm trong ROI, crop lưu trữ lớn. UI dùng thông báo tiếng Việt theo reason; thông báo ảnh chung không còn kết luận sai về kích thước. Kiểm tra hồi quy backend cho thiếu mặt/nhiều mặt/ROI đã thất bại trước sửa và qua sau sửa; browser kiểm tra lỗi thiếu mặt không chứa câu2MiB, sau đó thử tải lại mẫu48MP thành công qua API fixture.

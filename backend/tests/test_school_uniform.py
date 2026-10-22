@@ -39,6 +39,23 @@ class UniformInferenceTests(SimpleTestCase):
 
 
 class UniformScopeTests(TestCase):
+    def test_uniform_image_errors_explain_cause_instead_of_claiming_upload_is_large(self):
+        from unittest.mock import patch
+        from school_app.vision.uniform_services import add_sample
+        from school_app.accounts.services import AccountError
+        image=np.zeros((400,300,3),np.uint8)
+        cases=[([], '[50,150,150,150]', 'UNIFORM_NO_FACE'),
+               (np.array([[50,10,80,80],[150,10,80,80]]), '[50,150,150,150]', 'UNIFORM_MULTIPLE_FACES'),
+               (np.array([[50,10,80,80]]), '[50,50,150,150]', 'UNIFORM_ROI_POSITION')]
+        for faces,roi,reason in cases:
+            with self.subTest(reason=reason), patch('school_app.vision.engine.decode_upload',return_value=image), \
+                    patch('school_app.vision.engine.detect_faces',return_value=faces):
+                with self.assertRaises(AccountError) as error:
+                    add_sample(self.supervisor,self.classroom.pk,None,
+                        {'label':'SHIRT','split':'test','capture_group':'why-error','roi':roi})
+                self.assertEqual(error.exception.code,'INVALID_IMAGE')
+                self.assertEqual(error.exception.details.get('reason'),reason)
+
     def setUp(self):
         from django.contrib.auth import get_user_model
         from school_app.academics.models import Grade, Classroom

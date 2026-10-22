@@ -96,17 +96,25 @@ def add_sample(user, classroom_id, upload, payload):
         raise AccountError('VALIDATION_ERROR','Garment crop must be inside image and at least 96 pixels.',422)
     faces = detect_faces(image)
     # Fail closed: original context must establish a head above the garment crop.
-    if len(faces) != 1 or y < float(faces[0][1]+faces[0][3])*1.0 + 12:
-        raise AccountError('INVALID_IMAGE','Show one face above a separate garment ROI; face pixels are never stored.',422)
+    if len(faces) == 0:
+        raise AccountError('INVALID_IMAGE','Show one person with a visible face above the garment.',422,
+                           {'reason':'UNIFORM_NO_FACE'})
+    if len(faces) != 1:
+        raise AccountError('INVALID_IMAGE','Show only one person in the uniform sample.',422,
+                           {'reason':'UNIFORM_MULTIPLE_FACES'})
+    if y < float(faces[0][1]+faces[0][3])*1.0 + 12:
+        raise AccountError('INVALID_IMAGE','Select a garment area below the face, with a small gap.',422,
+                           {'reason':'UNIFORM_ROI_POSITION'})
     crop = image[y:y+h,x:x+w].copy()
     if len(detect_faces(crop)):
-        raise AccountError('INVALID_IMAGE','Garment ROI contains a face.',422)
+        raise AccountError('INVALID_IMAGE','Garment ROI contains a face.',422,{'reason':'UNIFORM_ROI_FACE'})
     ok, encoded = cv2.imencode('.png',crop)
     if not ok:
         raise AccountError('INVALID_IMAGE','Cannot encode garment crop.',422)
     data = encoded.tobytes()
     if len(data) > 1024*1024:
-        raise AccountError('INVALID_IMAGE','Garment crop must encode to at most 1 MiB.',422)
+        raise AccountError('INVALID_IMAGE','Garment crop must encode to at most 1 MiB.',422,
+                           {'reason':'UNIFORM_CROP_SIZE'})
     with transaction.atomic():
         # Serialize per-class dataset mutations before limits and group checks.
         from school_app.academics.models import Classroom

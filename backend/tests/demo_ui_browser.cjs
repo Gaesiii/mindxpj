@@ -5,7 +5,7 @@ const assert=require('node:assert/strict');
 let browser;
 (async()=>{
  browser=await chromium.launch({executablePath:process.env.BROWSER_EXECUTABLE||'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',headless:true,args:['--use-fake-device-for-media-stream','--use-fake-ui-for-media-stream']});
- const context=await browser.newContext({permissions:['camera']});const page=await context.newPage();let errors=[],scans=[],writes=[],role='SUPERVISOR';page.on('pageerror',e=>errors.push(e.message));
+ const context=await browser.newContext({permissions:['camera']});const page=await context.newPage();let errors=[],scans=[],writes=[],role='SUPERVISOR',uniformRejectReason=null;page.on('pageerror',e=>errors.push(e.message));
  const now=new Date(),today=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Ho_Chi_Minh'}).format(now);
  const classroom={id:'c1',code:'10A',name:'Lớp 10A',grade_id:'g1',teacher_id:'t1',capacity:50,active:true,version:1,active_student_count:1};
  const student={id:'s1',student_code:'HS01',full_name:'Nguyễn An',class_id:'c1',active:true,version:1};
@@ -26,7 +26,10 @@ let browser;
   else if(['/sessions/q1/roster','/sessions/q0/roster'].includes(path))body={items:[row]};
   else if(['/sessions/q1/vision-scans','/sessions/q0/vision-scans'].includes(path))body={items:[]};
   else if(path==='/classes/c1/uniform-profile')body={profile:null,versions:[]};
-  else if(path==='/classes/c1/uniform-samples')body={items:[]};
+  else if(path==='/classes/c1/uniform-samples'){
+   if(req.method()==='POST'&&uniformRejectReason){await route.fulfill({status:422,json:{code:'INVALID_IMAGE',message:'Image rejected',details:{reason:uniformRejectReason}}});return;}
+   body={items:[]};
+  }
   else if(path==='/grades')body={items:[{id:'g1',name:'Khối 10'}]};
   else if(path==='/teachers')body={items:[{id:'t1',username:'teacher'}]};
   else if(path==='/sessions/q1/auto-attendance-scans'){
@@ -51,7 +54,11 @@ let browser;
  await page.waitForFunction(()=>document.querySelector('#uniform-crop-canvas').width===600&&document.querySelector('#uniform-crop-canvas').height===338);
  await page.locator('#uniform-crop-canvas').scrollIntoViewIfNeeded();const box=await page.locator('#uniform-crop-canvas').boundingBox();
  await page.mouse.move(box.x+box.width*.25,box.y+box.height*.4);await page.mouse.down();await page.mouse.move(box.x+box.width*.75,box.y+box.height*.9);await page.mouse.up();
- await page.locator('#uniform-capture-group').fill('group-01');await page.locator('#uniform-sample-form button[type="submit"]').click();await page.waitForTimeout(200);
+ await page.locator('#uniform-capture-group').fill('group-01');uniformRejectReason='UNIFORM_NO_FACE';
+ await page.locator('#uniform-sample-form button[type="submit"]').click();await page.waitForTimeout(200);
+ const cropError=await page.locator('#uniform-sample-form .dialog-error').textContent();
+ assert(cropError.includes('khuôn mặt')&&!cropError.includes('2 MiB'),'face context rejection must not be shown as a size limit: '+cropError);
+ uniformRejectReason=null;await page.locator('#uniform-sample-form button[type="submit"]').click();await page.waitForTimeout(200);
  const cropWrite=writes.find(w=>w.path==='/classes/c1/uniform-samples'&&w.method==='POST');assert(cropWrite,'crop upload submitted');
  const match=cropWrite.body.match(/name="roi"\r\n\r\n([^\r]+)/);assert(match);const roi=JSON.parse(match[1]);assert(Math.abs(roi[0]-240)<=1&&Math.abs(roi[1]-216)<=1&&Math.abs(roi[2]-480)<=1&&Math.abs(roi[3]-270)<=1,'1920 source maps to 960 decoder ROI: '+roi);
  const large=await page.evaluate(()=>{

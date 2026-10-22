@@ -29,7 +29,12 @@
     INVALID_CREDENTIALS:'Tên đăng nhập hoặc mật khẩu chưa đúng.',UNAUTHENTICATED:'Phiên đăng nhập đã hết. Vui lòng đăng nhập lại.',
     NO_FACE:'Chưa tìm thấy khuôn mặt. Chụp rõ mặt hơn hoặc ghi nhận thủ công.',MULTIPLE_FACES:'Có nhiều khuôn mặt. Chỉ để một người trong ảnh.',
     BLURRY_FACE:'Ảnh khuôn mặt bị mờ. Giữ máy ổn định và chụp lại.',FACE_TOO_SMALL:'Khuôn mặt còn nhỏ. Hãy đứng gần camera hơn.',
-    INVALID_IMAGE:'Ảnh chưa hợp lệ. Dùng JPEG, PNG hoặc WebP, tối đa 2 MiB và 4 triệu pixel.',
+    INVALID_IMAGE:'Không đọc được ảnh hợp lệ. Dùng JPEG, PNG hoặc WebP; chọn lại ảnh để hệ thống tối ưu trước khi gửi.',
+    UNIFORM_NO_FACE:'Chưa tìm thấy khuôn mặt trong ảnh mẫu đồng phục. Chọn ảnh một người thấy rõ mặt và áo; chỉ vùng áo được lưu.',
+    UNIFORM_MULTIPLE_FACES:'Ảnh mẫu đồng phục có nhiều khuôn mặt. Chọn ảnh chỉ có một người.',
+    UNIFORM_ROI_POSITION:'Vùng áo đang chạm hoặc quá gần khuôn mặt. Kéo chọn xuống dưới cằm, chừa một khoảng nhỏ và tránh khuôn mặt.',
+    UNIFORM_ROI_FACE:'Vùng áo đã chọn chứa khuôn mặt. Chọn lại riêng vùng áo, tránh đầu và mặt.',
+    UNIFORM_CROP_SIZE:'Vùng áo sau cắt còn quá nhiều chi tiết để lưu. Chọn vùng áo nhỏ hơn, tập trung vào màu áo, kiểu áo hoặc logo.',
     SESSION_TIME:'Đang ngoài khung giờ điểm danh. Kiểm tra giờ buổi học hoặc dùng ghi nhận thủ công.',
     SESSION_DATE:'Buổi học không thuộc ngày hôm nay. Hãy chọn buổi hôm nay hoặc ghi nhận thủ công.',
     SESSION_CLOSED:'Buổi học chưa mở hoặc đã chốt. Hãy chọn buổi đang mở.',
@@ -55,7 +60,7 @@
   function displayTime(value) {return value ? new Intl.DateTimeFormat('vi-VN',{timeZone:'Asia/Ho_Chi_Minh',hour:'2-digit',minute:'2-digit'}).format(new Date(value)) : '—';}
   const csrf = () => decodeURIComponent(document.cookie.split('; ').find(c=>c.startsWith('csrftoken='))?.slice(10) || '');
   function notify(message, error=false) { $('notice').textContent=message; $('notice').classList.toggle('error',error);$('notice').hidden=!message; }
-  function errorText(error) {return messages[error.code] || error.message || 'Không thể thực hiện. Vui lòng thử lại.';}
+  function errorText(error) {return messages[error.details?.reason] || messages[error.code] || error.message || 'Không thể thực hiện. Vui lòng thử lại.';}
   function formError(node,error) {node.textContent=errorText(error);node.hidden=false;}
   function setLoginError(message) {$('login-error').textContent=message;$('login-error').hidden=!message;}
 

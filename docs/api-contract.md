@@ -323,6 +323,8 @@ Các schema response/mã lỗi cụ thể phải đối chiếu implementation v
 
 Mã lỗi bổ sung: VISION_LIMIT422, RATE_LIMITED429, SESSION_CLOSED409, SESSION_DATE409, SESSION_TIME409 (ngoài start_at/close_at), SCAN_NOT_PENDING409, ROSTER_CHANGED409, ENROLLMENT_CHANGED409, ATTENDANCE_CHANGED409; dùng chung INVALID_IMAGE/VALIDATION_ERROR422, VERSION_CONFLICT/IDEMPOTENCY_CONFLICT409. Quy tắc error envelope/request_id từ mục4 vẫn áp dụng. Backend settings dùng VISION_FACE_MIN_COSINE, VISION_FACE_MIN_COSINE_MARGIN, VISION_MIN_SHARPNESS, VISION_UNIFORM_HSV cho margin/độ nét/dải màu cấu hình.
 
+Chẩn đoán ảnh mẫu đồng phục (22/10/2026): giữ `422 INVALID_IMAGE`, bổ sung `details.reason` khi ảnh đã đọc được nhưng không đạt điều kiện dataset: `UNIFORM_NO_FACE` (không thấy mặt), `UNIFORM_MULTIPLE_FACES` (nhiều mặt), `UNIFORM_ROI_POSITION` (vùng áo chưa nằm dưới mặt và chừa khoảng cách), `UNIFORM_ROI_FACE` (vùng áo chứa mặt), `UNIFORM_CROP_SIZE` (crop PNG lưu trữ vượt1MiB). Client cần hiển thị đúng nguyên nhân, không thay mọi INVALID_IMAGE bằng thông báo giới hạn ảnh tải lên. Không đổi schema, quyền truy cập hoặc nới kiểm tra pixel mặt.
+
 
 ### Nâng cấp mẫu/scan v1.4
 
