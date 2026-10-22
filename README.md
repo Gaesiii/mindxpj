@@ -30,3 +30,5 @@ Member1: accounts/academics/students/reports; Member2: schedules/attendance/visi
 - [Thử nghiệm dataset đồng phục KV (21/10/2026)](docs/thu-nghiem-dataset-dong-phuc-kv-2026-10-21.md): dataset/model local, kết quả và cách test ảnh.
 
 - [Demo đồng phục KV để quay gửi PM (22/10/2026)](docs/demo-dong-phuc-cho-pm-2026-10-22.md): UI local, ảnh mẫu, camera và kịch bản quay.
+
+- [Ảnh mẫu face từ camera độ phân giải cao](docs/anh-mau-face-do-phan-giai-cao-2026-10-22.md): chọn ảnh gốc tới32MiB/120MP, UI tự tối ưu.

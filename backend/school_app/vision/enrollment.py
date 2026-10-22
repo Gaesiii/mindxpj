@@ -42,7 +42,9 @@ def replace_samples(user, student_id, uploads):
     if not 3 <= len(uploads) <= 10 or sum(file.size for file in uploads) > budget:
         raise AccountError('VALIDATION_ERROR',
                            f'Submit 3–10 images, at most {budget / (1024 * 1024):g} MiB total.',422)
-    crops = [engine.extract_face(engine.decode_upload(file))[0] for file in uploads]
+    crops = [engine.extract_face(engine.decode_upload(file,
+        max_bytes=settings.VISION_ENROLLMENT_IMAGE_BYTES,
+        max_pixels=settings.VISION_ENROLLMENT_MAX_PIXELS))[0] for file in uploads]
     encoded = [engine.encode_face(crop) for crop in crops]
     embeddings = [engine.embed_face(crop) for crop in crops]
     digests = [hashlib.sha256(data).hexdigest() for data in encoded]

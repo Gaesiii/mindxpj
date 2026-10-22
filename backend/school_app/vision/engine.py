@@ -14,17 +14,17 @@ MAX_BYTES = 2 * 1024 * 1024
 MAX_PIXELS = 4_000_000
 
 
-def decode_upload(upload):
-    if upload is None or upload.size > MAX_BYTES:
-        raise AccountError('INVALID_IMAGE', 'Image must be at most 2 MiB.', 422)
-    raw = upload.read(MAX_BYTES + 1)
-    if len(raw) > MAX_BYTES:
-        raise AccountError('INVALID_IMAGE', 'Image must be at most 2 MiB.', 422)
+def decode_upload(upload, *, max_bytes=MAX_BYTES, max_pixels=MAX_PIXELS):
+    if upload is None or upload.size > max_bytes:
+        raise AccountError('INVALID_IMAGE', f'Image must be at most {max_bytes/(1024*1024):g} MiB.', 422)
+    raw = upload.read(max_bytes + 1)
+    if len(raw) > max_bytes:
+        raise AccountError('INVALID_IMAGE', f'Image must be at most {max_bytes/(1024*1024):g} MiB.', 422)
     try:
         with warnings.catch_warnings():
             warnings.simplefilter('error', Image.DecompressionBombWarning)
             with Image.open(io.BytesIO(raw)) as image:
-                if image.format not in {'PNG','JPEG','WEBP'} or image.width * image.height > MAX_PIXELS:
+                if image.format not in {'PNG','JPEG','WEBP'} or image.width * image.height > max_pixels:
                     raise ValueError('Image format or dimensions')
                 image.verify()
             with Image.open(io.BytesIO(raw)) as image:
@@ -33,7 +33,7 @@ def decode_upload(upload):
                 return cv2.cvtColor(np.asarray(image), cv2.COLOR_RGB2BGR)
     except (UnidentifiedImageError, OSError, ValueError, SyntaxError,
             Image.DecompressionBombWarning, Image.DecompressionBombError):
-        raise AccountError('INVALID_IMAGE', 'Use a valid JPEG/PNG/WebP of at most 4 million pixels.', 422) from None
+        raise AccountError('INVALID_IMAGE', f'Use a valid JPEG/PNG/WebP of at most {max_pixels/1_000_000:g} million pixels.', 422) from None
 
 
 def detect_faces(image):

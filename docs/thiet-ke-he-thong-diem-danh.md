@@ -30,7 +30,7 @@ Roster tạo khi OPEN từ học sinh active. Học sinh mới mặc định và
 
 ## 4. Mẫu mặt và tự điểm danh
 
-Enrollment 3–10 ảnh riêng, đúng một mặt rõ nét. Lưu private crop BGR 112×112 PNG và embedding chuẩn hóa 128 float32 little-endian (512 byte), model_key=sface-2021dec-fp32. Không endpoint byte mẫu mặt. Mỗi ảnh 2 MiB/4 MP, tổng local 15 MiB, Vercel 3 MiB. Mẫu legacy phải đăng ký lại.
+Enrollment 3–10 ảnh riêng, đúng một mặt rõ nét. Lưu private crop BGR 112×112 PNG và embedding chuẩn hóa 128 float32 little-endian (512 byte), model_key=sface-2021dec-fp32. Không endpoint byte mẫu mặt. Bổ sung theo yêu cầu22/10/2026: backend local nhận16 MiB/64MP mỗi ảnh, tổng64 MiB; Vercel giữ2 MiB/4MP mỗi ảnh, tổng3 MiB sau tối ưu. UI cho chọn ảnh gốc JPEG/PNG/WebP32 MiB/120MP mỗi ảnh rồi tự thu nhỏ/nén tuần tự, giữ toàn khung ảnh, trước upload. Không thay giới hạn ảnh quét hoặc ngưỡng nhận diện. Mẫu legacy phải đăng ký lại.
 
 YuNet2023mar phát hiện 5 landmark; SFace2021dec FP32 so cosine đúng roster. Cosine không phải xác suất. Model pinned revision/hash, license/ghi công tại backend/third_party/opencv_zoo. Chuẩn bị model trước request; không download lúc nhận diện. Thiếu/hỏng model báo 503. Không tuyên bố tự huấn luyện YuNet/SFace.
 

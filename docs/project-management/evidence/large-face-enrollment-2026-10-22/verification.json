@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-22",
+  "full_suite": {
+    "working_directory": "backend",
+    "command": "manage.py test tests --verbosity 1",
+    "passed": 262,
+    "seconds": 67.49,
+    "system_check_issues": 0
+  },
+  "independent_review": "No remaining blockers; per-dialog generation guard and real high-resolution face-quality enrollment verified.",
+  "scope": "Originals supported through client optimization, local enrollment budgets increased, scan and Vercel payload limits preserved. No deployment.",
+  "source_sha256": {
+    "backend/config/settings.py": "3848ba4e895fa39057a23d2ddf9087338f00c807153c540ece79fa37455dde63",
+    "backend/school_app/vision/engine.py": "1560a153974713295779f10bee23084e27eec96e6aae07e9d70c91b55debd4c1",
+    "backend/school_app/vision/enrollment.py": "a3d61950d6d71102968f90bbf818a79609b953e0b5303208116b3c4413e7af22",
+    "backend/school_app/demo_ui/static/demo_ui/app.js": "8673e7d8be8330b8946412f587ddd565de601f659e090f0cfd6b66565c2e8877",
+    "backend/school_app/demo_ui/static/demo_ui/enrollment.js": "b27d55e78f8682751a8c1fcaaa169150501cc37e4aabe0c49e43dc0bfeb77d92",
+    "backend/tests/test_enrollment_large_images.py": "574db8811ca00fefd69a12d95fc84682808d65faa064ac6ef4f9accf35adf702",
+    "backend/tests/test_demo_ui.py": "b158c3022230a385f501e9337849fc3a2aa748f51c6b78ce94505dc8055e0087"
+  }
+}

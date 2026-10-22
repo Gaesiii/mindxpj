@@ -82,7 +82,9 @@ VISION_AUTO_MIN_MARGIN = float(os.environ.get('VISION_AUTO_MIN_MARGIN', '0.15'))
 if not 0 <= VISION_AUTO_MIN_COSINE <= 1 or not 0 <= VISION_AUTO_MIN_MARGIN <= 2:
     raise ImproperlyConfigured('Automatic face thresholds are outside their valid range.')
 VISION_ENROLLMENT_TOTAL_BYTES = int(os.environ.get(
-    'VISION_ENROLLMENT_TOTAL_BYTES', str((3 if VERCEL_DEMO else 15) * 1024 * 1024)))
+    'VISION_ENROLLMENT_TOTAL_BYTES', str((3 if VERCEL_DEMO else 64) * 1024 * 1024)))
+VISION_ENROLLMENT_IMAGE_BYTES = (2 if VERCEL_DEMO else 16) * 1024 * 1024
+VISION_ENROLLMENT_MAX_PIXELS = 4_000_000 if VERCEL_DEMO else 64_000_000
 if VISION_ENROLLMENT_TOTAL_BYTES <= 0:
     raise ImproperlyConfigured('VISION_ENROLLMENT_TOTAL_BYTES must be positive.')
 # Demo colors only. Customize to the school's actual clothes, then evaluate.

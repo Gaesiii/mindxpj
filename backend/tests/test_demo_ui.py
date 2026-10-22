@@ -10,7 +10,8 @@ class DemoUiTests(TestCase):
     def test_shell_advertises_runtime_upload_budget(self):
         response = self.client.get('/')
         self.assertContains(response, 'data-enrollment-limit="3145728"')
-        self.assertContains(response, 'Tổng ≤3 MiB.')
+        self.assertContains(response, 'Tổng ≤3 MiB sau tối ưu.')
+        self.assertContains(response, 'Ảnh gốc ≤32 MiB/ảnh')
 
     def test_public_shell_bootstraps_csrf_without_private_data(self):
         response=self.client.get('/')

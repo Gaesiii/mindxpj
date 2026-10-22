@@ -1,0 +1,36 @@
+{
+  "input_images": [
+    {
+      "name": "camera-1.jpg",
+      "bytes": 10330541,
+      "dimensions": [
+        8000,
+        6000
+      ]
+    },
+    {
+      "name": "camera-2.jpg",
+      "bytes": 9703096,
+      "dimensions": [
+        8000,
+        6000
+      ]
+    },
+    {
+      "name": "camera-3.jpg",
+      "bytes": 10039546,
+      "dimensions": [
+        8000,
+        6000
+      ]
+    }
+  ],
+  "input_total_bytes": 30073183,
+  "browser_budget_bytes": 3145728,
+  "multipart_request_bytes": 887203,
+  "actual_api_status": 201,
+  "usable_face_samples_saved": 3,
+  "stale_dialog_preparation_cancelled": true,
+  "javascript_errors": [],
+  "note": "48MP stress fixtures derived from existing authorized enrollment portraits; not new camera acquisition or accuracy evidence."
+}
