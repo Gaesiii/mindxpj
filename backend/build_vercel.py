@@ -43,7 +43,7 @@ def main():
         call_command('collectstatic', interactive=False, verbosity=0)
         connections.close_all()
         os.replace(staging, target)
-        print('Vercel demo template and static assets prepared; runtime storage is temporary per instance.')
+        print('Isolated SQLite template and static assets prepared. Runtime uses shared PostgreSQL when DATABASE_URL is set; otherwise instance-local SQLite.')
     finally:
         if connections is not None:
             connections.close_all()

@@ -10,3 +10,5 @@ sqlparse==0.6.0
 tzdata==2026.5
 numpy==2.2.6
 opencv-contrib-python-headless==4.13.0.92
+psycopg[binary]==3.2.13
+typing_extensions==4.15.0

@@ -27,6 +27,27 @@
     };
     return {start,stop};
   }
-  const api={validatePair,retryDelay,createLoop};
+  function createAttendanceGate(hold=5000) {
+    let student=null,until=0,emptyAt=null;
+    return {
+      remaining:(now=Date.now())=>Math.max(0,until-now),
+      reset(){student=null;until=0;emptyAt=null;},
+      observe(result,now=Date.now()) {
+        if(result.student_id&&result.attendance&&result.attendance.status!=='PRESENT'){
+          this.reset();return 'ready';
+        }
+        const success=['RECORDED','ALREADY_RECORDED'].includes(result.outcome)&&result.attendance?.status==='PRESENT'&&result.student_id;
+        if(success&&result.student_id!==student){student=result.student_id;until=now+hold;emptyAt=null;return 'saved';}
+        if(!student)return 'ready';
+        // Unknown identity, blur and multiple faces are not evidence of departure.
+        if(now>=until&&result.reason==='NO_FACE'){
+          if(emptyAt!==null&&now-emptyAt>=1000){this.reset();return 'ready';}
+          emptyAt=now;
+        }else emptyAt=null;
+        return 'waiting';
+      }
+    };
+  }
+  const api={validatePair,retryDelay,createLoop,createAttendanceGate};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.MindXCamera=api;
 })(typeof window==='undefined'?globalThis:window);

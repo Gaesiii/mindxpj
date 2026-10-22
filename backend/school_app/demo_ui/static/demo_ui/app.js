@@ -7,6 +7,8 @@
     scan:null, analysis:null, analyzing:false, view:'dashboard', sampleCounts:new Map(),
     writes:new Map(), reportFilters:null, manual:null, uniform:null, enroll:null, authEpoch:0};
   let autoLoop=null, autoAbort=null, cameraGeneration=0, autoFailures=0, nextScanAt=0;
+  const attendanceGate=MindXCamera.createAttendanceGate();
+  let savedAttendanceFeedback='';
   let classEdit=null, studentEdit=null, cropImage=null, cropRoi=null, cropStart=null, cropScale=1;
   const labels = {MORNING:'Buổi sáng',AFTERNOON:'Buổi chiều',PLANNED:'Chưa mở',OPEN:'Đang điểm danh',CLOSED:'Đã chốt',
     PRESENT:'Có mặt',ABSENT:'Vắng',UNMARKED:'Chưa ghi nhận',COMPLIANT:'Đạt',NON_COMPLIANT:'Không đạt',
@@ -94,6 +96,7 @@
     finally {if(button){delete button.dataset.busy;button.disabled=false;button.removeAttribute('aria-busy');}renderControls();}
   }
   function stopCamera() {
+    attendanceGate.reset();savedAttendanceFeedback='';nextScanAt=0;
     cameraGeneration++;autoLoop?.stop();autoAbort?.abort();autoAbort=null;
     state.stream?.getTracks().forEach(track=>track.stop());state.stream=null;
     $('camera-video').srcObject=null;$('camera-video').hidden=true;$('camera-guide').hidden=true;
@@ -330,8 +333,10 @@
   async function capture(){if(state.stream)await automaticScan();}
   async function analyze(){await automaticScan(true);}
   async function automaticScan(upload=false) {
+    if(!upload&&state.view==='attendance'&&attendanceGate.remaining())return attendanceGate.remaining();
     if(state.analyzing||Date.now()<nextScanAt||!inWindow())return Math.max(4000,nextScanAt-Date.now());
     const context=contextStamp(),generation=cameraGeneration,stream=state.stream;
+    const started=Date.now();
     state.analyzing=true;nextScanAt=Date.now()+4000;renderControls();
     try {
       let request=state.analysis;
@@ -346,23 +351,30 @@
       if(!request)return 4000;
       MindXCamera.validatePair(request.files);state.analysis=request;
       const form=new FormData();request.files.forEach(f=>form.append('images',f));form.append('scan_mode',request.mode);form.append('expected_session_version',String(request.version));
-      autoAbort=new AbortController();$('scan-feedback').textContent='Đang kiểm tra hai ảnh…';
+      autoAbort=new AbortController();if(!savedAttendanceFeedback)$('scan-feedback').textContent='Đang kiểm tra hai ảnh…';
       const result=await api(`/sessions/${context.sessionId}/auto-attendance-scans`,{method:'POST',body:form,key:request.key,signal:autoAbort.signal});
       if(generation!==cameraGeneration||!sameContext(context))return 4000;
       autoFailures=0;state.analysis=null;if(upload)state.frame=null;$('retry-analysis-button').hidden=true;
       const outcome=result.outcome||result.recognition;
       const name=result.full_name_snapshot||result.student?.full_name||'';
       const feedback={RECORDED:`Đã ghi nhận có mặt${name?' · '+name:''}.`,ALREADY_RECORDED:`Đã ghi nhận trước đó${name?' · '+name:''}.`,UNIFORM_UPDATED:`Đã cập nhật gợi ý đồng phục${name?' · '+name:''}.`,NOT_PRESENT:'Học sinh chưa có mặt trong buổi. Hãy điểm danh trước.',UNKNOWN:'Chưa nhận diện được. Đứng rõ mặt hoặc dùng ghi nhận thủ công.',AMBIGUOUS:'Chưa phân biệt chắc chắn. Chụp lại hoặc ghi nhận thủ công.',RETRY:'Ảnh chưa ổn định. Giữ yên và nhìn vào camera.'};
-      $('scan-feedback').textContent=feedback[outcome]||messages[result.reason]||'Chưa có kết quả rõ ràng. Có thể ghi nhận thủ công.';
+      const gateState=!upload&&state.view==='attendance'?attendanceGate.observe(result):'ready';
+      if(gateState==='saved')savedAttendanceFeedback=feedback[outcome]+' Đã lưu. Chờ 5 giây và người tiếp theo vào camera.';
+      if(gateState==='ready')savedAttendanceFeedback='';
+      if(outcome==='ALREADY_RECORDED'&&result.attendance?.status==='ABSENT')feedback.ALREADY_RECORDED=`Đã ghi vắng${name?' · '+name:''}. Giữ nguyên kết quả của giáo viên.`;
+      $('scan-feedback').textContent=savedAttendanceFeedback||feedback[outcome]||messages[result.reason]||'Chưa có kết quả rõ ràng. Có thể ghi nhận thủ công.';
+      // Uncertain frames cannot change attendance; avoid replacing the roster
+      // (or a successful receipt) after blur/no face.
+      if(['UNKNOWN','AMBIGUOUS','RETRY'].includes(outcome))return 4000;
       const [session,roster]=await Promise.all([api('/sessions/'+context.sessionId),api(`/sessions/${context.sessionId}/roster`)]);
       if(generation!==cameraGeneration||!sameContext(context))return 4000;
       state.session=session;state.roster=roster.items;renderData();
       if(result.attendance?.uniform_status==='NOT_CHECKED')$('uniform-model-status').textContent='Đồng phục chưa kiểm tra: chưa có bộ nhận biết phù hợp hoặc ảnh chưa rõ vùng áo.';
-      return 4000;
+      return Math.max(4000,attendanceGate.remaining()+Date.now()-started);
     } catch(error) {
       if(generation!==cameraGeneration||!sameContext(context))return 4000;
       const delay=MindXCamera.retryDelay(error.retryAfter,++autoFailures);nextScanAt=Date.now()+delay;
-      $('scan-feedback').textContent=errorText(error);$('retry-analysis-button').hidden=!error.uncertain;
+      $('scan-feedback').textContent=(savedAttendanceFeedback?savedAttendanceFeedback+' ':'')+errorText(error);$('retry-analysis-button').hidden=!error.uncertain;
       if(!error.uncertain){state.analysis=null;if(upload)state.frame=null;}
       if(error.code==='VERSION_CONFLICT'){
         const session=await api('/sessions/'+context.sessionId);if(sameContext(context))state.session=session;

@@ -45,6 +45,40 @@ class DemoUiTests(TestCase):
         self.assertNotContains(response,settings.SECRET_KEY)
 
 class AutomaticCameraBehaviorTests(TestCase):
+    def test_success_is_held_until_a_new_person_or_confirmed_empty_camera(self):
+        import shutil
+        import subprocess
+        node = shutil.which('node')
+        if not node:
+            self.skipTest('Node required')
+        script = Path(settings.BASE_DIR) / 'school_app/demo_ui/static/demo_ui/camera.js'
+        program = r"""
+const assert=require('node:assert/strict');
+const {createAttendanceGate}=require(process.argv[1]);
+const gate=createAttendanceGate();
+const present={outcome:'RECORDED',student_id:'a',attendance:{status:'PRESENT'}};
+assert.equal(gate.observe(present,0),'saved');
+assert.equal(gate.remaining(4999),1);
+assert.equal(gate.observe({outcome:'UNKNOWN',reason:'BLURRY_FACE'},5000),'waiting');
+assert.equal(gate.observe({outcome:'UNKNOWN',reason:'NO_FACE'},6000),'waiting');
+assert.equal(gate.observe({outcome:'UNKNOWN',reason:'BLURRY_FACE'},7000),'waiting');
+assert.equal(gate.observe({outcome:'UNKNOWN',reason:'NO_FACE'},8000),'waiting');
+assert.equal(gate.observe({outcome:'UNKNOWN',reason:'NO_FACE'},9000),'ready');
+assert.equal(gate.observe(present,10000),'saved');
+assert.equal(gate.observe({...present,outcome:'ALREADY_RECORDED'},15000),'waiting');
+assert.equal(gate.observe({...present,student_id:'b'},16000),'saved');
+assert.equal(gate.remaining(16000),5000);
+assert.equal(gate.observe({...present,student_id:'b',attendance:{status:'ABSENT'}},21000),'ready');
+gate.observe(present,22000);
+assert.equal(gate.observe({...present,student_id:'b',attendance:{status:'ABSENT'}},28000),'ready');
+gate.reset();assert.equal(gate.remaining(16000),0);
+assert.equal(gate.observe({outcome:'UNKNOWN',reason:'BLURRY_FACE'},17000),'ready');
+// Manual ABSENT must never be presented as a new successful PRESENT.
+assert.equal(gate.observe({...present,attendance:{status:'ABSENT'}},18000),'ready');
+"""
+        result = subprocess.run([node, '-e', program, str(script)], capture_output=True, text=True, timeout=10)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
     def test_pair_validation_and_serial_camera_loop(self):
         import shutil
         import subprocess

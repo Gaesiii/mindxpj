@@ -72,6 +72,22 @@ class AutoAttendanceTests(WorkflowCase):
         self.attendance.refresh_from_db()
         self.assertEqual(self.attendance.status, 'UNMARKED')
 
+    def test_blur_and_lost_face_after_success_never_erase_committed_attendance(self):
+        from school_app.accounts.services import AccountError
+        self.assertEqual(self.scan('first').json()['outcome'], 'RECORDED')
+        self.attendance.refresh_from_db()
+        saved = (self.attendance.status, self.attendance.arrived_at, self.attendance.version)
+        for reason in ('BLURRY_FACE', 'NO_FACE', 'MULTIPLE_FACES', 'FACE_TOO_SMALL'):
+            with self.subTest(reason=reason), patch('school_app.vision.engine.extract_face',
+                    side_effect=AccountError(reason, 'Uncertain frame', 422)):
+                response = self.scan(reason)
+                self.assertEqual(response.status_code, 200, response.content)
+                self.assertEqual(response.json()['reason'], reason)
+                self.attendance.refresh_from_db()
+                self.assertEqual((self.attendance.status, self.attendance.arrived_at,
+                                  self.attendance.version), saved)
+        self.assertEqual(VisionScan.objects.filter(status='AUTO_RECORDED').count(), 1)
+
     def test_server_rechecks_transfer_and_enrollment_after_inference(self):
         good = self.mock_match.return_value
         def transfer(*args, **kwargs):

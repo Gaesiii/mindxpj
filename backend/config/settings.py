@@ -5,6 +5,7 @@ import tempfile
 from pathlib import Path
 
 from django.core.exceptions import ImproperlyConfigured
+from config.database import database_config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "")
@@ -44,8 +45,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = "config.urls"
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
-DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME":
-    os.environ.get("DJANGO_DB_PATH", str(BASE_DIR / "db.sqlite3"))}}
+DATABASES = {'default': database_config(os.environ, BASE_DIR / 'db.sqlite3')}
 AUTH_USER_MODEL = "accounts.User"
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -112,8 +112,7 @@ if VERCEL_DEMO:
     ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS]
     deployment = os.environ.get('VERCEL_URL') or os.environ.get('VERCEL_PROJECT_PRODUCTION_URL') or 'local-build'
     runtime_root = Path(tempfile.gettempdir()) / ('mindx-demo-' + hashlib.sha256(deployment.encode()).hexdigest()[:16])
-    DATABASES['default']['NAME'] = os.environ.get('DJANGO_DB_PATH', str(runtime_root / 'db.sqlite3'))
-    DATABASES['default']['OPTIONS'] = {'timeout': 20}
+    DATABASES = {'default': database_config(os.environ, runtime_root / 'db.sqlite3')}
     PRIVATE_MEDIA_ROOT = runtime_root / 'private_media'
     FILE_UPLOAD_TEMP_DIR = str(runtime_root / 'uploads')
     VERCEL_DEMO_TEMPLATE = BASE_DIR / '.vercel-demo' / 'template.sqlite3'

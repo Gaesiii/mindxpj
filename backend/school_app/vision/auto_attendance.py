@@ -152,6 +152,18 @@ def analyze_auto(user, session_id, uploads, mode, expected_session_version, key)
     uniform = evaluate_pair(images,boxes,uniform_profile)
 
     def commit():
+        # Enrollment replacement/deletion and transfers lock the Student row
+        # first. Hold the same row through revision checks and commit on PG,
+        # where an idempotency INSERT does not serialize unrelated writers.
+        from school_app.students.models import Student
+        from school_app.academics.models import Classroom
+        from school_app.schedules.models import Session
+        # All candidates affect ambiguity, so lock the complete roster in a
+        # stable order, including currently inactive/transferred candidates.
+        list(Student.objects.filter(sessionroster__session_id=session_id)
+             .order_by('pk').select_for_update().values_list('pk', flat=True))
+        Classroom.objects.filter(pk=session.classroom_id).update(version=F('version'))
+        Session.objects.filter(pk=session_id).update(version=F('version'))
         current = _current_session(user,session_id)
         require_open_today(current)
         check_version(current,expected_session_version)

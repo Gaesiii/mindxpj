@@ -92,6 +92,15 @@ def refresh_demo_sessions():
                     open_session(supervisor, session.pk, session.version)
 
 
+def refresh_shared_demo_sessions():
+    """Serialize daily fictional session creation across PostgreSQL instances."""
+    from django.contrib.auth import get_user_model
+    from django.db import transaction
+    with transaction.atomic():
+        get_user_model().objects.select_for_update().get(username='demo_supervisor')
+        refresh_demo_sessions()
+
+
 class DemoBootstrapMiddleware:
     """Initialize only on real requests, before session/auth/database middleware."""
     def __init__(self, get_response):
@@ -101,6 +110,16 @@ class DemoBootstrapMiddleware:
 
     def __call__(self, request):
         from django.utils import timezone
+        if settings.DATABASES['default'].get('ENGINE', 'django.db.backends.sqlite3') != 'django.db.backends.sqlite3':
+            # Shared storage is migrated/seeded explicitly by the operator.
+            # Never copy a template or reset shared records on cold starts.
+            Path(settings.PRIVATE_MEDIA_ROOT).mkdir(parents=True, exist_ok=True)
+            Path(settings.FILE_UPLOAD_TEMP_DIR).mkdir(parents=True, exist_ok=True)
+            today = timezone.localdate()
+            if self.prepared_date != today:
+                refresh_shared_demo_sessions()
+                self.prepared_date = today
+            return self.get_response(request)
         database = Path(settings.DATABASES['default']['NAME'])
         if not self.storage_ready or not database.is_file():
             if ensure_database(settings.VERCEL_DEMO_TEMPLATE, database):

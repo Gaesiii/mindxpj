@@ -1,37 +1,53 @@
-# Demo trên Vercel
+# Demo Django/OpenCV trên Vercel
 
-**v1.5:** camera tự gửi hai ảnh, server tự điểm danh nếu nhận diện đủ điều kiện; không yêu cầu xác nhận từng học sinh. CRUD và không gian Đồng phục đã tích hợp. Giữ hai biến môi trường cũ. Thiếu model trường giữ NOT_CHECKED, không dùng HSV kết luận mẫu/logo. [Dataset/model offline](../tools/uniform_training/README.md).
+Cập nhật 22/10/2026. Production: https://attendance-eta-silk.vercel.app. Root Directory: `backend`, Python 3.12, entrypoint `config.wsgi:application`, build script `python build_vercel.py`. Camera cần HTTPS và quyền trình duyệt. PM API_Gate vẫn chờ review nghiệp vụ.
 
-Auto scan tối đa1MiB mỗi ảnh/2MiB tổng, một cặp/4giây; không chồng request. UI thu nhỏ/nén trước gửi. Không thêm Torch runtime. Export dataset từ4MiB ảnh hoặc trên500mẫu trả422 trước tạo ZIP, xử lý bộ lớn trên local. Build/test local không phải native Vercel build/deployment.
+## Lưu dữ liệu dùng chung
 
-API đã được tối ưu để request thông thường không nạp OpenCV/NumPy/Excel trước khi cần; quét mặt chỉ đọc embedding, không kéo crop ảnh từ DB. Runtime đã khởi tạo bỏ qua copy-lock/tạo thư mục lặp lại, vẫn tự phục hồi khi mất DB tạm. [Kiểm chứng API/Vercel](project-management/evidence/vercel-api-performance/README.md). Đây là cấu hình bàn giao để bạn tự deploy; không có deployment được tạo tự động.
+Production dùng PostgreSQL qua Neon Free, kết nối bằng biến bí mật `DATABASE_URL` do integration Vercel cấp. Điểm danh, mẫu mặt (crop + embedding trong DB), tài khoản và dữ liệu lớp/học sinh được dùng chung giữa các instance và các lần redeploy. Không thay `DATABASE_URL` hoặc xóa DB để làm mới giao diện.
 
-Import repository `Gaesiii/mindxpj` vào Vercel, chọn **Root Directory: `backend`**, framework **Django**, giữ build command theo `pyproject.toml`. Python được khóa ở 3.12. Chưa thực hiện deploy trong lần bàn giao này.
-
-Chỉ cần thêm hai Environment Variables trước khi build:
-
-File `.env.vercel` tạo trên máy chỉ dùng để nhập giá trị; không được push và Vercel không tự đọc file local đó. Trong đúng project Vercel, mở Environment Variables, nhập từng Name/Value, chọn Production và Preview, Save rồi tạo deployment mới. Nếu build vẫn báo thiếu env, tìm dòng `[demo-build:v2]`: dòng này chỉ in tên biến=set/missing, môi trường và commit, không in giá trị. Log không có marker này là bản code cũ; cần chọn deployment mới từ nhánh main.
-
-Nếu hai biến đều `set` nhưng seed thất bại, bản mới kiểm tra mật khẩu cho cả23tài khoản trước khi tạo dữ liệu. `DEMO_PASSWORD rejected [...]` chỉ rõ mã như `password_too_short`, `password_too_common`, `password_entirely_numeric`, `password_too_similar`; thay bằng giá trị mật khẩu ngẫu nhiên trong file private và tạo deployment mới. Chỉ copy phần giá trị sau `DEMO_PASSWORD=`, không copy tên biến/dấu `=` vào ô Value. Nếu báo `data validation`, `data creation rejected` hoặc `database constraint`, giữ dòng mã lỗi đó để chẩn đoán dữ liệu, không tự bỏ kiểm tra mật khẩu.
-
-| Biến | Giá trị |
+| Biến | Mục đích |
 | --- | --- |
-| `DJANGO_SECRET_KEY` | Chuỗi ngẫu nhiên dài, giữ nguyên giữa các lần build cần dùng chung phiên |
-| `DEMO_PASSWORD` | Mật khẩu demo đủ mạnh, tối thiểu 8 ký tự và không quá phổ biến |
+| `DJANGO_SECRET_KEY` | Secret Django; giữ ổn định để cookie đăng nhập tiếp tục hợp lệ |
+| `DEMO_PASSWORD` | Mật khẩu đủ mạnh khi tạo tài khoản demo lần đầu |
+| `DATABASE_URL` | URL PostgreSQL có TLS, lấy từ Vercel → Storage/integration Neon; không đưa vào Git/log/chat |
 
-Có thể tạo secret bằng `python -c "import secrets; print(secrets.token_urlsafe(64))"`. Lưu trong cấu hình Vercel; không đưa giá trị thật vào repository. Không cần `DATABASE_URL`, dịch vụ DB hay chạy migrate thủ công.
+Integration hiện kết nối **Production**. Preview chưa có `DATABASE_URL` vẫn dùng SQLite tạm. Khi tạo preview riêng, dùng database/branch riêng để tránh sửa dữ liệu production trong lúc thử nghiệm.
 
-Sau khi deploy, mở `/`, đăng nhập `demo_supervisor` bằng mật khẩu đã đặt. Có thêm `demo_teacher_a` và `demo_teacher_b` để trình bày phân quyền. Có hai lớp,20học sinh giả; buổi sáng/chiều hôm nay tự mở. Đóng buổi giữ trạng thái trên instance đó. Xem [demo](huong-dan-demo-opencv.md) và [slide](thuyet-trinh-opencv.pptx). Đăng ký 3–10 ảnh khác nhau; luồng auto ghi có mặt khi đủ điều kiện, giáo viên xử lý ngoại lệ. Camera cần HTTPS và quyền trình duyệt.
+Nếu không có `DATABASE_URL`, ứng dụng vẫn hỗ trợ SQLite cho local/demo tạm: trên Vercel mỗi instance có bản sao riêng và có thể mất điểm danh/mẫu khi cold start hoặc redeploy. Không dùng chế độ này để chứng minh dữ liệu được lưu lâu dài. `DJANGO_DB_PATH` luôn ưu tiên SQLite để build/test/local được cách ly; **không đặt biến này trong cấu hình runtime production PostgreSQL**. URL PostgreSQL sai hoặc không có TLS sẽ báo cấu hình lỗi, không tự rơi về SQLite.
 
-Build chạy prepare_vision_models để tải/kiểm SHA-256 model YuNet+SFace FP32 đã pin trước khi bundle, rồi migration, tạo DB mẫu có hash mật khẩu và thu gom static. Lần truy cập đầu của mỗi instance chỉ copy DB mẫu vào vùng tạm có khóa khởi tạo; không migrate hay hash mật khẩu tại cold start. Static được phục vụ qua cơ chế Django/CDN của Vercel. `config.wsgi` được chọn rõ ràng, timeout 60 giây; OpenCV dùng bản headless, không cần GUI hệ thống. Cấu hình theo [Django trên Vercel](https://vercel.com/docs/frameworks/full-stack/django) và [Python runtime](https://vercel.com/docs/functions/runtimes/python).
+## Khởi tạo DB mới và cập nhật schema
 
-DB SQLite, ảnh riêng tư và mẫu khuôn mặt mới tạo **chỉ tồn tại tạm trên từng instance**. Instance mới/redeploy có thể mất thay đổi; các instance không đồng bộ dữ liệu. Chỉ dùng dữ liệu giả hoặc người tự nguyện cho buổi demo. Đây là lựa chọn để giảm setup, không phải lưu trữ lâu dài; xem [giới hạn SQLite của Vercel](https://vercel.com/kb/guide/is-sqlite-supported-in-vercel). Phiên đăng nhập dùng cookie ký có hạn một giờ; không có cơ chế thu hồi phiên toàn cục bền vững giữa các instance. Dữ liệu nhạy cảm không nằm trong cookie.
+Operator nạp các biến môi trường qua kênh riêng; Django không tự đọc `.env`. Với DB mới, chạy từ `backend`:
 
-Vercel giới hạn request/response 4.5 MB, nên tổng ảnh enrollment **sau tối ưu** vẫn là 3 MiB, mỗi ảnh gửi tối đa 2 MiB/4 triệu pixel. Từ cập nhật 22/10/2026, UI nhận ảnh gốc JPEG/PNG/WebP tới **32 MiB/120 triệu pixel mỗi ảnh**, tự thu nhỏ và nén tuần tự theo ngân sách bộ mẫu trước khi gửi. Có thể chọn thẳng ảnh camera lớn, không cần tự giảm kích thước trước. Backend local nhận trực tiếp tối đa16 MiB/64MP mỗi ảnh, tổng64 MiB; backend Vercel giữ giới hạn request nêu trên. HEIC/RAW cần chuyển JPEG trước. Xem [giới hạn Functions](https://vercel.com/docs/functions/limitations).
+```powershell
+python manage.py migrate --noinput
+python manage.py seed_demo
+python manage.py shell -c "from config.vercel_demo import prepare_demo_rules, refresh_demo_sessions; prepare_demo_rules(); refresh_demo_sessions()"
+```
 
-Hostname deployment và production do Vercel cung cấp được thêm tự động vào `ALLOWED_HOSTS`. Nếu dùng domain riêng chưa nằm trong các biến platform, thêm `DJANGO_ALLOWED_HOSTS` là danh sách hostname phân cách dấu phẩy, không có `https://`. Không bật `DJANGO_DEBUG` trên bản public. Giữ hai biến platform host được Vercel cung cấp khi cấu hình project.
+Hai lệnh chuẩn bị chỉ dành cho dữ liệu demo giả đã được seed. Không chạy lại `prepare_demo_rules` để ghi đè lịch đã tùy chỉnh. `seed_demo` giữ mật khẩu cũ và dừng khi gặp dữ liệu trùng không tương thích. Với DB đã có dữ liệu, thay đổi schema qua `migrate` sau khi backup; build/redeploy không tự seed/reset DB dùng chung. Mỗi ngày middleware mở buổi demo giả bằng service hiện có, có khóa DB để phối hợp các instance; không chạy migration hay tạo lại tài khoản trong request.
 
-Kiểm chứng local và giới hạn bằng chứng nằm trong [evidence Vercel](project-management/evidence/vercel-demo/README.md). Đã tải đủ Linux wheels; tổng nội dung wheel khoảng267.4MiB; model đã xác minh38,928,942byte (khoảng38.9MB/37.1MiB), tổng ước tính304.5MiB trước source/runtime/overhead. Đây là estimate không phải kích thước function deployed. Chưa xác nhận build thực tế trên hạ tầng Vercel hay camera/người thật.
+Build luôn tạo SQLite template **riêng** bằng đường dẫn staging, kể cả khi môi trường có `DATABASE_URL`. Build tải/kiểm SHA-256 YuNet + SFace FP32, chuẩn bị static và template; không ghi production PostgreSQL. Hai model được bundle, không tải trong request. Thiếu/hỏng model trả `VISION_UNAVAILABLE`, không fallback sang nhận diện khác.
 
+## Luồng camera và kiểm tra nhanh
 
-YuNet + SFace FP32 được chuẩn bị tại build, include trong bundle, không download ở HTTP request/cold start. Thiếu/hỏng model trả503 VISION_UNAVAILABLE, không fallback LBPH. Hai biến người dùng cần cấu hình vẫn chỉ DJANGO_SECRET_KEY và DEMO_PASSWORD. Giữ license/attribution YuNet MIT và SFace Apache2.0 trong backend/third_party/opencv_zoo khi đóng gói. Mẫu LBPH từ DB cũ cần enrollment lại3–10ảnh; SFace lưu crop màu112x112 và embedding private, scan metric=cosine không phải xác suất. SQLite/ảnh/mẫu chỉ tạm từng instance như mô tả trên. Chưa deploy và chưa kiểm chứng bundle thực tế trên Vercel hoặc độ chính xác camera; không công bố kết quả đang chạy là đã đạt.
+Đăng nhập `demo_supervisor` bằng mật khẩu đã cấu hình; có thêm `demo_teacher_a/b` và tài khoản học sinh giả. Chọn buổi hôm nay đang mở. Đăng ký 3–10 ảnh rõ mặt cho học sinh, rồi mở camera trong **Điểm danh**.
+
+1. Server xác minh hai khung hình độc lập cùng một học sinh trong roster, đủ ngưỡng → commit PRESENT ngay, không cần xác nhận tay.
+2. UI giữ biên nhận “Đã lưu”, nghỉ ít nhất **5 giây** sau kết quả thành công rồi quan sát người tiếp theo. Ảnh mờ/không rõ danh tính không xóa điểm danh và không được coi là người đã rời camera.
+3. Người khác được xác định đủ điều kiện có thể vào tiếp sau khoảng nghỉ. Hai lần quan sát `NO_FACE` liên tiếp, cách nhau ít nhất một giây, đưa camera về trạng thái chờ trống; với nhịp quét 4 giây việc này có thể lâu hơn một giây.
+4. Cùng học sinh đã PRESENT không ghi thêm lượt và không đổi giờ đến. Kết quả ABSENT đã ghi được giữ nguyên và hiển thị rõ; sửa thủ công qua giáo viên khi cần.
+5. Thử làm mờ sau khi thành công, làm mới trang, rồi mở một trình duyệt/điện thoại khác: roster trong cùng buổi phải tiếp tục giữ PRESENT và giờ đến cũ.
+
+Camera gửi tối đa một cặp/4 giây khi không nghỉ/backoff, mỗi ảnh ≤1 MiB, tổng ≤2 MiB, không chồng request. Giới hạn phân tích 20/phút/nhân sự dùng cache process, chưa phải hạn mức phân tán. Hai ảnh nhất quán không phải bảo đảm chống giả mạo/liveness.
+
+## Ảnh mẫu và đồng phục
+
+UI nhận JPEG/PNG/WebP gốc ≤32 MiB/120 MP mỗi ảnh, thu nhỏ/nén tuần tự trước khi gửi. Enrollment Vercel tổng ≤3 MiB sau tối ưu, mỗi ảnh ≤2 MiB/4 MP; local API ≤16 MiB/64 MP mỗi ảnh và tổng ≤64 MiB. HEIC/RAW cần đổi sang JPEG. Mẫu đã đăng ký bằng SQLite tạm có thể cần đăng ký lại khi chuyển DB: API metadata không xuất ảnh/embedding để khôi phục đầy đủ.
+
+Đồng phục trường cần model local đã được đánh giá riêng; thiếu bằng chứng giữ `NOT_CHECKED`. Không dùng màu áo để khẳng định logo/mẫu trường. Phòng thử dataset KV chỉ chạy local, không được xuất bản trong deployment này.
+
+Ảnh đại diện học sinh và file export dùng filesystem vẫn là file tạm trên Vercel; PostgreSQL ở đây bảo đảm dữ liệu bản ghi và mẫu nhận diện trong BinaryField, không bổ sung cloud object storage. Không đưa DB/runtime, ảnh người dùng, mật khẩu hay `.env` vào Git. Phân quyền và CSRF vẫn do backend kiểm tra trên mỗi API.
+
+Tham khảo vận hành: [Django trên Vercel](https://vercel.com/docs/frameworks/full-stack/django), [Neon integration](https://vercel.com/marketplace/neon), [Psycopg binary](https://www.psycopg.org/psycopg3/docs/basic/install.html), [giới hạn Functions](https://vercel.com/docs/functions/limitations).

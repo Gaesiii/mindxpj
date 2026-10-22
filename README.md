@@ -17,7 +17,7 @@ Mở `http://127.0.0.1:8000/`, lấy tài khoản/mật khẩu từ file runtime
 - [Thiết kế chuẩn v1.5](docs/thiet-ke-he-thong-diem-danh.md), [API contract](docs/api-contract.md), [backend setup](backend/README.md).
 - [Kế hoạch/task v1.5](docs/superpowers/plans/2026-10-18-auto-attendance-uniform-crud.md), [tracker CSV](docs/project-management/auto-attendance-uniform-crud-tasks.csv).
 - [Pipeline đồng phục offline](tools/uniform_training/README.md), [hướng dẫn demo](docs/huong-dan-demo-opencv.md), [PowerPoint7slide có notes](docs/thuyet-trinh-opencv.pptx).
-- [Tự deploy Vercel](docs/deploy-vercel-demo.md): Root Directory `backend`, hai biến `DJANGO_SECRET_KEY`/`DEMO_PASSWORD`. SQLite/ảnh/mẫu tạm theo instance, không đồng bộ và có thể mất; không thay database bền vững.
+- [Deploy Vercel](docs/deploy-vercel-demo.md): Root Directory `backend`, `DJANGO_SECRET_KEY`/`DEMO_PASSWORD`; thêm `DATABASE_URL` PostgreSQL để giữ điểm danh và mẫu mặt giữa các instance/redeploy. Không cấu hình DB chung thì SQLite vẫn chỉ là dữ liệu tạm.
 
 GVCN chỉ lớp được giao; giám thị toàn phạm vi; STUDENT không dùng staff console. Ảnh hồ sơ, mẫu mặt và áo tách riêng/private; không lưu video/frame quét. QR mặc định tắt, giữ dữ liệu/migrations cũ. Cosine không phải phần trăm chính xác và không có liveness guarantee.
 
