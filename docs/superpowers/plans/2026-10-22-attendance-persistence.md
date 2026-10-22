@@ -25,4 +25,6 @@ Yêu cầu: commit PRESENT sau xác minh hai ảnh, giữ kết quả khi ngư�
 
 ## Giới hạn chuyển đổi
 
+Đã push mã `8af8fbe` và deploy production thành công. [Bằng chứng kiểm tra](../../project-management/evidence/attendance-persistence/README.md) ghi kết quả native build, API/DB dùng chung và phạm vi kiểm chứng camera.
+
 API metadata của bản SQLite tạm không xuất ảnh/embedding hoặc đầy đủ audit/scan. Không thể khẳng định khôi phục toàn bộ dữ liệu đã biến mất cùng instance. Các snapshot API đọc được được lưu ngoài repository, không công bố dữ liệu cá nhân. Người demo có thể phải đăng ký lại mẫu khi chuyển DB. Không tăng phạm vi sang object storage/queue/external AI.
