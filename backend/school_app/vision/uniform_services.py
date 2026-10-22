@@ -75,25 +75,40 @@ def require_sample(user, sample_id):
     return sample
 
 
+def sample_validation(reason, message, field=None, **details):
+    raise AccountError('VALIDATION_ERROR',message,422,
+                       {'reason':reason,**({'field':field} if field else {}),**details})
+
+
 def add_sample(user, classroom_id, upload, payload):
     supervisor_user(user)
     classroom = require_class(user,classroom_id)
     require_active(classroom)
-    if set(payload) != {'label','capture_group','split','roi'} or payload['label'] not in LABELS or payload['split'] not in ['train','val','test']:
-        raise AccountError('VALIDATION_ERROR','Supply label, capture_group, split and garment roi.',422)
-    if not re.fullmatch(r'[A-Za-z0-9_-]{1,80}',payload['capture_group']):
-        raise AccountError('VALIDATION_ERROR','Use a non-identifying capture_group token.',422)
+    required={'label','capture_group','split','roi'}
+    if set(payload)-required:
+        sample_validation('UNIFORM_REQUEST_FIELDS','Unexpected uniform sample fields; reload the form.')
+    if required-set(payload):
+        sample_validation('UNIFORM_REQUIRED_FIELDS','Supply label, capture_group, split and garment roi.',
+                          fields=sorted(required-set(payload)))
+    if payload['label'] not in LABELS:
+        sample_validation('UNIFORM_LABEL','Select SHIRT, SPORTS or OTHER.','label')
+    if payload['split'] not in ['train','val','test']:
+        sample_validation('UNIFORM_SPLIT','Select train, val or test.','split')
+    if not isinstance(payload['capture_group'],str) or not re.fullmatch(r'[A-Za-z0-9_-]{1,80}',payload['capture_group']):
+        sample_validation('UNIFORM_GROUP','Use 1-80 letters, digits, hyphens or underscores for capture_group.','capture_group')
     try:
         roi = json.loads(payload['roi'])
         if not isinstance(roi,list) or len(roi) != 4 or any(type(v) is not int for v in roi):
             raise ValueError()
         x,y,w,h = roi
     except (ValueError,TypeError):
-        raise AccountError('VALIDATION_ERROR','roi must be [x,y,width,height] integers.',422) from None
+        sample_validation('UNIFORM_ROI_FORMAT','Select a garment rectangle in the preview.','roi')
+    if min(w,h) < 96:
+        sample_validation('UNIFORM_ROI_TOO_SMALL','Garment crop must be at least 96 by 96 pixels.','roi',size=[w,h],minimum=96)
     from .engine import decode_upload, detect_faces
     image = decode_upload(upload)
-    if min(x,y) < 0 or min(w,h) < 96 or x+w > image.shape[1] or y+h > image.shape[0]:
-        raise AccountError('VALIDATION_ERROR','Garment crop must be inside image and at least 96 pixels.',422)
+    if min(x,y) < 0 or x+w > image.shape[1] or y+h > image.shape[0]:
+        sample_validation('UNIFORM_ROI_BOUNDS','Garment crop extends outside the image; select it again.','roi')
     faces = detect_faces(image)
     # Fail closed: original context must establish a head above the garment crop.
     if len(faces) == 0:
@@ -129,20 +144,21 @@ def add_sample(user, classroom_id, upload, payload):
         classroom=require_class(actor,classroom_id)
         require_active(classroom)
         if SchoolUniformSample.objects.filter(classroom=classroom).count() >= 1000:
-            raise AccountError('VALIDATION_ERROR','Class dataset limit is 1000 samples.',422)
+            sample_validation('UNIFORM_SAMPLE_LIMIT','Class dataset limit is 1000 samples.',maximum=1000)
         from django.db.models import Sum
         from django.db.models.functions import Length
         total = SchoolUniformSample.objects.filter(classroom=classroom).aggregate(size=Sum(Length('image')))['size'] or 0
         if total + len(data) > 32*1024*1024:
-            raise AccountError('VALIDATION_ERROR','Class private dataset limit is 32 MiB.',422)
-        if SchoolUniformSample.objects.filter(classroom=classroom,capture_group=payload['capture_group']).exclude(split=payload['split']).exists():
-            raise AccountError('VALIDATION_ERROR','A capture group must stay in one split.',422)
+            sample_validation('UNIFORM_DATASET_SIZE','Class private dataset limit is 32 MiB.',maximum_mib=32)
+        other_split=SchoolUniformSample.objects.filter(classroom=classroom,capture_group=payload['capture_group']).exclude(split=payload['split']).values_list('split',flat=True).first()
+        if other_split:
+            sample_validation('UNIFORM_GROUP_SPLIT_CONFLICT','A capture group must stay in one split.','split',existing_split=other_split)
         try:
             sample = SchoolUniformSample.objects.create(classroom=classroom,image=data,
                 digest=hashlib.sha256(data).hexdigest(),label=payload['label'],split=payload['split'],
                 capture_group=payload['capture_group'],created_by=actor)
         except IntegrityError:
-            raise AccountError('DUPLICATE','This garment image is already stored.',409) from None
+            raise AccountError('DUPLICATE','This garment image is already stored.',409,{'reason':'UNIFORM_DUPLICATE_IMAGE'}) from None
         record_change(user,sample,'UNIFORM_SAMPLE_ADD',{},sample_metadata(sample))
     return sample_metadata(sample)
 

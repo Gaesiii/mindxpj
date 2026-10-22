@@ -325,6 +325,8 @@ Mã lỗi bổ sung: VISION_LIMIT422, RATE_LIMITED429, SESSION_CLOSED409, SESSIO
 
 Chẩn đoán ảnh mẫu đồng phục (22/10/2026): giữ `422 INVALID_IMAGE`, bổ sung `details.reason` khi ảnh đã đọc được nhưng không đạt điều kiện dataset: `UNIFORM_NO_FACE` (không thấy mặt), `UNIFORM_MULTIPLE_FACES` (nhiều mặt), `UNIFORM_ROI_POSITION` (vùng áo chưa nằm dưới mặt và chừa khoảng cách), `UNIFORM_ROI_FACE` (vùng áo chứa mặt), `UNIFORM_CROP_SIZE` (crop PNG lưu trữ vượt1MiB). Client cần hiển thị đúng nguyên nhân, không thay mọi INVALID_IMAGE bằng thông báo giới hạn ảnh tải lên. Không đổi schema, quyền truy cập hoặc nới kiểm tra pixel mặt.
 
+`422 VALIDATION_ERROR` khi thêm mẫu có `details.reason`: `UNIFORM_REQUIRED_FIELDS` (+`fields` thiếu), `UNIFORM_REQUEST_FIELDS`, `UNIFORM_LABEL`, `UNIFORM_SPLIT`, `UNIFORM_GROUP`, `UNIFORM_ROI_FORMAT`, `UNIFORM_ROI_TOO_SMALL` (+`size:[width,height]`, `minimum:96`), `UNIFORM_ROI_BOUNDS`, `UNIFORM_SAMPLE_LIMIT` (+`maximum:1000`), `UNIFORM_DATASET_SIZE` (+`maximum_mib:32`), `UNIFORM_GROUP_SPLIT_CONFLICT` (+`existing_split:train|val|test`). `details.field` chỉ trường cần sửa khi áp dụng. Ảnh trùng giữ `409 DUPLICATE`, thêm reason`UNIFORM_DUPLICATE_IMAGE`. Client hiển thị thông tin cụ thể này; không ghi đè bằng hướng dẫn chung.
+
 
 ### Nâng cấp mẫu/scan v1.4
 

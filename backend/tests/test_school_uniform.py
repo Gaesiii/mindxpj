@@ -39,6 +39,37 @@ class UniformInferenceTests(SimpleTestCase):
 
 
 class UniformScopeTests(TestCase):
+    def test_group_split_conflict_names_existing_split(self):
+        from unittest.mock import patch
+        from school_app.vision.uniform_services import add_sample
+        from school_app.accounts.services import AccountError
+        with patch('school_app.vision.engine.decode_upload',return_value=np.zeros((400,300,3),np.uint8)), \
+                patch('school_app.vision.engine.detect_faces',side_effect=[np.array([[50,10,80,80]]),[]]):
+            with self.assertRaises(AccountError) as error:
+                add_sample(self.supervisor,self.classroom.pk,None,
+                    {'label':'SHIRT','split':'test','capture_group':'group1','roi':'[50,150,150,150]'})
+        self.assertEqual(error.exception.details,{'reason':'UNIFORM_GROUP_SPLIT_CONFLICT','field':'split','existing_split':'train'})
+
+    def test_uniform_validation_identifies_field_and_bad_crop_size(self):
+        from unittest.mock import patch
+        from school_app.vision.uniform_services import add_sample
+        from school_app.accounts.services import AccountError
+        base={'label':'SHIRT','split':'train','capture_group':'group-1','roi':'[50,150,150,150]'}
+        cases=[({'capture_group':'nhóm có dấu'},'UNIFORM_GROUP','capture_group'),
+               ({'label':'INVALID'},'UNIFORM_LABEL','label'),
+               ({'split':'INVALID'},'UNIFORM_SPLIT','split'),
+               ({'roi':'not json'},'UNIFORM_ROI_FORMAT','roi'),
+               ({'roi':'[50,150,30,40]'},'UNIFORM_ROI_TOO_SMALL','roi'),
+               ({'roi':'[50,150,300,300]'},'UNIFORM_ROI_BOUNDS','roi')]
+        for values,reason,field in cases:
+            with self.subTest(reason=reason), patch('school_app.vision.engine.decode_upload',return_value=np.zeros((400,300,3),np.uint8)):
+                with self.assertRaises(AccountError) as error:
+                    add_sample(self.supervisor,self.classroom.pk,None,{**base,**values})
+                self.assertEqual(error.exception.details.get('reason'),reason)
+                self.assertEqual(error.exception.details.get('field'),field)
+                if reason=='UNIFORM_ROI_TOO_SMALL':
+                    self.assertEqual(error.exception.details['size'],[30,40])
+
     def test_uniform_image_errors_explain_cause_instead_of_claiming_upload_is_large(self):
         from unittest.mock import patch
         from school_app.vision.uniform_services import add_sample

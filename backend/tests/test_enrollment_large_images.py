@@ -10,6 +10,21 @@ from school_app.vision import engine
 
 
 class EnrollmentLargeImageTests(SimpleTestCase):
+    def test_uniform_roi_edges_stay_inside_decoded_image(self):
+        node=shutil.which('node')
+        if not node:self.skipTest('Node required')
+        module=Path(__file__).resolve().parents[1]/'school_app/demo_ui/static/demo_ui/enrollment.js'
+        code=r'''
+const assert=require('node:assert/strict');
+const {uniformRoi}=require(process.argv[1]);
+// Rounded preview is 600x338; old .625 scalar mapped its bottom to 541,
+// outside the 960x540 decoded image. Round endpoints, not x and width.
+assert.deepEqual(uniformRoi([13.4375,0],[600,338],600,338,960,540),[22,0,938,540]);
+assert.deepEqual(uniformRoi([600,338],[-3,-1],600,338,960,540),[0,0,960,540]);
+'''
+        result=subprocess.run([node,'-e',code,str(module)],capture_output=True,text=True)
+        self.assertEqual(result.returncode,0,result.stderr)
+
     def test_uniform_large_original_is_prepared_with_camera_payload_budget(self):
         node=shutil.which('node')
         if not node:self.skipTest('Node required')
@@ -19,8 +34,9 @@ const assert=require('node:assert/strict');
 const {prepareUniform}=require(process.argv[1]);
 (async()=>{
  const original={size:25*1048576,type:'image/jpeg'};
- const result=await prepareUniform(original,async(file,budget)=>{
+ const result=await prepareUniform(original,async(file,budget,index,edges)=>{
   assert.equal(file,original);assert.ok(budget<2*1048576);
+  assert.equal(edges[0],960);
   return {size:1000000,type:'image/jpeg'};
  });
  assert.equal(result.size,1000000);

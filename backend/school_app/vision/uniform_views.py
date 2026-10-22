@@ -27,7 +27,8 @@ def uniform_samples(request,classroom_id):
         return json_response(services.samples(request.user,classroom_id))
     supervisor_user(request.user)
     if set(request.FILES) != {'image'} or len(request.FILES.getlist('image')) != 1 or any(len(request.POST.getlist(k)) != 1 for k in request.POST):
-        raise AccountError('VALIDATION_ERROR','Submit one image and garment metadata.',422)
+        raise AccountError('VALIDATION_ERROR','Submit one image and garment metadata.',422,
+                           {'reason':'UNIFORM_REQUEST_FIELDS','field':'image'})
     return json_response(services.add_sample(request.user,classroom_id,request.FILES['image'],request.POST.dict()),201)
 
 

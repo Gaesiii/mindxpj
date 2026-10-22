@@ -1,12 +1,12 @@
 (function(root){
   'use strict';
   const MiB=1048576;
-  async function optimize(file,budget,index){
+  async function optimize(file,budget,index,edges=[1920,1600,1280,1024,800]){
     const image=new Image(),url=URL.createObjectURL(file);
     try{
       image.src=url;await image.decode();
       if(!image.naturalWidth||image.naturalWidth*image.naturalHeight>120000000)throw new Error('Ảnh gốc tối đa 120 triệu pixel.');
-      for(const edge of [1920,1600,1280,1024,800]){
+      for(const edge of edges){
         const ratio=Math.min(1,edge/image.naturalWidth,edge/image.naturalHeight);
         const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(image.naturalWidth*ratio));canvas.height=Math.max(1,Math.round(image.naturalHeight*ratio));
         const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(image,0,0,canvas.width,canvas.height);
@@ -39,10 +39,16 @@
     if(!file||file.size>32*MiB)throw new Error('Ảnh gốc đồng phục tối đa 32 MiB.');
     if(!['image/jpeg','image/png','image/webp'].includes(file.type))throw new Error('Chọn ảnh JPEG, PNG hoặc WebP; chuyển HEIC/RAW sang JPEG trước.');
     if(!isCurrent())return null;
-    const budget=Math.floor(1.9*MiB),prepared=await encoder(file,budget,0);
+    // Match the server decoder dimensions so ROI coordinates need no second resize.
+    const budget=Math.floor(1.9*MiB),prepared=await encoder(file,budget,0,[960,800,640]);
     if(!isCurrent())return null;
     if(!prepared||prepared.size>budget)throw new Error('Ảnh đồng phục vượt dung lượng sau tối ưu.');
     return prepared;
   }
-  const api={prepare,prepareUniform};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.MindXEnrollment=api;
+  function uniformRoi(start,end,displayWidth,displayHeight,imageWidth,imageHeight){
+    const axis=(a,b,display,size)=>[a,b].map(v=>Math.max(0,Math.min(size,Math.round(v*size/display)))).sort((a,b)=>a-b);
+    const [x1,x2]=axis(start[0],end[0],displayWidth,imageWidth),[y1,y2]=axis(start[1],end[1],displayHeight,imageHeight);
+    return [x1,y1,x2-x1,y2-y1];
+  }
+  const api={prepare,prepareUniform,uniformRoi};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.MindXEnrollment=api;
 })(typeof window!=='undefined'?window:globalThis);

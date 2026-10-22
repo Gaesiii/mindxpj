@@ -21,3 +21,11 @@ Kiểm chứng:
 Sau rollout, người dùng thấy câu “tối đa2MiB/4MP”. Kiểm tra mã cho thấy UI ghi đè mọi `INVALID_IMAGE` bằng câu này, kể cả các kiểm tra không thấy mặt/vùng áo chạm mặt/crop lưu trữ. Native probe ảnh trống từ lượt deploy trước cũng trả INVALID_IMAGE dù file nhỏ và đúng định dạng. Chưa có ảnh gốc người dùng để xác định điều kiện cụ thể bị vi phạm.
 
 Backend nay giữ mã lỗi/status cũ và trả thêm `details.reason` phân biệt thiếu mặt, nhiều mặt, vị trí ROI, mặt nằm trong ROI, crop lưu trữ lớn. UI dùng thông báo tiếng Việt theo reason; thông báo ảnh chung không còn kết luận sai về kích thước. Kiểm tra hồi quy backend cho thiếu mặt/nhiều mặt/ROI đã thất bại trước sửa và qua sau sửa; browser kiểm tra lỗi thiếu mặt không chứa câu2MiB, sau đó thử tải lại mẫu48MP thành công qua API fixture.
+
+## Chẩn đoán trường dữ liệu và sửa mép vùng chọn
+
+Phát hiện thêm: preview1920×1080 đã chuẩn bị được hiển thị600×338, trong khi backend giải mã960×540. Hệ số scalar0,625 cũ biến mép dưới338thành541, gây lỗi bounds dù người dùng chọn trong ảnh; việc làm tròn x và width riêng cũng có thể cộng thành961. Đã chuyển ảnh đồng phục về tối đa960px như decoder, dùng tỷ lệ riêng hai trục theo kích thước preview thực tế, làm tròn/clamp hai đầu mút trước khi tính width/height. Encoder mặt giữ cấu hình cũ.
+
+VALIDATION_ERROR nay có reason/field cho thiếu trường, nhãn áo, bộ dữ liệu, tên nhóm, ROI không đúng định dạng/quá nhỏ/vượt mép, nhóm khác split và quota. UI báo kích thước thực khi ROI nhỏ, tên split hiện tại khi nhóm xung đột, focus/đánh dấu trường cần sửa. API giữ status/code, không echo dữ liệu cá nhân. Lỗi POST cũ bị bỏ qua khi người dùng đã đổi ảnh/lớp/view.
+
+Kiểm tra red trước sửa:6 lỗi trường/ROI và1 lỗi ánh xạ mép ảnh. Kiểm tra browser:thông báo31×40px cần96×96px, đánh dấu canvas; nhóm ở Huấn luyện hiển thị rõ và đánh dấu select; retry vẫn tải48MP đúngROI. Ảnh fixture22.247.629byte → multipart335.916byte với encoder960px. Review độc lập kiểm tra thêm10.000vùng chọn ngẫu nhiên:đều giữ trong ảnh, không có blocker.

@@ -27,7 +27,7 @@ let browser;
   else if(['/sessions/q1/vision-scans','/sessions/q0/vision-scans'].includes(path))body={items:[]};
   else if(path==='/classes/c1/uniform-profile')body={profile:null,versions:[]};
   else if(path==='/classes/c1/uniform-samples'){
-   if(req.method()==='POST'&&uniformRejectReason){await route.fulfill({status:422,json:{code:'INVALID_IMAGE',message:'Image rejected',details:{reason:uniformRejectReason}}});return;}
+   if(req.method()==='POST'&&uniformRejectReason){const details={reason:uniformRejectReason,...(uniformRejectReason==='UNIFORM_ROI_TOO_SMALL'?{field:'roi',size:[31,40]}:{}),...(uniformRejectReason==='UNIFORM_GROUP_SPLIT_CONFLICT'?{field:'split',existing_split:'train'}:{})};await route.fulfill({status:422,json:{code:uniformRejectReason==='UNIFORM_NO_FACE'?'INVALID_IMAGE':'VALIDATION_ERROR',message:'Image rejected',details}});return;}
    body={items:[]};
   }
   else if(path==='/grades')body={items:[{id:'g1',name:'Khối 10'}]};
@@ -58,6 +58,12 @@ let browser;
  await page.locator('#uniform-sample-form button[type="submit"]').click();await page.waitForTimeout(200);
  const cropError=await page.locator('#uniform-sample-form .dialog-error').textContent();
  assert(cropError.includes('khuôn mặt')&&!cropError.includes('2 MiB'),'face context rejection must not be shown as a size limit: '+cropError);
+ uniformRejectReason='UNIFORM_ROI_TOO_SMALL';await page.locator('#uniform-sample-form button[type="submit"]').click();await page.waitForTimeout(150);
+ assert((await page.locator('#uniform-sample-form .dialog-error').textContent()).includes('31 × 40 px, cần ít nhất 96 × 96 px'));
+ assert.equal(await page.locator('#uniform-crop-canvas').getAttribute('aria-invalid'),'true');
+ uniformRejectReason='UNIFORM_GROUP_SPLIT_CONFLICT';await page.locator('#uniform-sample-form button[type="submit"]').click();await page.waitForTimeout(150);
+ assert((await page.locator('#uniform-sample-form .dialog-error').textContent()).includes('bộ Huấn luyện'));
+ assert.equal(await page.locator('#uniform-sample-split').getAttribute('aria-invalid'),'true');
  uniformRejectReason=null;await page.locator('#uniform-sample-form button[type="submit"]').click();await page.waitForTimeout(200);
  const cropWrite=writes.find(w=>w.path==='/classes/c1/uniform-samples'&&w.method==='POST');assert(cropWrite,'crop upload submitted');
  const match=cropWrite.body.match(/name="roi"\r\n\r\n([^\r]+)/);assert(match);const roi=JSON.parse(match[1]);assert(Math.abs(roi[0]-240)<=1&&Math.abs(roi[1]-216)<=1&&Math.abs(roi[2]-480)<=1&&Math.abs(roi[3]-270)<=1,'1920 source maps to 960 decoder ROI: '+roi);
